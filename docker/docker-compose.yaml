@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile-backend
+    environment:
+      DB_HOST: db_app
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: database_transcendence
+      DB_PORT: 5432
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../apps:/app_backend/apps
+    networks:
+      - webapp
+      - database
+    restart: always
+    container_name: backend_app
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../frontend:/app_frontend/apps
+    networks:
+      - webapp
+    restart: always
+    container_name: frontend_app
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: database_transcendence
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../database-data:/var/lib/postgresql/data/
+    networks:
+      - database
+    restart: always
+    container_name: db_app
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8082:8082
+    networks:
+      - database
+    restart: always
+    container_name: adminer
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    networks:
+      - database
+    restart: always
+    container_name: pgadmin
+
+networks:
+  webapp:
+    driver: bridge
+  database:
+    driver: bridge
