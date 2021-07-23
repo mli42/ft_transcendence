@@ -20,11 +20,7 @@ RUN npm install @nestjs/jwt @nestjs/passport passport passport-jwt @types/passpo
 # dependency for Websocket
 RUN npm i @nestjs/websockets@7 @nestjs/platform-socket.io@7
 
-
 EXPOSE 3000
 
-# CMD [ "sh" ]
 CMD sleep infinity
-
-# To build the image: docker image build -f backend.dockerfile -t backend_apps .
-# To run the container: docker run -it -v $PWD:/app_backend/apps -p 3000:3000 backend_apps
+# ENTRYPOINT npm run start:dev

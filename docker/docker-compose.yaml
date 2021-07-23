@@ -14,7 +14,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ../backend:/backend/
+      - ../backend:/app_backend
     networks:
       - webapp
       - database
@@ -28,7 +28,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ../frontend:/frontend/
+      - ../frontend:/app_frontend
     networks:
       - webapp
     restart: always
