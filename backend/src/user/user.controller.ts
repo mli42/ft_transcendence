@@ -1,0 +1,28 @@
+import { Controller, Post, Body } from "@nestjs/common"
+import { UserService } from "./user.service";
+import { User } from './entities/user.entity';
+import { CreateUserDto } from "./dto/user.dto";
+import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
+import { ApiConflictResponse, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+
+@ApiTags('users')
+@Controller('api/user')
+export class UserController {
+	constructor (
+		private readonly userService: UserService,
+	) {}
+
+    @ApiOkResponse({description: 'User Sign Up'})
+    @ApiConflictResponse({description: 'Username or email already exist'})
+	@Post('/signup')
+	async signUp(@Body() userData: CreateUserDto): Promise<Partial<User>> {
+		return this.userService.signUp(userData);
+	}
+
+	@ApiOkResponse({description: 'User Sign Up'})
+    @ApiUnauthorizedResponse({description: 'Please check your login credentials'})
+	@Post('/signin')
+	async signIn(@Body() userAuth: AuthCredentialsDto): Promise<{accessToken: string}> {
+		return this.userService.signIn(userAuth);
+	}
+}
