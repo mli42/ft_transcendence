@@ -1,9 +1,12 @@
+# Folder database
 database-data
 
+# OS
 .DS_Store
+
+# compiled output
 node_modules
 /dist
-
 
 # local env files
 .env.local
@@ -23,3 +26,14 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
