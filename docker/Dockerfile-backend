@@ -6,21 +6,20 @@ WORKDIR /app_backend
 RUN npm i -g @nestjs/cli
 
 # dependency for validation data and transform data | uuid (Universally unique identifier) for generate unique ID
-RUN npm install class-validator class-transformer uuid
+# RUN npm install class-validator class-transformer uuid
 
 # dependency for database management (typeORM | Postgres)
-RUN npm install typeorm @nestjs/typeorm@7 pg
+# RUN npm install typeorm @nestjs/typeorm@7 pg
 
 # dependency bcrypt (for encrypt password)
-RUN npm install bcrypt
+# RUN npm install bcrypt
 
 # dependency for JSON WEB TOKEN
-RUN npm install @nestjs/jwt @nestjs/passport passport passport-jwt @types/passport-jwt
+# RUN npm install @nestjs/jwt @nestjs/passport passport passport-jwt @types/passport-jwt
 
 # dependency for Websocket
-RUN npm i @nestjs/websockets@7 @nestjs/platform-socket.io@7
+# RUN npm i @nestjs/websockets@7 @nestjs/platform-socket.io@7
 
 EXPOSE 3000
 
-CMD sleep infinity
-# ENTRYPOINT npm run start:dev
+ENTRYPOINT npm install

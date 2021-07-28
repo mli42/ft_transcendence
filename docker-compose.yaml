@@ -3,18 +3,12 @@ version: '3'
 services:
   api:
     build:
-      context: .
+      context: ./docker
       dockerfile: Dockerfile-backend
-    environment:
-      DB_HOST: db_app
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: database_transcendence
-      DB_PORT: 5432
     ports:
       - "3000:3000"
     volumes:
-      - ../backend:/app_backend
+      - ./backend:/app_backend
     networks:
       - webapp
       - database
@@ -23,12 +17,12 @@ services:
 
   webapp:
     build:
-      context: .
+      context: ./docker
       dockerfile: Dockerfile-frontend
     ports:
       - "8080:8080"
     volumes:
-      - ../frontend:/app_frontend
+      - ./frontend:/app_frontend
     networks:
       - webapp
     restart: always
@@ -36,14 +30,10 @@ services:
 
   db:
     image: postgres:13-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: database_transcendence
     ports:
-      - "5432:5432"
+      - "31415:5432"
     volumes:
-      - ../database-data:/var/lib/postgresql/data/
+      - ./database-data:/var/lib/postgresql/data/
     networks:
       - database
     restart: always
