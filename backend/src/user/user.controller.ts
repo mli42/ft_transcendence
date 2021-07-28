@@ -3,7 +3,7 @@ import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto } from "./dto/user.dto";
 import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
-import { ApiConflictResponse, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiConflictResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 
 @ApiTags('users')
 @Controller('api/user')
