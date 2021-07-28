@@ -22,4 +22,5 @@ RUN npm i -g @nestjs/cli
 
 EXPOSE 3000
 
-ENTRYPOINT npm install
+CMD sleep infinity
+# ENTRYPOINT npm install

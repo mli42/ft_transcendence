@@ -3,7 +3,7 @@ version: '3'
 services:
   api:
     build:
-      context: ./docker
+      context: ./docker/
       dockerfile: Dockerfile-backend
     ports:
       - "3000:3000"
@@ -17,7 +17,7 @@ services:
 
   webapp:
     build:
-      context: ./docker
+      context: ./docker/
       dockerfile: Dockerfile-frontend
     ports:
       - "8080:8080"
@@ -30,6 +30,10 @@ services:
 
   db:
     image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: database_transcendence
     ports:
       - "31415:5432"
     volumes:
