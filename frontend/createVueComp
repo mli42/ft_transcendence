@@ -8,6 +8,7 @@ fi
 # ____________________________________________________________________
 
 tab="  "
+STYLE_EXT="scss"
 
 function fillVueFile () {
     echo -n >> $vue_file "\
@@ -30,7 +31,7 @@ ${tab}},
 }
 </script>
 
-<style scoped src=\"./$(basename ${css_file})\">
+<style scoped lang=\"${STYLE_EXT}\" src=\"./$(basename ${css_file})\">
 </style>
 "
 }
@@ -43,7 +44,7 @@ function createComponent () {
     # $1 == component-name
     lowercase=$(echo "${1}" | awk '{ print tolower($0) }')
     targetDir="./src/components/${1}"
-    css_file="${targetDir}/${1}.css"
+    css_file="${targetDir}/${1}.${STYLE_EXT}"
     vue_file="${targetDir}/${1}.vue"
 
     mkdir -p ${targetDir}
