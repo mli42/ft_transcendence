@@ -1,4 +1,4 @@
-import { IsNotEmpty, MinLength, MaxLength, IsEmail } from 'class-validator';
+import { IsNotEmpty, MinLength, MaxLength, IsEmail, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -16,34 +16,37 @@ export class CreateUserDto {
 	@IsNotEmpty()
 	@MinLength(8)
 	@MaxLength(32)
+	@Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+		message: 'password is too weak',
+	})
 	@ApiProperty({description: 'required'})
 	password: string;
 
-	@ApiProperty()
-	profile_picture: string;
+	// @ApiProperty()
+	// profile_picture: string;
 
-	@ApiProperty()
-	elo: string;
+	// @ApiProperty()
+	// elo: string;
 
-	@ApiProperty()
-	game_won: number;
+	// @ApiProperty()
+	// game_won: number;
 
-	@ApiProperty()
-	lost_game: number;
+	// @ApiProperty()
+	// lost_game: number;
 
-	@ApiProperty()
-	ration: number;
+	// @ApiProperty()
+	// ration: number;
 
-	@ApiProperty()
-	status: string
+	// @ApiProperty()
+	// status: string
 
-	@ApiProperty()
-	sign_up_date: Date;
+	// @ApiProperty()
+	// sign_up_date: Date;
 
-	@ApiProperty()
-	friend: string;
+	// @ApiProperty()
+	// friend: string;
 
-	@ApiProperty()
-	match_history: string;
+	// @ApiProperty()
+	// match_history: string;
 
 }
