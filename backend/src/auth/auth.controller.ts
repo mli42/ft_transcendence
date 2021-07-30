@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger'
 
 @ApiTags('42 authentication')
 // Je n'est pas m'y @Controller('api') car j'avais deja demandé l'url de redirection "http://localhost:3000"...
-@Controller('')
+@Controller('42/')
 export class AuthController {
 
 	// GET /api/auth/login
@@ -20,11 +20,11 @@ export class AuthController {
 	// GET /api/auth/redirect
 	// redirect URL que OAuth2 va appeler pour rediriger l'utilisateur sur la page de connexion d'accueil
 	// Je n'est pas m'y @Get('redirect') car j'avais deja demandé l'url de redirection "http://localhost:3000"...
-	@Get('')
+	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
 	redirect(@Res() res: Response) {
 		// res.send(200);
-		res.redirect('http://localhost:8080');
+		res.redirect('http://localhost:3000/');
 	}
 
 	// to do
@@ -33,7 +33,6 @@ export class AuthController {
 
 	@Get('status')
 	status() {
-		
 	}
 
 	// to do

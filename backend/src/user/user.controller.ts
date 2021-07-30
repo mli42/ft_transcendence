@@ -19,7 +19,7 @@ export class UserController {
 		return this.userService.signUp(userData);
 	}
 
-	@ApiOkResponse({description: 'User Sign Up'})
+	@ApiOkResponse({description: 'User Sign In'})
     @ApiUnauthorizedResponse({description: 'Please check your login credentials'})
 	@Post('/signin')
 	async signIn(@Body() userAuth: AuthCredentialsDto): Promise<{accessToken: string}> {
