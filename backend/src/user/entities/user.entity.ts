@@ -32,4 +32,6 @@ export class User {
 
   match_history: string;
 
+  auth: boolean;
+
 }

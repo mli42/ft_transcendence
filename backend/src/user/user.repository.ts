@@ -12,6 +12,7 @@ export class UsersRepository extends Repository<User> {
 
 		const salt = await bcrypt.genSalt();
 		user.password = await bcrypt.hash(user.password, salt);
+		user.auth = false;
 
 		try {
 			await this.save(user);
