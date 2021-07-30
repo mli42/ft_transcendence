@@ -1,16 +1,22 @@
-import { Controller, Get, Res, UseGuards } from '@nestjs/common'
+import { Controller, Get, Param, Post, Res, UseGuards } from '@nestjs/common'
 import { Response } from 'express';
 import { IntraAuthGuard } from './guards/auth.guard';
 import { ApiTags } from '@nestjs/swagger'
+import { Code } from 'typeorm';
+import { HttpService } from '@nestjs/axios';
 
 @ApiTags('42 authentication')
 // Je n'est pas m'y @Controller('api') car j'avais deja demandé l'url de redirection "http://localhost:3000"...
-@Controller('42/')
+@Controller('auth/')
 export class AuthController {
+	constructor (
+		private httpService: HttpService,
+	) {}
 
+	// 42 API
 	// GET /api/auth/login
 	// Route que le user visit pour s'authentifier
-	@Get('login')
+	@Get('42/login')
 	@UseGuards(IntraAuthGuard)
 	login() {
 		console.log("ok login");
@@ -31,13 +37,36 @@ export class AuthController {
 	// GET /api/auth/status
 	// Recupérer le status d'anthentification
 
-	@Get('status')
+	@Get('42/status')
 	status() {
 	}
 
 	// to do
 	// GET /api/auth/logout
 	// Supprimer la session
-	@Get('logout')
+	@Get('42/logout')
 	logout() {}
+
+
+	// two factor authentication
+	@Get('2fa/:user')
+	async getQrcode(@Param('user') user, @Param('code') code) {
+	  const resp = await this.httpService.get(
+		  `https://www.authenticatorApi.com/pair.aspx?
+		  AppName=${process.env.TWO_FACTOR_AUTHENTICATION_APP_NAME}
+		  &AppInfo=${user}
+		  &SecretCode=${process.env.TWO_FACTOR_AUTHENTICATION_SECRET_CODE}`,
+		).toPromise();
+	  return resp.data;
+	}
+
+	@Post('2fa/:secret')
+	async validate(@Param('secret') secret) {
+	  const resp = await this.httpService.get(
+		  `https://www.authenticatorApi.com/Validate.aspx?
+		  Pin=${secret}
+		  &SecretCode=${process.env.TWO_FACTOR_AUTHENTICATION_SECRET_CODE}`,
+		).toPromise();
+	  return resp.data;
+	}
 }
