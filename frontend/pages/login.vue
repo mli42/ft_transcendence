@@ -1,6 +1,6 @@
 <template>
-  <div>
-    Login
+  <div class="main">
+    <img class="imgBox" src="~/assets/img/vague.svg" />
   </div>
 </template>
 
@@ -18,3 +18,6 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped lang="scss" src="./login.scss">
+</style>
