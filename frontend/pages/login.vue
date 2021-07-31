@@ -1,6 +1,6 @@
 <template>
   <div>
-    Homepage
+    Login
   </div>
 </template>
 
@@ -8,12 +8,8 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  name: 'root-index',
-  head(): object {
-    return {
-      title: "Home Page" as String,
-    };
-  },
+  name: 'login',
+  layout: 'empty',
   data() {
     return {
     };

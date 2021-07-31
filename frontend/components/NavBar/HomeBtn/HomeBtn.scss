@@ -1,0 +1,19 @@
+@import '~/assets/Palette.scss';
+
+.homebtn {
+  width: 100%;
+  height: 100%;
+  border-radius: 40px;
+  text-decoration: none;
+}
+
+img.logoHomeBtn {
+  width: 35px;
+  height: 35px;
+}
+
+p.txtHomeBtn {
+  padding-top: 2px;
+  color: $pg-grey;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}

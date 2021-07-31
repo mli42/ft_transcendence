@@ -1,0 +1,36 @@
+@import '~/assets/Palette.scss';
+
+div#banner {
+  position: absolute;
+  box-sizing: border-box;
+  width: 100%;
+  height: 64px;
+  top: 0;
+  left: 0;
+  background: $pg-grey;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 40px;
+  margin: 12px;
+}
+
+.homebtn {
+  width: 170px;
+  height: 100%;
+}
+
+.align-content {
+  display: flex;
+  flex-direction: row;
+}
+
+.pg-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: $pg-white;
+}
