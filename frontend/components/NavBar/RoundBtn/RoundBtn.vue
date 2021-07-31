@@ -8,13 +8,15 @@
 export default {
   name: 'RoundBtn',
   data(): any {
+    const _this: any = this;
     return {
-      imgURL: `https://api.iconify.design/${this.icone}.svg` as string,
+      imgURL: `https://api.iconify.design/${_this.icone}.svg` as string,
     };
   },
   computed: {
     imgClass(): object {
-      return {imgIcone: true, msgIcone: (this.route == '/chat')}
+      const _this: any = this;
+      return {imgIcone: true, msgIcone: (_this.route == '/chat')}
     }
   },
   components: {
