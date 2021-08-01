@@ -25,11 +25,15 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     '~/assets/Palette.scss',
+    '~/assets/transitions.scss',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
   ],
+
+  pageTransition: 'fade',
+  layoutTransition: 'fade',
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
