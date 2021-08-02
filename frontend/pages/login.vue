@@ -4,15 +4,18 @@
 
     <div class="content flexHVcenter">
       <div class="contentCol">
-        <h1>Login</h1>
+        <h1 class="contentTitle">Login</h1>
         <br>
         <form>
           <LoginInput name="Username/Email" v-model="logEmail"></LoginInput>
           <LoginInput name="Password" v-model="logPass" :isPassword="true"></LoginInput>
+          <v-btn @click.prevent="loginSubmit"
+          block elevation="2">Login</v-btn>
         </form>
+        <hr class="leftHR" />
       </div>
       <div class="contentCol">
-        <h1>Sign-up</h1>
+        <h1 class="contentTitle">Sign-up</h1>
       </div>
     </div>
   </div>
@@ -31,6 +34,9 @@ export default Vue.extend({
     };
   },
   methods: {
+    loginSubmit(): void {
+      console.log(this.logEmail, this.logPass);
+    },
   },
 });
 </script>

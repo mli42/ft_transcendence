@@ -32,7 +32,7 @@ export default Vue.extend({
       return (this.isPassword && this.hidePassword ? 'password' : 'text');
     },
     eyeType(): string {
-      return (this.hidePassword ? 'ph:eye-closed-bold' : 'el:eye-open');
+      return (this.hidePassword ? 'ph:eye-closed-bold' : 'ic:outline-remove-red-eye');
     },
   },
   props: {
