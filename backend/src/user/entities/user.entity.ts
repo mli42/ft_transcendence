@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, IsNull } from 'typeorm';
 
 @Entity()
 export class User {
@@ -14,24 +14,34 @@ export class User {
   @Column()
   password: string;
 
+  @Column()
   profile_picture: string;
 
-  elo: string;
+  // @Column()
+  // elo: string;
 
-  game_won: number;
+  // @Column()
+  // game_won: number;
 
-  lost_game: number;
+  // @Column()
+  // lost_game: number;
 
-  ration: number;
+  // @Column()
+  // ration: number;
 
-  status: string
+  // @Column()
+  // status: string
 
-  sign_up_date: Date;
+  // @Column()
+  // sign_up_date: Date;
 
-  friend: string;
+  // @Column()
+  // friend: string;
 
-  match_history: string;
+  // @Column()
+  // match_history: string;
 
+  // @Column()
   auth: boolean;
 
 }

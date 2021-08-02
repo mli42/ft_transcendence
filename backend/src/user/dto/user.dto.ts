@@ -1,5 +1,6 @@
-import { IsNotEmpty, MinLength, MaxLength, IsEmail, Matches } from 'class-validator';
+import { IsNotEmpty, MinLength, MaxLength, IsEmail, Matches, IsEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNull } from 'typeorm';
 
 export class CreateUserDto {
 	@IsNotEmpty()
@@ -22,6 +23,7 @@ export class CreateUserDto {
 	@ApiProperty({description: 'required'})
 	password: string;
 
+	// @IsOptional()
 	// @ApiProperty()
 	// profile_picture: string;
 

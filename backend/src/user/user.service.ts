@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, UploadedFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -38,5 +38,9 @@ export class UserService {
         } else {
             throw new UnauthorizedException('Please check your login credentials');
         }
+	}
+
+	async uploadImage(@UploadedFile() file, user: User): Promise<string> {
+		return this.usersRepository.saveImage(file, user);
 	}
 }
