@@ -8,6 +8,7 @@ import { UsersRepository } from './user.repository';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { GetUserFilterDto } from './dto/get-user-filter.dto';
 
 @Injectable()
 export class UserService {
@@ -38,6 +39,10 @@ export class UserService {
         } else {
             throw new UnauthorizedException('Please check your login credentials');
         }
+	}
+
+	getUserWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
+		return this.usersRepository.getUsers(filterDto);
 	}
 
 	async uploadImage(@UploadedFile() file, user: User): Promise<string> {

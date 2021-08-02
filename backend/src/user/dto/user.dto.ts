@@ -23,32 +23,4 @@ export class CreateUserDto {
 	@ApiProperty({description: 'required'})
 	password: string;
 
-	// @IsOptional()
-	// @ApiProperty()
-	// profile_picture: string;
-
-	// @ApiProperty()
-	// elo: string;
-
-	// @ApiProperty()
-	// game_won: number;
-
-	// @ApiProperty()
-	// lost_game: number;
-
-	// @ApiProperty()
-	// ration: number;
-
-	// @ApiProperty()
-	// status: string
-
-	// @ApiProperty()
-	// sign_up_date: Date;
-
-	// @ApiProperty()
-	// friend: string;
-
-	// @ApiProperty()
-	// match_history: string;
-
 }

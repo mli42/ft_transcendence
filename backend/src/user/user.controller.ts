@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Request } from "@nestjs/common"
+import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Request, Patch, Param, Query } from "@nestjs/common"
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto } from "./dto/user.dto";
@@ -10,7 +10,19 @@ import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import path = require("path")
 import { AuthGuard } from "@nestjs/passport";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 
+export const storage = {
+	storage: diskStorage({
+		destination: 'upload/profileImage',
+		filename: (req, file, cb) => {
+			const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+			const extension: string = path.parse(file.originalname).ext;
+			cb(null, `${filename}${extension}`)
+		}
+	}),
+}
 
 @ApiTags('users')
 @Controller('api/user')
@@ -33,20 +45,21 @@ export class UserController {
 		return this.userService.signIn(userAuth);
 	}
 
+	@Get('/search')
+	getUser(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
+		return this.userService.getUserWithFilters(filterDto);
+	}
+
+	// @Patch('/:id/settings')
+	// updateUser(
+	// @Param('id') id: string,
+	// @Body() updateUser: UpdateUserDto,
+	// ){
+	// }
+
 	@UseGuards(AuthGuard())
 	@Post('upload')
-	@UseInterceptors(FileInterceptor('file', {
-	storage: diskStorage({
-		destination: 'upload/profileImage',
-        filename: (req, file, cb) => {
-			const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-			const extension: string = path.parse(file.originalname).ext;
-
-			cb(null, `${filename}${extension}`)
-		}
-	}),
-	}),
-	)
+	@UseInterceptors(FileInterceptor('file', storage))
 	uploadImage(@UploadedFile() file, @Request() req): Promise<string> {
 		const user: User = req.user;
 		return this.userService.uploadImage(file, user);
