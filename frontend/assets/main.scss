@@ -1,0 +1,14 @@
+@font-face {
+  font-family: "Josefin Sans";
+  src: url(~/assets/fonts/JosefinSans.ttf);
+}
+
+* {
+  font-family: "Josefin Sans";
+}
+
+.flexHVcenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

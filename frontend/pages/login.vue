@@ -1,6 +1,15 @@
 <template>
-  <div class="main">
-    <img class="imgBox" src="~/assets/img/vague.svg" />
+  <div class="loginMain flexHVcenter">
+    <img class="imgWave" src="~/assets/img/vague.svg" />
+
+    <div class="content flexHVcenter">
+      <div class="contentCol">
+        <h1>Login</h1>
+      </div>
+      <div class="contentCol">
+        <h1>Sign-up</h1>
+      </div>
+    </div>
   </div>
 </template>
 
