@@ -9,6 +9,7 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { GetUserFilterDto } from './dto/get-user-filter.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -43,6 +44,10 @@ export class UserService {
 
 	getUserWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
 		return this.usersRepository.getUsers(filterDto);
+	}
+
+	updateUser(updateUser: UpdateUserDto, user: User): Promise<User> {
+		return this.usersRepository.updateUser(updateUser, user);
 	}
 
 	async uploadImage(@UploadedFile() file, user: User): Promise<string> {

@@ -4,6 +4,7 @@ import { CreateUserDto } from "./dto/user.dto";
 import * as bcrypt from 'bcrypt';
 import { ConflictException, InternalServerErrorException, UploadedFile } from "@nestjs/common";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
@@ -51,6 +52,32 @@ export class UsersRepository extends Repository<User> {
 		}
 		const users = await query.getMany();
 		return users;
+	}
+
+	async updateUser(updateUser: UpdateUserDto, user: User): Promise<User> {
+		const {
+			username,
+			email,
+			password,
+			profile_picture,
+		} = updateUser;
+
+		if (username) {
+			user.username = username;
+		} if (email) {
+			user.email = email;
+		} if (password) {
+			user.password = password;
+		} if (profile_picture) {
+			user.profile_picture = profile_picture;
+		}
+		try {
+			await this.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+		return user;
 	}
 
 	async saveImage(@UploadedFile() file, user: User): Promise<string> {

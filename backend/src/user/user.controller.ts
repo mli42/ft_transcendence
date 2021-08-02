@@ -51,12 +51,13 @@ export class UserController {
 		return this.userService.getUserWithFilters(filterDto);
 	}
 
-	// @Patch('/:id/settings')
-	// updateUser(
-	// @Param('id') id: string,
-	// @Body() updateUser: UpdateUserDto,
-	// ){
-	// }
+	@ApiOkResponse({description: 'User Update'})
+	@UseGuards(AuthGuard())
+	@Patch('/settings')
+	updateUser(@Body() updateUser: UpdateUserDto, @Request() req): Promise<User> {
+		const user: User = req.user;
+		return this.userService.updateUser(updateUser, user);
+	}
 
 	@ApiOkResponse({description: 'User Upload Image'})
 	@UseGuards(AuthGuard())
