@@ -50,6 +50,10 @@ export class UserService {
 		return this.usersRepository.updateUser(updateUser, user);
 	}
 
+	async deleteUser(id: string): Promise<void> {
+		const result = await this.usersRepository.delete(id);
+	}
+
 	async uploadImage(@UploadedFile() file, user: User): Promise<string> {
 		return this.usersRepository.saveImage(file, user);
 	}

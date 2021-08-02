@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Request, Patch, Param, Query } from "@nestjs/common"
+import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Request, Patch, Param, Query, Delete } from "@nestjs/common"
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto } from "./dto/user.dto";
@@ -59,9 +59,20 @@ export class UserController {
 		return this.userService.updateUser(updateUser, user);
 	}
 
+	@ApiOkResponse({description: 'User Delete'})
+	@UseGuards(AuthGuard())
+	@Delete('/delete')
+	deleteUser(@Request() req): Promise<void> {
+		const user_id = req.user.userId;
+		console.log(req.user);
+		console.log(user_id);
+		return this.userService.deleteUser(user_id);
+	}
+
+
 	@ApiOkResponse({description: 'User Upload Image'})
 	@UseGuards(AuthGuard())
-	@Post('upload')
+	@Post('/upload')
 	@UseInterceptors(FileInterceptor('file', storage))
 	uploadImage(@UploadedFile() file, @Request() req): Promise<string> {
 		const user: User = req.user;
