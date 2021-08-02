@@ -1,9 +1,14 @@
 <template>
   <div class="inputMain">
-    <label :for="name">{{ name }}</label>
-    <br>
+    <div class="label">
+      <label :for="name">{{ name }}</label>
+      <img v-if="isPassword" alt="eye icon to show/hide password"
+      @click="hidePassword = !hidePassword"
+      :src="`https://api.iconify.design/${eyeType}.svg?color=white`"
+      />
+    </div>
     <input :type="inputType" :id="name" :name="name"
-    @input="updateValue($event.target.value)"/>
+    @input="updateValue($event.target.value)" />
   </div>
 </template>
 
@@ -14,6 +19,7 @@ export default Vue.extend({
   name: 'LoginInput',
   data() {
     return {
+      hidePassword: true as Boolean,
     };
   },
   methods: {
@@ -23,7 +29,10 @@ export default Vue.extend({
   },
   computed: {
     inputType(): string {
-      return (this.isPassword ? 'password' : 'text');
+      return (this.isPassword && this.hidePassword ? 'password' : 'text');
+    },
+    eyeType(): string {
+      return (this.hidePassword ? 'ph:eye-closed-bold' : 'el:eye-open');
     },
   },
   props: {

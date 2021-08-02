@@ -4,6 +4,12 @@ div.inputMain {
   margin-bottom: 15px;
 }
 
+div.label {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 5px;
+}
+
 label {
   font-size: 24px;
   line-height: 24px;
@@ -18,4 +24,9 @@ input {
   font-size: 18px;
   line-height: 18px;
   color: $pg-white;
+}
+
+img {
+  width: 22px;
+  height: 22px;
 }
