@@ -45,6 +45,7 @@ export class UserController {
 		return this.userService.signIn(userAuth);
 	}
 
+	@ApiOkResponse({description: 'User Search'})
 	@Get('/search')
 	getUser(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
 		return this.userService.getUserWithFilters(filterDto);
@@ -57,6 +58,7 @@ export class UserController {
 	// ){
 	// }
 
+	@ApiOkResponse({description: 'User Upload Image'})
 	@UseGuards(AuthGuard())
 	@Post('upload')
 	@UseInterceptors(FileInterceptor('file', storage))
