@@ -5,6 +5,11 @@
     <div class="content flexHVcenter">
       <div class="contentCol">
         <h1>Login</h1>
+        <br>
+        <form>
+          <LoginInput name="Username/Email" v-model="logEmail"></LoginInput>
+          <LoginInput name="Password" v-model="logPass" :isPassword="true"></LoginInput>
+        </form>
       </div>
       <div class="contentCol">
         <h1>Sign-up</h1>
@@ -21,6 +26,8 @@ export default Vue.extend({
   layout: 'empty',
   data() {
     return {
+      logEmail: '' as String,
+      logPass: '' as String,
     };
   },
   methods: {
