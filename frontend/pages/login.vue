@@ -18,8 +18,18 @@
           <p class="v-btn-content">Connect with 42</p>
         </v-btn>
       </div>
+
       <div class="contentCol">
         <h1 class="contentTitle">Sign-up</h1>
+        <form>
+          <LoginInput name="Username" v-model="signUsername"></LoginInput>
+          <LoginInput name="Email" v-model="signEmail"></LoginInput>
+          <LoginInput name="Password" v-model="signPass" :isPassword="true" :idNb=1></LoginInput>
+          <LoginInput name="Confirm password" v-model="signPass2" :isPassword="true"></LoginInput>
+          <v-btn block elevation="2" class="logOpt" @click.prevent="signUp">
+            <p class="v-btn-content">Sign up</p>
+          </v-btn>
+        </form>
       </div>
     </div>
   </div>
@@ -35,6 +45,10 @@ export default Vue.extend({
     return {
       logEmail: '' as String,
       logPass: '' as String,
+      signUsername: '' as String,
+      signEmail: '' as String,
+      signPass: '' as String,
+      signPass2: '' as String,
     };
   },
   methods: {
@@ -43,6 +57,9 @@ export default Vue.extend({
     },
     login42(): void {
       console.log("Logging with 42");
+    },
+    signUp(): void {
+      console.log(this.signUsername, this.signEmail, this.signPass, this.signPass2);
     },
   },
 });
