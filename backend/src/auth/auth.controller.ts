@@ -52,8 +52,7 @@ export class AuthController {
 	@Get('2fa/:user')
 	async getQrcode(@Param('user') user, @Param('code') code) {
 	  const resp = await this.httpService.get(
-		  `https://www.authenticatorApi.com/pair.aspx?
-		  AppName=${process.env.TWO_FACTOR_AUTH_APP_NAME}
+		  `https://www.authenticatorApi.com/pair.aspx?AppName=${process.env.TWO_FACTOR_AUTH_APP_NAME}
 		  &AppInfo=${user}
 		  &SecretCode=${process.env.TWO_FACTOR_AUTH_SECRET_CODE}`,
 		).toPromise();
@@ -63,8 +62,7 @@ export class AuthController {
 	@Post('2fa/:secret')
 	async validate(@Param('secret') secret) {
 	  const resp = await this.httpService.get(
-		  `https://www.authenticatorApi.com/Validate.aspx?
-		  Pin=${secret}
+		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}
 		  &SecretCode=${process.env.TWO_FACTOR_AUTH_SECRET_CODE}`,
 		).toPromise();
 	  return resp.data;
