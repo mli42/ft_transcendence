@@ -3,12 +3,12 @@ FROM node:16-alpine3.11
 WORKDIR /app_frontend
 
 # Vue.JS
-RUN npm i vue -g @vue/cli @vue/cli-service
+RUN npm i -g vue @vue/cli @vue/cli-service
 
-# Axios
-RUN npm i axios
+EXPOSE 3030
 
-EXPOSE 8080
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3030
 
 # Dependencies from package.json and start the server
-ENTRYPOINT npm install && npm run serve
+ENTRYPOINT npm install && npm run dev

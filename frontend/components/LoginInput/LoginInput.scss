@@ -1,0 +1,33 @@
+@import '~/assets/Palette.scss';
+
+div.inputMain {
+  margin-bottom: 15px;
+}
+
+div.label {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 5px;
+  margin-bottom: 8px;
+}
+
+label {
+  font-size: 24px;
+  line-height: 24px;
+}
+
+input {
+  background: $pg-blue;
+  border-radius: 5px;
+  width: 300px;
+  height: 30px;
+  padding: 5px;
+  font-size: 18px;
+  line-height: 18px;
+  color: $pg-white;
+}
+
+img {
+  width: 22px;
+  height: 22px;
+}
