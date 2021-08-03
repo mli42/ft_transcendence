@@ -58,8 +58,19 @@ export default Vue.extend({
     login42(): void {
       console.log("Logging with 42");
     },
-    signUp(): void {
-      console.log(this.signUsername, this.signEmail, this.signPass, this.signPass2);
+    async signUp() {
+      await this.$axios.post('/api/user/signup', {
+        username: this.signUsername,
+        email: this.signEmail,
+        password: this.signPass,
+      })
+      .then(resp => {
+        console.log("User:", resp.statusText);
+        this.$router.push('/');
+      })
+      .catch(err => {
+        console.log(err.response.data.message);
+      });
     },
   },
 });
