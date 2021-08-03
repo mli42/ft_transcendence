@@ -3,7 +3,7 @@ import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto } from "./dto/user.dto";
 import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
-import { ApiConflictResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiConflictResponse, ApiOkResponse, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -68,7 +68,6 @@ export class UserController {
 		console.log(user_id);
 		return this.userService.deleteUser(user_id);
 	}
-
 
 	@ApiOkResponse({description: 'User Upload Image'})
 	@UseGuards(AuthGuard())

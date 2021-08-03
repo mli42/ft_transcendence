@@ -14,34 +14,34 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column("text", {default: "empty"})
   profile_picture: string;
 
-  // @Column()
-  // elo: string;
+  @Column('int',  {default: 0})
+  elo: number;
 
-  // @Column()
-  // game_won: number;
+  @Column('int',  {default: 0})
+  game_won: number;
 
-  // @Column()
-  // lost_game: number;
+  @Column('int',  {default: 0})
+  lost_game: number;
 
-  // @Column()
-  // ration: number;
+  @Column('int',  {default: -1})
+  ration: number;
 
   // @Column()
   // status: string
 
-  // @Column()
-  // sign_up_date: Date;
+  @Column('date', { default: () => '((CURRENT_DATE))' })
+  sign_up_date: Date;
 
-  // @Column()
-  // friend: string;
+  @Column("text", { array: true, default: "{}" })
+  friends: string[];
 
   // @Column()
   // match_history: string;
 
-  // @Column()
+  @Column('boolean', {default: false})
   auth: boolean;
 
 }
