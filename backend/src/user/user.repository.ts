@@ -2,7 +2,7 @@ import { EntityRepository, Repository } from "typeorm";
 import { User } from './entities/user.entity'
 import { CreateUserDto } from "./dto/user.dto";
 import * as bcrypt from 'bcrypt';
-import { ConflictException, InternalServerErrorException, UploadedFile } from "@nestjs/common";
+import { ConflictException, HttpStatus, InternalServerErrorException, UnauthorizedException, UploadedFile } from "@nestjs/common";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 
@@ -11,11 +11,10 @@ export class UsersRepository extends Repository<User> {
 
 	async createUser(userData: CreateUserDto): Promise<Partial<User>> {
 		const user = this.create(userData);
-		user.profile_picture = "empty";
 
 		const salt = await bcrypt.genSalt();
 		user.password = await bcrypt.hash(user.password, salt);
-		user.auth = false;
+		user.friends = [];
 
 		try {
 			await this.save(user);
@@ -34,7 +33,7 @@ export class UsersRepository extends Repository<User> {
 		}
 	}
 
-	async getUsers(filterDto: GetUserFilterDto): Promise<User[]> {
+	async getUsersWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
 		const {
 			username,
 			email,
@@ -89,5 +88,21 @@ export class UsersRepository extends Repository<User> {
 			throw new InternalServerErrorException();
 		}
 		return file.filename;
+	}
+
+	async addFriend(friend: string, user: User): Promise<void> {
+		const found = user.friends.find(element => element === friend)
+		if (found != undefined) {
+			throw new UnauthorizedException({
+				status: HttpStatus.FORBIDDEN,
+				error: 'the user is already in your friend list',});
+		}
+		user.friends.push(friend);
+		try {
+			await this.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
 	}
 }
