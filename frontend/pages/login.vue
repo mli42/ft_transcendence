@@ -14,7 +14,8 @@
           </v-btn>
         </form>
         <hr class="leftHR" />
-        <v-btn block elevation="2" class="logOpt" @click.prevent="login42">
+        <v-btn block elevation="2" class="logOpt"
+        href="http://localhost:3000/api/auth/42/login">
           <p class="v-btn-content">Connect with 42</p>
         </v-btn>
       </div>
@@ -63,11 +64,12 @@ export default Vue.extend({
     };
   },
   methods: {
+    handleErrMsg(msg: string | string[]) : void {
+      this.errMsg = ((typeof(msg) == "string") ? [msg] : msg);
+      setTimeout(() => { this.errMsg = []; }, 5000)
+    },
     loginSubmit(): void {
       console.log(this.logEmail, this.logPass);
-    },
-    login42(): void {
-      console.log("Logging with 42");
     },
     async signUp() {
       await this.$axios.post('/api/user/signup', {
@@ -79,12 +81,7 @@ export default Vue.extend({
         console.log("User:", resp.statusText);
         this.$router.push('/');
       })
-      .catch(err => {
-        this.errMsg = err.response.data.message;
-        if (typeof(this.errMsg) == "string")
-          this.errMsg = [this.errMsg];
-        setTimeout(() => { this.errMsg = []; }, 5000)
-      });
+      .catch(err => { this.handleErrMsg(err.response.data.message); });
     },
   },
 });
