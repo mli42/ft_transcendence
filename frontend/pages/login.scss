@@ -15,9 +15,10 @@
 
 div.content {
   box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(30px);
+  backdrop-filter: blur(10px);
   border-radius: 10px;
   border: 3px solid $pg-blue;
+  background: rgba(0, 29, 61, 0.5);
   min-width: 785px;
   max-width: 785px;
   height: 510px;
