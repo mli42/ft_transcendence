@@ -2,7 +2,6 @@ import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, 
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto } from "./dto/user.dto";
-import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
 import { ApiConflictResponse, ApiOkResponse, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -41,11 +40,12 @@ export class UserController {
 	@ApiOkResponse({description: 'User Sign In'})
     @ApiUnauthorizedResponse({description: 'Please check your login credentials'})
 	@Post('/signin')
-	async signIn(@Body() userAuth: AuthCredentialsDto): Promise<{accessToken: string}> {
-		return this.userService.signIn(userAuth);
+	async signIn(@Body('id') id: string, @Body('password') password: string): Promise<{accessToken: string}> {
+		return this.userService.signIn(id, password);
 	}
 
 	@ApiOkResponse({description: 'User Search'})
+	@UseGuards(AuthGuard())
 	@Get('/search')
 	getUser(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
 		return this.userService.getUserWithFilters(filterDto);
@@ -64,8 +64,6 @@ export class UserController {
 	@Delete('/delete')
 	deleteUser(@Request() req): Promise<void> {
 		const user_id = req.user.userId;
-		console.log(req.user);
-		console.log(user_id);
 		return this.userService.deleteUser(user_id);
 	}
 
@@ -76,5 +74,13 @@ export class UserController {
 	uploadImage(@UploadedFile() file, @Request() req): Promise<string> {
 		const user: User = req.user;
 		return this.userService.uploadImage(file, user);
+	}
+
+	@ApiOkResponse({description: 'User Add Friend'})
+	@UseGuards(AuthGuard())
+	@Patch('/addFriend')
+	addFriend(@Body('friend') friend: string, @Request() req): Promise<void> {
+		const user: User = req.user;
+		return this.userService.addFriend(friend, user);
 	}
 }
