@@ -29,7 +29,7 @@ export class AuthController {
 	@UseGuards(IntraAuthGuard)
 	redirect(@Res() res: Response) {
 		// res.send(200);
-		res.redirect('http://localhost:8080/');
+		res.redirect('http://localhost:3030/');
 	}
 
 	// to do
