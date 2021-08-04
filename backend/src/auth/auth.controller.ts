@@ -6,8 +6,7 @@ import { Code } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 
 @ApiTags('42 authentication')
-// Je n'est pas m'y @Controller('api') car j'avais deja demandé l'url de redirection "http://localhost:3000"...
-@Controller('auth/')
+@Controller('api/auth/')
 export class AuthController {
 	constructor (
 		private httpService: HttpService,
@@ -30,7 +29,7 @@ export class AuthController {
 	@UseGuards(IntraAuthGuard)
 	redirect(@Res() res: Response) {
 		// res.send(200);
-		res.redirect('http://localhost:3000/');
+		res.redirect('http://localhost:8080/');
 	}
 
 	// to do

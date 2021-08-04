@@ -8,7 +8,7 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
 		super({
 			clientID: process.env.UID,
 			clientSecret: process.env.SECRET,
-			callbackURL: "http://localhost:3000/",
+			callbackURL: "http://localhost:3000/api/auth/redirect",
 			scope: ['public']
 		});
 	}
