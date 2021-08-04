@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Request, Patch, Param, Query, Delete } from "@nestjs/common"
+import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Request, Patch, Param, Query, Delete, Res } from "@nestjs/common"
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto } from "./dto/user.dto";
@@ -11,6 +11,7 @@ import path = require("path")
 import { AuthGuard } from "@nestjs/passport";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
+import { join } from "path";
 
 export const storage = {
 	storage: diskStorage({
@@ -74,6 +75,14 @@ export class UserController {
 	uploadImage(@UploadedFile() file, @Request() req): Promise<string> {
 		const user: User = req.user;
 		return this.userService.uploadImage(file, user);
+	}
+
+	@ApiOkResponse({description: 'User Get Profile Picture'})
+	@UseGuards(AuthGuard())
+	@Get('/profile-picture')
+	getProfilePicture(@Res() res, @Request() req): Observable<object> {
+		const user: User = req.user;
+		return this.userService.getProfilePicture(res, user.profile_picture);
 	}
 
 	@ApiOkResponse({description: 'User Add Friend'})

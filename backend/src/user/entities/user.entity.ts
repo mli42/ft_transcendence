@@ -35,7 +35,7 @@ export class User {
   @Column('date', { default: () => '((CURRENT_DATE))' })
   sign_up_date: Date;
 
-  @Column("text", { array: true, default: [] })
+  @Column("simple-array")
   friends: string[];
 
   // @Column()
@@ -43,5 +43,8 @@ export class User {
 
   @Column('boolean', {default: false})
   auth: boolean;
+
+  @Column('boolean', {default: false})
+  user42: boolean;
 
 }

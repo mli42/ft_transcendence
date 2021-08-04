@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, UnauthorizedException, UploadedFile } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, UploadedFile, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -9,6 +9,8 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { GetUserFilterDto } from './dto/get-user-filter.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Observable, of } from 'rxjs';
+import { join } from 'path';
 
 @Injectable()
 export class UserService {
@@ -53,6 +55,10 @@ export class UserService {
 
 	uploadImage(@UploadedFile() file, user: User): Promise<string> {
 		return this.usersRepository.saveImage(file, user);
+	}
+
+	getProfilePicture(@Res() res, picture: string): Observable<object> {
+		return of(res.sendFile(join(process.cwd(), '../upload/image/' + picture)));
 	}
 
 	addFriend(friend: string, user: User): Promise<void> {
