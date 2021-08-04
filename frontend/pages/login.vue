@@ -32,6 +32,14 @@
         </form>
       </div>
     </div>
+
+    <div class="errMessages">
+      <v-expand-transition v-for="(msgErr, index) in this.errMsg" :key="index">
+        <v-alert dense dismissible elevation="8" type="warning">
+          <p style="text-transform: uppercase;">{{msgErr}}</p>
+        </v-alert>
+      </v-expand-transition>
+    </div>
   </div>
 </template>
 
@@ -49,6 +57,7 @@ export default Vue.extend({
       signEmail: '' as String,
       signPass: '' as String,
       signPass2: '' as String,
+      errMsg: [] as String[],
     };
   },
   methods: {
@@ -69,7 +78,10 @@ export default Vue.extend({
         this.$router.push('/');
       })
       .catch(err => {
-        console.log(err.response.data.message);
+        this.errMsg = err.response.data.message;
+        if (typeof(this.errMsg) == "string")
+          this.errMsg = [this.errMsg];
+        setTimeout(() => { this.errMsg = []; }, 5000)
       });
     },
   },
