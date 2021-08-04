@@ -1,11 +1,12 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { IntraStrategy } from './strategy/auth.strategy';
 
 
 @Module({
-	imports: [HttpModule],
+	imports: [forwardRef(() => UserModule), HttpModule],
 	controllers: [AuthController],
 	providers: [IntraStrategy]
 })

@@ -25,6 +25,6 @@ dotenv.config();
   ],
   controllers: [UserController],
   providers: [UserService, JwtStrategy],
-  exports: [JwtStrategy, PassportModule],
+  exports: [JwtStrategy, PassportModule, UserService],
 })
 export class UserModule {}
