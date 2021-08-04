@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { ConflictException, HttpStatus, InternalServerErrorException, UnauthorizedException, UploadedFile } from "@nestjs/common";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { User42Details } from "./type/user42.type";
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
@@ -26,6 +27,30 @@ export class UsersRepository extends Repository<User> {
 				throw new InternalServerErrorException();
 			}
 		}
+		return {
+			userId: user.userId,
+			username: user.username,
+			email: user.email
+		}
+	}
+
+	async createUser42(userData: User42Details): Promise<Partial<User>> {
+		const user = this.create(userData);
+
+		user.friends = [];
+
+		try {
+			await this.save(user);
+		} catch(error) {
+			if (error.code === '23505') { //duplicate username or email
+				throw new ConflictException('Username or email already exist')
+			} 
+			// else {
+			// 	console.log(error);
+			// 	throw new InternalServerErrorException();
+			// }
+		}
+		user.user42 = true;
 		return {
 			userId: user.userId,
 			username: user.username,

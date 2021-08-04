@@ -11,6 +11,7 @@ import { GetUserFilterDto } from './dto/get-user-filter.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Observable, of } from 'rxjs';
 import { join } from 'path';
+import { User42Details } from './type/user42.type';
 
 @Injectable()
 export class UserService {
@@ -22,6 +23,10 @@ export class UserService {
 
 	async signUp(userData: CreateUserDto): Promise<Partial<User>> {
 		return this.usersRepository.createUser(userData)
+	}
+
+	async signUp42(userData: User42Details): Promise<Partial<User>> {
+		return this.usersRepository.createUser42(userData)
 	}
 
 	async signIn(id: string, password: string): Promise<{accessToken: string}> {

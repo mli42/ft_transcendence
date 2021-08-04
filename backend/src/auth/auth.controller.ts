@@ -66,4 +66,5 @@ export class AuthController {
 		).toPromise();
 	  return resp.data;
 	}
+
 }
