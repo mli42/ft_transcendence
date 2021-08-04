@@ -19,6 +19,8 @@
         </v-btn>
       </div>
 
+      <hr class="middleHR" />
+
       <div class="contentCol">
         <h1 class="contentTitle">Sign-up</h1>
         <form>
