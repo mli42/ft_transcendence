@@ -5,9 +5,9 @@ import { UserService } from '../../user/user.service';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
-    constructor(private readonly userService: UserService) { 
+    constructor(private readonly userService: UserService) {
         super();
-    } 
+    }
 
     serializeUser(user: User, done: (err: Error, user: User) => void ) {
         done(null, user);
@@ -17,4 +17,4 @@ export class SessionSerializer extends PassportSerializer {
         const userDb = await this.userService.findUser42(user.username);
         return userDb ? done(null, userDb) : done(null, null);
     }
-} 
+}

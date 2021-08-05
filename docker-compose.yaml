@@ -21,7 +21,7 @@ services:
       context: ./docker/
       dockerfile: Dockerfile-frontend
     ports:
-      - "8080:8080"
+      - "3030:3030"
     volumes:
       - ./frontend:/app_frontend
     networks:

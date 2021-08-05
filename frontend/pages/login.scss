@@ -1,0 +1,70 @@
+@import '~/assets/Palette.scss';
+
+.loginMain {
+  background-color: $pg-dark-blue;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+
+.imgWave {
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+}
+
+div.content {
+  box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 3px solid $pg-blue;
+  background: rgba(0, 29, 61, 0.5);
+  min-width: 785px;
+  max-width: 785px;
+  height: 510px;
+  justify-content: space-around;
+}
+
+div.contentCol {
+  color: $pg-white;
+}
+
+h1.contentTitle {
+  text-align: center;
+  font-size: 45px;
+  line-height: 45px;
+  margin-bottom: 40px;
+}
+
+hr.leftHR {
+  margin: 40px 0;
+}
+
+hr.middleHR {
+  height: 380px;
+}
+
+hr.leftHR, hr.middleHR {
+  border: 3px solid $pg-blue;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+}
+
+button.logOpt {
+  background: $pg-white !important;
+}
+
+p.v-btn-content {
+  text-transform: initial;
+  font-size: 18px;
+  line-height: 18px;
+  color: $pg-blue;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+div.errMessages {
+  position: absolute;
+  top: 10px;
+  display:flex;
+  flex-direction: column;
+}

@@ -1,0 +1,18 @@
+@font-face {
+  font-family: "Josefin Sans";
+  src: url(~/assets/fonts/JosefinSans.ttf);
+}
+
+html {
+  overflow: auto !important; // Override vuetify scroll-bar
+}
+
+* {
+  font-family: "Josefin Sans";
+}
+
+.flexHVcenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -10,7 +10,7 @@ import { User42Dto } from "./dto/user42.dto";
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
 
-	async createUser(userData: CreateUserDto): Promise<Partial<User>> {
+	async createUser(userData: CreateUserDto): Promise<User> {
 		const user = this.create(userData);
 
 		const salt = await bcrypt.genSalt();
@@ -27,12 +27,7 @@ export class UsersRepository extends Repository<User> {
 				throw new InternalServerErrorException();
 			}
 		}
-		console.log(user);
-		return {
-			userId: user.userId,
-			username: user.username,
-			email: user.email
-		}
+		return user;
 	}
 
 	async createUser42(userData: User42Dto): Promise<Partial<User>> {
@@ -43,6 +38,26 @@ export class UsersRepository extends Repository<User> {
 	}
 
 	async getUsers(filterDto: GetUserFilterDto): Promise<User[]> {
+		const {
+			username,
+			email,
+			elo,
+			status,
+		} = filterDto;
+		const query = this.createQueryBuilder('user');
+
+		if (username) {
+			query.andWhere(
+				'user.username LIKE :username', { username: `%${username}%` });
+		} else if (email) {
+			query.andWhere(
+				'user.email like :email', { email: `%${email}%` });
+		}
+		const users = await query.getMany();
+		return users;
+	}
+
+	async getUsersWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
 		const {
 			username,
 			email,
