@@ -1,48 +1,35 @@
-import { Controller, Get, Param, Post, Res, UseGuards, Request } from '@nestjs/common'
+import { Controller, Get, Param, Post, Res, UseGuards, Req } from '@nestjs/common'
 import { Response } from 'express';
-import { IntraAuthGuard } from './guards/auth.guard';
+import { AuthenticatedGuard, IntraAuthGuard } from './guards/auth.guard';
 import { ApiTags } from '@nestjs/swagger'
-import { Code } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
+import { UserService } from '../user/user.service';
 
 @ApiTags('42 authentication')
 @Controller('api/auth/')
 export class AuthController {
 	constructor (
 		private httpService: HttpService,
+		private readonly userService: UserService
 	) {}
 
-	// 42 API
-	// GET /api/auth/login
-	// Route que le user visit pour s'authentifier
 	@Get('42/login')
 	@UseGuards(IntraAuthGuard)
-	login() {
-		console.log("ok login");
-		return;
+	login(@Req() req) {
 	}
 
-	// GET /api/auth/redirect
-	// redirect URL que OAuth2 va appeler pour rediriger l'utilisateur sur la page de connexion d'accueil
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
-	redirect(@Res() res: Response, @Request() req) {
-		const user= req.user;
-		console.log("redir");
-		console.log(user);
-		res.redirect('http://localhost:3030/');
+	redirect(@Res() res: Response) {
+		res.send(200);
+		// res.redirect('http://localhost:3030/');
 	}
 
-	// to do
-	// GET /api/auth/status
-	// Recupérer le status d'anthentification
-	// @Get('42/status')
-	// @UseGuards(IntraAuthGuard)
-	// status(@Request() req) {
-	// 	const user= req.user;
-	// 	console.log("status");
-	// 	console.log(user);
-	// }
+	@Get('42/status')
+	@UseGuards(AuthenticatedGuard)
+	status() {
+		return 'ok';
+	}
 
 	// to do
 	// GET /api/auth/logout

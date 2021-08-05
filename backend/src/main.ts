@@ -4,10 +4,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session'
 import * as passport from 'passport'
-import { use } from 'passport';
+import { getRepository } from 'typeorm';
+import { Session } from './auth/entity/Session'
+import { TypeormStore } from 'connect-typeorm';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const sessionRepository = getRepository(Session);
 
   app.enableCors();
 
@@ -29,6 +33,7 @@ async function bootstrap() {
       secret: 'secretforauthfourtytwo',
       resave: false,
       saveUninitialized: false,
+      store: new TypeormStore().connect(sessionRepository),
     }),
   );
   app.use(passport.initialize());

@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity'
 import { UserController } from './user.controller';
@@ -7,7 +7,6 @@ import { UsersRepository } from './user.repository';
 import { PassportModule, PassportStrategy } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
-import { AuthModule } from 'src/auth/auth.module';
 import * as dotenv from 'dotenv'
 dotenv.config();
 
@@ -22,7 +21,6 @@ dotenv.config();
         expiresIn: 3600,
       },
     }),
-    forwardRef(() => AuthModule)
   ],
   controllers: [UserController],
   providers: [UserService, JwtStrategy],

@@ -37,10 +37,11 @@ export class UserService {
 	async validateUser42(userData: User42Dto) {
 		const { username } = userData;
 		const user = await this.usersRepository.findOne({username});
-		console.log(user);
+		// console.log(user);
 		if (user)
 			return user;
 		const newUser = await this.createUser42(userData);
+		// console.log(newUser);
 		return newUser;
 	}
 
@@ -48,7 +49,7 @@ export class UserService {
 		return this.usersRepository.createUser42(userData)
 	}
 
-	findUser42(username: string): Promise<User> {
+	findUser42(username: string): Promise<User | undefined> {
 		return this.usersRepository.findOne({username});
 	}
 
