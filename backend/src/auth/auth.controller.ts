@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Res, UseGuards } from '@nestjs/common'
+import { Controller, Get, Param, Post, Res, UseGuards, Request } from '@nestjs/common'
 import { Response } from 'express';
 import { IntraAuthGuard } from './guards/auth.guard';
 import { ApiTags } from '@nestjs/swagger'
@@ -24,27 +24,31 @@ export class AuthController {
 
 	// GET /api/auth/redirect
 	// redirect URL que OAuth2 va appeler pour rediriger l'utilisateur sur la page de connexion d'accueil
-	// Je n'est pas m'y @Get('redirect') car j'avais deja demandé l'url de redirection "http://localhost:3000"...
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
-	redirect(@Res() res: Response) {
-		// res.send(200);
-		res.redirect('http://localhost:8080/');
+	redirect(@Res() res: Response, @Request() req) {
+		const user= req.user;
+		console.log("redir");
+		console.log(user);
+		res.redirect('http://localhost:3030/');
 	}
 
 	// to do
 	// GET /api/auth/status
 	// Recupérer le status d'anthentification
-
-	@Get('42/status')
-	status() {
-	}
+	// @Get('42/status')
+	// @UseGuards(IntraAuthGuard)
+	// status(@Request() req) {
+	// 	const user= req.user;
+	// 	console.log("status");
+	// 	console.log(user);
+	// }
 
 	// to do
 	// GET /api/auth/logout
 	// Supprimer la session
-	@Get('42/logout')
-	logout() {}
+	// @Get('42/logout')
+	// logout() {}
 
 
 	// two factor authentication
