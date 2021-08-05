@@ -48,7 +48,7 @@ export class UserController {
 	@ApiOkResponse({description: 'User Search'})
 	@UseGuards(AuthGuard())
 	@Get('/search')
-	getUser(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
+	getUserWithFilters(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
 		return this.userService.getUserWithFilters(filterDto);
 	}
 
@@ -91,5 +91,13 @@ export class UserController {
 	addFriend(@Body('friend') friend: string, @Request() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.addFriend(friend, user);
+	}
+
+	@ApiOkResponse({description: 'User Delete Friend'})
+	@UseGuards(AuthGuard())
+	@Delete('/deleteFriend')
+	deleteFriend(@Body('friend') friend: string, @Request() req): Promise<void>  {
+		const user: User = req.user;
+		return this.userService.deleteFriend(friend, user);
 	}
 }

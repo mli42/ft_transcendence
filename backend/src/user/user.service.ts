@@ -92,4 +92,8 @@ export class UserService {
 	addFriend(friend: string, user: User): Promise<void> {
 		return this.usersRepository.addFriend(friend, user);
 	}
+
+	deleteFriend(friend: string, user: User): Promise<void> {
+		return this.usersRepository.deleteFriend(friend, user);
+	}
 }

@@ -37,26 +37,6 @@ export class UsersRepository extends Repository<User> {
 		return this.save(user);
 	}
 
-	async getUsers(filterDto: GetUserFilterDto): Promise<User[]> {
-		const {
-			username,
-			email,
-			elo,
-			status,
-		} = filterDto;
-		const query = this.createQueryBuilder('user');
-
-		if (username) {
-			query.andWhere(
-				'user.username LIKE :username', { username: `%${username}%` });
-		} else if (email) {
-			query.andWhere(
-				'user.email like :email', { email: `%${email}%` });
-		}
-		const users = await query.getMany();
-		return users;
-	}
-
 	async getUsersWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
 		const {
 			username,
@@ -122,6 +102,23 @@ export class UsersRepository extends Repository<User> {
 				error: 'the user is already in your friend list',});
 		}
 		user.friends.push(friend);
+		try {
+			await this.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
+
+	async deleteFriend(friend: string, user: User): Promise<void> {
+		const index = user.friends.indexOf(friend);
+		if (index !== -1) {
+			user.friends.splice(index, 1);
+		} else {
+			throw new UnauthorizedException({
+				status: HttpStatus.FORBIDDEN,
+				error: 'user id isn\'t in your friends list',});
+		}
 		try {
 			await this.save(user);
 		} catch (e) {
