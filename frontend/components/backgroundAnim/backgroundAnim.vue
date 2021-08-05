@@ -19,8 +19,8 @@ export default Vue.extend ({
     window.addEventListener('resize', () => {
       this.windowHeight = window.innerHeight;
       this.windowWidth = window.innerWidth;
-      console.log(this.windowWidth);
-      console.log(this.windowHeight);
+      console.log('x = ' + this.windowWidth);
+      console.log('y = ' + this.windowHeight);
     })
   },
   async mounted () {
