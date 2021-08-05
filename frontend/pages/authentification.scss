@@ -1,0 +1,79 @@
+@import '~/assets/Palette.scss';
+
+.auth {
+    background-color: $pg-blue;
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+}
+
+.content {
+    background: #003566;
+    border: 3px solid #001D3D;
+    border-radius: 10px;
+    width: 576px;
+    height: 264px;
+    align-content: center;
+}
+
+img {
+    width: 264px;
+    height: 264px;
+}
+
+hr.middleHR {
+    height: 264px;
+    width: 0px;
+    border: 2px solid $pg-dark-blue;
+    margin: 0 40px;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    margin: 32px 32px;
+    font-size: 40px;
+    font-weight: 300;
+}
+
+.myInput {
+    width: 296px;
+    height: 64px;
+}
+
+label {
+    display: flex;
+    justify-content: space-between;
+    margin-right: 0px;
+    margin-bottom: 8px;
+    color: white;
+    font-size: 24px;
+    line-height: 24px;
+    margin: 0 32px 8px 32px;
+    width: 400px;
+    margin: 0px 140px 8px 140px;
+}
+
+input {
+    display: block;
+    background: $pg-dark-blue;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    width: 296px;
+    height: 32px;
+    font-size: 24px;
+    line-height: 24px;
+    color: $pg-white;
+    margin-left: 32px;
+    padding: 7px 7px;
+    margin: 0 140px 16px 140px;
+}
+
+.verify {
+    width: 296px;
+    height: 32px;
+    margin: 16px 140px 32px 140px;
+    font-size: 18px;
+    text-transform: none;
+    color: $pg-blue;
+}
