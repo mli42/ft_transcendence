@@ -19,6 +19,8 @@
         </v-btn>
       </div>
 
+      <hr class="middleHR" />
+
       <div class="contentCol">
         <h1 class="contentTitle">Sign-up</h1>
         <form>
@@ -31,6 +33,14 @@
           </v-btn>
         </form>
       </div>
+    </div>
+
+    <div class="errMessages">
+      <v-expand-transition v-for="(msgErr, index) in this.errMsg" :key="index">
+        <v-alert dense dismissible elevation="8" type="warning">
+          <p style="text-transform: uppercase;">{{msgErr}}</p>
+        </v-alert>
+      </v-expand-transition>
     </div>
   </div>
 </template>
@@ -49,6 +59,7 @@ export default Vue.extend({
       signEmail: '' as String,
       signPass: '' as String,
       signPass2: '' as String,
+      errMsg: [] as String[],
     };
   },
   methods: {
@@ -58,8 +69,22 @@ export default Vue.extend({
     login42(): void {
       console.log("Logging with 42");
     },
-    signUp(): void {
-      console.log(this.signUsername, this.signEmail, this.signPass, this.signPass2);
+    async signUp() {
+      await this.$axios.post('/api/user/signup', {
+        username: this.signUsername,
+        email: this.signEmail,
+        password: this.signPass,
+      })
+      .then(resp => {
+        console.log("User:", resp.statusText);
+        this.$router.push('/');
+      })
+      .catch(err => {
+        this.errMsg = err.response.data.message;
+        if (typeof(this.errMsg) == "string")
+          this.errMsg = [this.errMsg];
+        setTimeout(() => { this.errMsg = []; }, 5000)
+      });
     },
   },
 });

@@ -9,6 +9,7 @@ services:
       - "3000:3000"
     volumes:
       - ./backend:/app_backend
+      - ./upload/image/:/upload/image
     networks:
       - webapp
       - database
