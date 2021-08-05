@@ -26,6 +26,7 @@ input {
   line-height: 24px;
   color: $pg-white;
   margin-left: 32px;
+  padding: 7px 7px;
 }
 
 img {
@@ -35,6 +36,10 @@ img {
 }
 
 .input img {
-  width: 32px;
-  height: 32px;
+  // position: absolute;
+  // left: 100;
+  // margin-right: 32px;
+  // width: 32px;
+  // height: 32px;
+  // background-color: yellow;
 }
