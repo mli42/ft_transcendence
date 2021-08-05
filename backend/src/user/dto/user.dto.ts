@@ -28,6 +28,7 @@ export class CreateUserDto {
 	@Match('password',{
 		message: 'the passwords entered are not identical',
 	})
+	@ApiProperty({description: 'required'})
 	passwordConfirm: string;
 
 }
