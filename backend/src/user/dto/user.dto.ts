@@ -1,6 +1,7 @@
-import { IsNotEmpty, MinLength, MaxLength, IsEmail, Matches, IsEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, MinLength, MaxLength, IsEmail, Matches, IsEmpty, IsOptional, Equals } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNull } from 'typeorm';
+import { Match } from './match.decorator';
 
 export class CreateUserDto {
 	@IsNotEmpty()
@@ -22,5 +23,11 @@ export class CreateUserDto {
 	})
 	@ApiProperty({description: 'required'})
 	password: string;
+
+	@IsNotEmpty()
+	@Match('password',{
+		message: 'the passwords entered are not identical',
+	})
+	passwordConfirm: string;
 
 }
