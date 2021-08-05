@@ -62,7 +62,6 @@ export class UsersRepository extends Repository<User> {
 			username,
 			email,
 			password,
-			profile_picture,
 		} = updateUser;
 
 		if (username) {
@@ -71,8 +70,6 @@ export class UsersRepository extends Repository<User> {
 			user.email = email;
 		} if (password) {
 			user.password = password;
-		} if (profile_picture) {
-			user.profile_picture = profile_picture;
 		}
 		try {
 			await this.save(user);
