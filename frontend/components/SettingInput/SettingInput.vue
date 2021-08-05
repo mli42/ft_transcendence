@@ -10,9 +10,9 @@
     <div class="input">    
       <input :type="inputType" :id="id" :name="id" :placeholder="placeHolder"
       @input="updateValue($event.target.value)" />
-      <img alt="check icon to validate input"
+      <!-- <img alt="check icon to validate input"
       :src="`https://api.iconify.design/ant-design:check-circle-filled.svg?color=white`"
-      />
+      /> -->
     </div>
   </div>
 </template>
