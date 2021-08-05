@@ -22,10 +22,13 @@ div.content {
   min-width: 785px;
   max-width: 785px;
   height: 510px;
-  justify-content: space-around;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 div.contentCol {
+  position: relative;
+  top: 48px;
   color: $pg-white;
 }
 
@@ -33,7 +36,7 @@ h1.contentTitle {
   text-align: center;
   font-size: 45px;
   line-height: 45px;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 
 hr.leftHR {
@@ -41,6 +44,7 @@ hr.leftHR {
 }
 
 hr.middleHR {
+  margin: auto 0px;
   height: 380px;
 }
 

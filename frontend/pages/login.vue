@@ -2,10 +2,9 @@
   <div class="loginMain flexHVcenter">
     <img class="imgWave" src="~/assets/img/vague.svg" />
 
-    <div class="content flexHVcenter">
+    <div class="content">
       <div class="contentCol">
         <h1 class="contentTitle">Login</h1>
-        <br>
         <form>
           <LoginInput name="Username/Email" v-model="logEmail"></LoginInput>
           <LoginInput name="Password" v-model="logPass" :isPassword="true"></LoginInput>
