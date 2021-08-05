@@ -1,5 +1,5 @@
 <template>
-  <div class="canvas"></div>
+  <div></div>
 </template>
 
 <script lang="ts">
@@ -17,8 +17,8 @@ export default Vue.extend ({
   },
   created() {
     window.addEventListener('resize', () => {
-      this.windowHeight = window.innerHeight;
-      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.screen.height;
+      this.windowWidth = window.screen.width;
       console.log('x = ' + this.windowWidth);
       console.log('y = ' + this.windowHeight);
     })
@@ -26,9 +26,9 @@ export default Vue.extend ({
   async mounted () {
     const { default: P5 } = await import('p5')
 
-    const sketch = (s) => {
+    const sketch = (s: any) => {
       s.setup = () => {
-        s.createCanvas(window.innerWidth, window.innerHeight);
+        s.createCanvas(window.innerWidth, window.innerHeight - 64);
       }
       s.draw = () => {
         s.background(33, 33, 33);
@@ -38,18 +38,12 @@ export default Vue.extend ({
         s.rect(s.mouseX - 10, s.mouseY + 10, 100, 100);
       }
       s.windowResized = () => {
-        s.resizeCanvas(this.windowWidth, this.windowHeight);
+        s.resizeCanvas(this.windowWidth, this.windowHeight - 64);
       }
     };
     // eslint-disable-next-line no-unused-vars
     const canvas = new P5(sketch, 'canvas');
   },
-  methods: {  
-      onResize() {
-          this.windowHeight = window.innerHeight;
-          this.windowWidth = window.innerWidth;
-      }
-  }
 });
 </script>
 
