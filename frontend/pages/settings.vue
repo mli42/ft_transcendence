@@ -3,10 +3,8 @@
     <div class="content">
       <h1 class="contentTitle">Settings</h1>
       <form>
-        <label for="nickname">Change your nickname :</label>
-        <input id="nickname" type="text" name="nickname" placeholder="Your nickname">
-        <label for="password">Change your password :</label>
-        <input id="password" type="password" name="password" placeholder="Your super secret password">
+        <SettingInput name="Change your nickname :" v-model="nickName" placeHolder="Your nickname"></SettingInput>
+        <SettingInput name="Change your password :" :isPassword="true" v-model="passWord" placeHolder="Your super secret password"></SettingInput>
         <div class="centeredContent">
           <v-btn class="ChangeBtn">
             <p class="v-btn-content">Change your profile picture</p>
@@ -31,8 +29,10 @@ import Vue from 'vue';
 export default Vue.extend({
   name: 'settings',
   layout: 'default',
-  data() {
+  data(): any {
     return {
+      nickName: '' as String,
+      passWord: '' as String,
     };
   },
   methods: {
