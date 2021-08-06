@@ -70,6 +70,17 @@ export class UserService {
         }
 	}
 
+	async getPartialUserInfo(id: string): Promise<Partial<User>> {
+		let user: User = undefined;
+
+		user = await this.usersRepository.findOne({userId: id});
+		return {
+			userId: user.userId,
+			username: user.username,
+			profile_picture: user.profile_picture,
+		}
+	}
+
 	getUserWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
 		return this.usersRepository.getUsersWithFilters(filterDto);
 	}
@@ -96,5 +107,17 @@ export class UserService {
 
 	deleteFriend(friend: string, user: User): Promise<void> {
 		return this.usersRepository.deleteFriend(friend, user);
+	}
+
+	async getFriendList(user: User): Promise<object> {
+		let i = 0;
+		let friendList = [];
+		while (user.friends[i]) {
+			await this.getPartialUserInfo(user.friends[i]).then(function(result) {
+				friendList.push(result);
+				i++;
+			});
+		}
+		return friendList;
 	}
 }
