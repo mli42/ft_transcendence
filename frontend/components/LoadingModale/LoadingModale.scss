@@ -1,0 +1,17 @@
+div.loadingContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 5;
+}
+
+.progress-circle {
+  color: purple;
+}
+
+.loadingLabel {
+  color: white;
+  margin-bottom: 40px;
+  text-transform: capitalize;
+}
