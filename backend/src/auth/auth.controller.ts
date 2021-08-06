@@ -1,17 +1,17 @@
 import { Controller, Get, Param, Post, Res, UseGuards, Req } from '@nestjs/common'
 import { Response, Request } from 'express';
-import { AuthenticatedGuard, IntraAuthGuard } from './guards/auth.guard';
+import {  IntraAuthGuard } from './guards/auth.guard';
 import { ApiTags } from '@nestjs/swagger'
 import { HttpService } from '@nestjs/axios';
-import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity'
+import { JwtPayload } from '../user/interfaces/jwt-payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @ApiTags('42 authentication')
 @Controller('api/auth/')
 export class AuthController {
 	constructor (
 		private httpService: HttpService,
-		private readonly userService: UserService
+		private jwtService: JwtService,
 	) {}
 
 	@Get('42/login')
@@ -21,19 +21,22 @@ export class AuthController {
 
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
-	redirect(@Res() res: Response) {
-		// res.send(200);
+	async redirect(@Res() res: Response, @Req() req: Request) {
+		const username = req.user['username'];
+		const payload: JwtPayload = { username };
+		const accessToken: string = await this.jwtService.sign(payload);
+		res.cookie('jwt', accessToken, {httpOnly: true});
 		res.redirect('http://localhost:3030/');
 	}
 
 	@Get('42/status')
-	@UseGuards(AuthenticatedGuard)
+	// @UseGuards(AuthenticatedGuard)
 	status(@Req() req: Request) {
 		return req.user;
 	}
 
 	@Get('42/logout')
-	@UseGuards(AuthenticatedGuard)
+	// @UseGuards(AuthenticatedGuard)
 	logout(@Req() req: Request) {
 		req.logOut();
 	}

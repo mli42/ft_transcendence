@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Request, Patch, Param, Query, Delete, Res } from "@nestjs/common"
+import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Req, Patch, Param, Query, Delete, Res } from "@nestjs/common"
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto } from "./dto/user.dto";
@@ -11,6 +11,7 @@ import path = require("path")
 import { AuthGuard } from "@nestjs/passport";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
+import { Response, Request } from 'express';
 import { join } from "path";
 
 export const storage = {
@@ -34,15 +35,15 @@ export class UserController {
     @ApiOkResponse({description: 'User Sign Up'})
     @ApiConflictResponse({description: 'Username or email already exist'})
 	@Post('/signup')
-	async signUp(@Body() userData: CreateUserDto): Promise<{accessToken: string}> {
-		return this.userService.signUp(userData);
+	async signUp(@Body() userData: CreateUserDto, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
+		return this.userService.signUp(userData, res);
 	}
 
 	@ApiOkResponse({description: 'User Sign In'})
     @ApiUnauthorizedResponse({description: 'Please check your login credentials'})
 	@Post('/signin')
-	async signIn(@Body('id') id: string, @Body('password') password: string): Promise<{accessToken: string}> {
-		return this.userService.signIn(id, password);
+	async signIn(@Body('id') id: string, @Body('password') password: string, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
+		return this.userService.signIn(id, password, res);
 	}
 
 	@ApiOkResponse({description: 'Partial User Information'})
@@ -62,7 +63,7 @@ export class UserController {
 	@ApiOkResponse({description: 'User Update'})
 	@UseGuards(AuthGuard())
 	@Patch('/settings')
-	updateUser(@Body() updateUser: UpdateUserDto, @Request() req): Promise<User> {
+	updateUser(@Body() updateUser: UpdateUserDto, @Req() req): Promise<User> {
 		const user: User = req.user;
 		return this.userService.updateUser(updateUser, user);
 	}
@@ -70,7 +71,7 @@ export class UserController {
 	@ApiOkResponse({description: 'User Delete'})
 	@UseGuards(AuthGuard())
 	@Delete('/delete')
-	deleteUser(@Request() req): Promise<void> {
+	deleteUser(@Req() req): Promise<void> {
 		const user_id = req.user.userId;
 		return this.userService.deleteUser(user_id);
 	}
@@ -79,7 +80,7 @@ export class UserController {
 	@UseGuards(AuthGuard())
 	@Post('/upload')
 	@UseInterceptors(FileInterceptor('file', storage))
-	uploadImage(@UploadedFile() file, @Request() req): Promise<string> {
+	uploadImage(@UploadedFile() file, @Req() req): Promise<string> {
 		const user: User = req.user;
 		return this.userService.uploadImage(file, user);
 	}
@@ -87,7 +88,7 @@ export class UserController {
 	@ApiOkResponse({description: 'User Get Profile Picture'})
 	@UseGuards(AuthGuard())
 	@Get('/profile-picture')
-	getProfilePicture(@Res() res, @Request() req): Observable<object> {
+	getProfilePicture(@Res() res, @Req() req): Observable<object> {
 		const user: User = req.user;
 		return this.userService.getProfilePicture(res, user.profile_picture);
 	}
@@ -95,7 +96,7 @@ export class UserController {
 	@ApiOkResponse({description: 'User Add Friend'})
 	@UseGuards(AuthGuard())
 	@Patch('/addFriend')
-	addFriend(@Body('friend') friend: string, @Request() req): Promise<void> {
+	addFriend(@Body('friend') friend: string, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.addFriend(friend, user);
 	}
@@ -103,7 +104,7 @@ export class UserController {
 	@ApiOkResponse({description: 'User Delete Friend'})
 	@UseGuards(AuthGuard())
 	@Delete('/deleteFriend')
-	deleteFriend(@Body('friend') friend: string, @Request() req): Promise<void>  {
+	deleteFriend(@Body('friend') friend: string, @Req() req): Promise<void>  {
 		const user: User = req.user;
 		return this.userService.deleteFriend(friend, user);
 	}
@@ -111,7 +112,7 @@ export class UserController {
 	@ApiOkResponse({description: 'Friends List'})
 	@UseGuards(AuthGuard())
 	@Get('/friendList')
-	getFriendList(@Request() req): Promise<object> {
+	getFriendList(@Req() req): Promise<object> {
 		const user: User = req.user;
 		return this.userService.getFriendList(user);
 	}

@@ -12,6 +12,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Observable, of } from 'rxjs';
 import { join } from 'path';
 import { User42Dto } from './dto/user42.dto';
+import { Response, Request } from 'express';
 
 @Injectable()
 export class UserService {
@@ -21,13 +22,13 @@ export class UserService {
 		private jwtService: JwtService,
 	) {}
 
-	async signUp(userData: CreateUserDto): Promise<{accessToken: string}> {
+	async signUp(userData: CreateUserDto, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
 		const {username, password } = userData;
 		const user: Promise<User> = this.usersRepository.createUser(userData);
-
 		if (await bcrypt.compare(password, (await user).password)) {
 			const payload: JwtPayload = { username };
 			const accessToken: string = await this.jwtService.sign(payload);
+			res.cookie('jwt', accessToken, {httpOnly: true});
 			return {accessToken};
         } else {
             throw new InternalServerErrorException('access token creation error')
@@ -37,11 +38,9 @@ export class UserService {
 	async validateUser42(userData: User42Dto) {
 		const { username } = userData;
 		const user = await this.usersRepository.findOne({username});
-		// console.log(user);
 		if (user)
 			return user;
 		const newUser = await this.createUser42(userData);
-		// console.log(newUser);
 		return newUser;
 	}
 
@@ -53,7 +52,7 @@ export class UserService {
 		return this.usersRepository.findOne({username});
 	}
 
-	async signIn(id: string, password: string): Promise<{accessToken: string}> {
+	async signIn(id: string, password: string, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
 		let user: User = undefined;
 
 		user = await this.usersRepository.findOne({username: id});
@@ -64,6 +63,7 @@ export class UserService {
 		if (user && (await bcrypt.compare(password, user.password))) {
 			const payload: JwtPayload = { username };
 			const accessToken: string = await this.jwtService.sign(payload);
+			res.cookie('jwt', accessToken, {httpOnly: true});
 			return {accessToken};
         } else {
             throw new UnauthorizedException('Please check your login credentials');

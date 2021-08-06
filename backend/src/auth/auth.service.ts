@@ -7,7 +7,6 @@ import { User } from "../user/entities/user.entity"
 @Injectable()
 export class AuthService implements AuthenticationProvider{
 	constructor(		
-		// @InjectRepository(UserService)
 		private userService: UserService
 	) {}
 
