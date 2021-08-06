@@ -1,9 +1,10 @@
 import { Controller, Get, Param, Post, Res, UseGuards, Req } from '@nestjs/common'
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { AuthenticatedGuard, IntraAuthGuard } from './guards/auth.guard';
 import { ApiTags } from '@nestjs/swagger'
 import { HttpService } from '@nestjs/axios';
 import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity'
 
 @ApiTags('42 authentication')
 @Controller('api/auth/')
@@ -15,7 +16,7 @@ export class AuthController {
 
 	@Get('42/login')
 	@UseGuards(IntraAuthGuard)
-	login(@Req() req) {
+	login() {
 	}
 
 	@Get('redirect')
@@ -27,16 +28,15 @@ export class AuthController {
 
 	@Get('42/status')
 	@UseGuards(AuthenticatedGuard)
-	status() {
-		return 'ok';
+	status(@Req() req: Request) {
+		return req.user;
 	}
 
-	// to do
-	// GET /api/auth/logout
-	// Supprimer la session
-	// @Get('42/logout')
-	// logout() {}
-
+	@Get('42/logout')
+	@UseGuards(AuthenticatedGuard)
+	logout(@Req() req: Request) {
+		req.logOut();
+	}
 
 	// two factor authentication
 	@Get('2fa/:user')
