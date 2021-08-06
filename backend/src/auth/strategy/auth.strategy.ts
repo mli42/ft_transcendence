@@ -19,7 +19,7 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
 		const user = {
 			username: username,
 			email: profile['emails'][0]['value'],
-			password: "Password1234*",
+			password: username,
 		}
 		// console.log(user);
 		return this.authService.validateUser(user);

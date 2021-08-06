@@ -33,6 +33,8 @@ export class UsersRepository extends Repository<User> {
 	async createUser42(userData: User42Dto): Promise<Partial<User>> {
 		console.log("Creating user");
 		const user = this.create(userData);
+		const salt = await bcrypt.genSalt();
+		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
 		return this.save(user);
 	}
