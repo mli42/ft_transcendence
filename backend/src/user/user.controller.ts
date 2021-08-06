@@ -45,6 +45,13 @@ export class UserController {
 		return this.userService.signIn(id, password);
 	}
 
+	@ApiOkResponse({description: 'Partial User Information'})
+	@UseGuards(AuthGuard())
+	@Get('/partialInfo')
+	getPartialUserInfo(@Body('userId') userId: string): Promise<Partial<User>> {
+		return this.userService.getPartialUserInfo(userId);
+	}
+
 	@ApiOkResponse({description: 'User Search'})
 	@UseGuards(AuthGuard())
 	@Get('/search')
@@ -99,5 +106,13 @@ export class UserController {
 	deleteFriend(@Body('friend') friend: string, @Request() req): Promise<void>  {
 		const user: User = req.user;
 		return this.userService.deleteFriend(friend, user);
+	}
+
+	@ApiOkResponse({description: 'Friends List'})
+	@UseGuards(AuthGuard())
+	@Get('/friendList')
+	getFriendList(@Request() req): Promise<object> {
+		const user: User = req.user;
+		return this.userService.getFriendList(user);
 	}
 }
