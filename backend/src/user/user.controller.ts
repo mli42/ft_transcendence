@@ -34,7 +34,7 @@ export class UserController {
     @ApiOkResponse({description: 'User Sign Up'})
     @ApiConflictResponse({description: 'Username or email already exist'})
 	@Post('/signup')
-	async signUp(@Body() userData: CreateUserDto): Promise<Partial<User>> {
+	async signUp(@Body() userData: CreateUserDto): Promise<{accessToken: string}> {
 		return this.userService.signUp(userData);
 	}
 

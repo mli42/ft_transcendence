@@ -9,7 +9,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
 
-	async createUser(userData: CreateUserDto): Promise<Partial<User>> {
+	async createUser(userData: CreateUserDto): Promise<User> {
 		const user = this.create(userData);
 
 		const salt = await bcrypt.genSalt();
@@ -26,11 +26,7 @@ export class UsersRepository extends Repository<User> {
 				throw new InternalServerErrorException();
 			}
 		}
-		return {
-			userId: user.userId,
-			username: user.username,
-			email: user.email
-		}
+		return user;
 	}
 
 	async getUsersWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {

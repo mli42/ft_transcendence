@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, UnauthorizedException, UploadedFile, Res } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, UploadedFile, Res, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -20,8 +20,17 @@ export class UserService {
 		private jwtService: JwtService,
 	) {}
 
-	async signUp(userData: CreateUserDto): Promise<Partial<User>> {
-		return this.usersRepository.createUser(userData)
+	async signUp(userData: CreateUserDto): Promise<{accessToken: string}> {
+		const {username, password } = userData;
+		const user: Promise<User> = this.usersRepository.createUser(userData);
+
+		if (await bcrypt.compare(password, (await user).password)) {
+			const payload: JwtPayload = { username };
+			const accessToken: string = await this.jwtService.sign(payload);
+			return {accessToken};
+        } else {
+            throw new InternalServerErrorException('access token creation error')
+        }
 	}
 
 	async signIn(id: string, password: string): Promise<{accessToken: string}> {
