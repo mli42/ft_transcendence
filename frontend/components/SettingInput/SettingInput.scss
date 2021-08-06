@@ -7,30 +7,25 @@ div.inputMain {
 div.label {
   display: flex;
   justify-content: space-between;
-  margin-right: 0px;
-  margin-bottom: 8px;
   color: white;
   font-size: 24px;
   line-height: 24px;
-  margin: 0 32px 8px 32px;
-  width: 400px;
+  width: 320px;
 }
 
 input {
   background: $pg-dark-blue;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
   border-radius: 5px;
-  width: 408px;
+  width: 320px;
   height: 32px;
   font-size: 24px;
   line-height: 24px;
   color: $pg-white;
-  margin-left: 32px;
   padding: 7px 7px;
 }
 
 img {
-  margin-left: 0;
   width: 22px;
   height: 22px;
 }

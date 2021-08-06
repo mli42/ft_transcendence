@@ -32,6 +32,7 @@ export const actions = {
     const _this: any = this;
     context.commit('updateAccessToken', response.data.accessToken);
     _this.$router.push('/');
+    _this.$axios.default.header.common['Authorization'] = "Bearer" + response.data.accessToken;
   },
   authFailed(context: any, error: any): void {
     context.commit('updateErrorMsg', error.response.data.message);

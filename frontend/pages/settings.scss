@@ -6,32 +6,42 @@
     width: 100vw;
 }
 
+form {
+    margin: 0 48px 8px 48px;
+}
+
 .content {
     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
     border-radius: 10px;
     border: 3px solid $pg-dark-blue;
     justify-content: space-around;
-    width: 520px;
-    height: 818px;
+    width: 416px;
+    height: 600px;
 }
 
 .contentTitle {
     text-align: center;
     color: $pg-white;
-    margin: 40px 40px;
+    margin: 32px 120px;
     font-size: 45px;
-    margin: 32px 176px;
     width: 168px;
     height: 40px;
 }
 
-.centeredContent{
-    width: 312px;
-    margin: 16px auto;
+.SaveBtn{
+    width: 320px;
+    height: 32px;
+    text-transform: none;
+    font-size: 18px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 7px 32px;
+    color: white;
+    background: #219653 !important;
 }
 
 .ChangeBtn{
-    width: 312px;
+    width: 320px;
     height: 32px;
     margin-top: 16px;
     text-transform: none;
@@ -42,27 +52,34 @@
     padding: 7px 32px;
 }
 
-.DeleteProfile{
-    width: 312px;
+.DeleteBtn{
+    width: 320px;
     height: 32px;
-    margin: 24px 0;
+    margin: 16px 0;
     text-transform: none;
     font-size: 18px;
     background: $pg-red !important;
     border-radius: 5px;
 }
 
-.centeredContent label{
-    margin: 32px 0 8px 0;
-    display: block;
-    color: white;
-    font-size: 24px;
-}
+div.errMessages {
+    position: absolute;
+    top: 10px;
+    display:flex;
+    flex-direction: column;
+  }
 
-.QRCode{
-    width: 312px;
-    height: 300px;
-    background-color: white;
-    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
-    border-radius: 10px;
-}
+// .centeredContent label{
+//     margin: 32px 0 8px 0;
+//     display: block;
+//     color: white;
+//     font-size: 24px;
+// }
+
+// .QRCode{
+//     width: 312px;
+//     height: 300px;
+//     background-color: white;
+//     filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+//     border-radius: 10px;
+// }

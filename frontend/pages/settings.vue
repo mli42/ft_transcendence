@@ -3,22 +3,32 @@
     <div class="content">
       <h1 class="contentTitle">Settings</h1>
       <form>
-        <SettingInput name="Change your nickname :" :v-model="nickName" :changeName="changeName" placeHolder="Your nickname"></SettingInput>
-        <SettingInput name="Change your password :" :isPassword="true" :changePassWord="changePassWord" v-model="passWord" placeHolder="Your super secret password"></SettingInput>
-        <div class="centeredContent">
-          <v-btn class="ChangeBtn">
-            <p class="v-btn-content">Change your profile picture</p>
-          </v-btn>
-          <v-btn class="ChangeBtn">
-            <p class="v-btn-content">Reset your QR code</p>
-          </v-btn>
-          <label for="QRCode">Your current 2FA QR code :</label>
-          <div class="QRCode"></div>
-          <v-btn color="error" class="DeleteProfile">
-            <p class="v-btn-content">Delete my account</p>
-          </v-btn>
-        </div>
+        <SettingInput name="Change your nickname :" v-model="nickName"  placeHolder="Your nickname"></SettingInput>
+        <SettingInput name="Change your password :" v-model="passWord" :isPassword="true" placeHolder="Your super secret password"></SettingInput>
+        <SettingInput name="Change your mail :" v-model="email" placeHolder="Enter your new email"></SettingInput>
+        <v-btn class="SaveBtn" @click.prevent="changeSettings">
+          <p class="v-btn-content">Save changes</p>
+        </v-btn>
+        <v-btn class="ChangeBtn">
+          <p class="v-btn-content">Change your profile picture</p>
+        </v-btn>
+        <v-btn class="ChangeBtn">
+          <p class="v-btn-content">Reset your QR code</p>
+        </v-btn>
+        <v-btn class="ChangeBtn">
+          <p class="v-btn-content">Show your current QR code</p>
+        </v-btn>
+        <v-btn color="error" class="DeleteBtn">
+          <p class="v-btn-content">Delete my account</p>
+        </v-btn>
       </form>
+    </div>
+    <div class="errMessages">
+      <v-expand-transition v-for="(msg, index) in msgErr" :key="index">
+        <v-alert dense dismissible elevation="8" type="warning">
+          <p style="text-transform: uppercase;">{{msg}}</p>
+        </v-alert>
+      </v-expand-transition>
     </div>
   </div>
 </template>
@@ -33,15 +43,27 @@ export default Vue.extend({
     return {
       nickName: '' as String,
       passWord: '' as String,
+      email: '' as string,
+      msgErr: [],
+      validated: false as boolean,
     };
   },
   methods: {
-    changeName(): void {
-      
+    changeSettings(): void {
+        // this.axios
+        // .patch('/api/user/settings', {
+        //   username: this.nickName,
+        //   email: this.email,
+        //   password: this.passWord,})
+        // .then((response: any): void => {
+        //   this.validated = true;
+        // })
+        // .catch((error: any): void => {
+        //   let errorTab = error.response.data.message;
+        //   setTimeout(() => {
+        //     this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 6000) 
+        // })
     },
-    changePassWord(): void {
-
-    }
   },
 });
 </script>
