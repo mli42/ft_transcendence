@@ -10,7 +10,7 @@ import { IntraStrategy } from './strategy/auth.strategy';
 
 @Module({
 	imports: [
-		forwardRef(() => UserModule), 
+		forwardRef(() => UserModule),
 		TypeOrmModule.forFeature([Session]),
 		HttpModule],
 	controllers: [AuthController],

@@ -22,13 +22,12 @@ export class AuthController {
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
 	redirect(@Res() res: Response) {
-		// res.send(200);
 		res.redirect('http://localhost:3030/');
 	}
 
 	@Get('42/status')
 	@UseGuards(AuthenticatedGuard)
-	status(@Req() req: Request) {
+	status(@Req() req) {
 		return req.user;
 	}
 
