@@ -6,7 +6,12 @@ import { User } from "../user/entities/user.entity"
 
 @Injectable()
 export class AuthService implements AuthenticationProvider{
+<<<<<<< HEAD
 	constructor(		
+=======
+	constructor(
+		// @InjectRepository(UserService)
+>>>>>>> 1cdb132895532dce9db3d3b0944e570e5001e36d
 		private userService: UserService
 	) {}
 
@@ -20,5 +25,4 @@ export class AuthService implements AuthenticationProvider{
 	findUser(username: string): Promise<User | undefined> {
 		return this.userService.findUser42(username);
 	}
-
 }

@@ -21,17 +21,26 @@ export class AuthController {
 
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
+<<<<<<< HEAD
 	async redirect(@Res() res: Response, @Req() req: Request) {
 		const username = req.user['username'];
 		const payload: JwtPayload = { username };
 		const accessToken: string = await this.jwtService.sign(payload);
 		res.cookie('jwt', accessToken, {httpOnly: true});
+=======
+	redirect(@Res() res: Response) {
+>>>>>>> 1cdb132895532dce9db3d3b0944e570e5001e36d
 		res.redirect('http://localhost:3030/');
 	}
 
 	@Get('42/status')
+<<<<<<< HEAD
 	// @UseGuards(AuthenticatedGuard)
 	status(@Req() req: Request) {
+=======
+	@UseGuards(AuthenticatedGuard)
+	status(@Req() req) {
+>>>>>>> 1cdb132895532dce9db3d3b0944e570e5001e36d
 		return req.user;
 	}
 
