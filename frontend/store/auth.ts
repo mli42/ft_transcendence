@@ -63,6 +63,7 @@ export const actions = {
       username: signInfos.username,
       email: signInfos.email,
       password: signInfos.password,
+      passwordConfirm: signInfos.password2,
     })
     .then((resp: any) => { context.dispatch('authSuccess', resp); })
     .catch((err: any) => { context.dispatch('authFailed', err); })
