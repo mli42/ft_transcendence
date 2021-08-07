@@ -9,17 +9,17 @@
         <v-btn class="SaveBtn" @click.prevent="changeSettings">
           <p class="v-btn-content">Save changes</p>
         </v-btn>
-        <v-btn class="ChangeBtn">
+        <v-btn class="ChangeBtn" @click="modalBool.showPicture = true">
           <p class="v-btn-content">Change your profile picture</p>
         </v-btn>
         <v-btn class="ChangeBtn">
           <p class="v-btn-content">Reset your QR code</p>
         </v-btn>
         <v-btn class="ChangeBtn">
-          <p class="v-btn-content">Show your current QR code</p>
+          <p class="v-btn-content" @click="modalBool.showQRC = true">Show your current QR code</p>
         </v-btn>
         <v-btn color="error" class="DeleteBtn">
-          <p class="v-btn-content">Delete my account</p>
+          <p class="v-btn-content" @click="modalBool.showDelete = true">Delete my account</p>
         </v-btn>
       </form>
     </div>
@@ -30,11 +30,33 @@
         </v-alert>
       </v-expand-transition>
     </div>
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showPicture">
+        <img class="profilePicture" src="~/assets/img/avatar.jpeg" alt="Profile image">
+        <v-btn class="modalBtn">
+          <p class="v-btn-content">Upload a picture</p>
+        </v-btn>
+        <v-btn id="doneBtn" @click="modalBool.showPicture = false">
+          <p class="v-btn-content">Done</p>
+        </v-btn>
+    </SettingModal>
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
+        <div class="QRCode"></div>
+        <v-btn id="QRCBtn" @click="modalBool.showQRC = false">
+          <p class="v-btn-content">Done</p>
+        </v-btn>
+    </SettingModal>
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showDelete">
+        <div class="deleteGif"></div>
+        <v-btn id="deleteModalBtn" @click="modalBool.showDelete = false">
+          <p class="v-btn-content">Done</p>
+        </v-btn>
+    </SettingModal>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import SettingModal from '../components/SettingModal/SettingModal.vue';
 
 export default Vue.extend({
   name: 'settings',
@@ -46,6 +68,12 @@ export default Vue.extend({
       email: '' as string,
       msgErr: [],
       validated: false as boolean,
+      modalBool : 
+      {
+        showPicture: false as boolean,
+        showDelete: false as boolean,
+        showQRC: false as boolean,
+      }
     };
   },
   methods: {
@@ -63,6 +91,11 @@ export default Vue.extend({
         //   setTimeout(() => {
         //     this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 6000) 
         // })
+    },
+    hideModal(): void {
+      this.modalBool.showPicture = false;
+      this.modalBool.showDelete = false;
+      this.modalBool.showQRC = false;
     },
   },
 });
