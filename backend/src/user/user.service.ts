@@ -2,7 +2,7 @@ import { Injectable, ConflictException, UnauthorizedException, UploadedFile, Res
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from "./dto/user.dto";
+import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
 import * as bcrypt from 'bcrypt';
 import { UsersRepository } from './user.repository';
 import { JwtService } from '@nestjs/jwt';
@@ -52,7 +52,8 @@ export class UserService {
 		return this.usersRepository.findOne({username});
 	}
 
-	async signIn(id: string, password: string, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
+	async signIn(userData: SigInUserDto, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
+		const {id, password } = userData;
 		let user: User = undefined;
 
 		user = await this.usersRepository.findOne({username: id});

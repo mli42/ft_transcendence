@@ -13,14 +13,20 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
+    .addBearerAuth(
+      {type: 'http', scheme: 'bearer', bearerFormat: 'Token'},
+      'accessToken',
+    )
     .setTitle('ft_transcendence')
     .setDescription('Deluxe Pong')
     .setVersion('1.0')
     .addTag('Deluxe Pong')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  app.useGlobalPipes(new ValidationPipe());
   SwaggerModule.setup('api', app, document);
+
+  app.useGlobalPipes(new ValidationPipe());
+
   await app.listen(3000);
 }
 bootstrap();
