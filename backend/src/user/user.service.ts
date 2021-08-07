@@ -114,6 +114,7 @@ export class UserService {
 		let i = 0;
 		let friendList = [];
 		while (user.friends[i]) {
+			
 			await this.getPartialUserInfo(user.friends[i]).then(function(result) {
 				friendList.push(result);
 				i++;

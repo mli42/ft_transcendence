@@ -33,7 +33,7 @@ export class UserController {
 	) {}
 
 	@ApiOperation({description: 'User Sign Up - Password : uppercase, lowercase, number and special character'})
-    @ApiOkResponse({description: 'User Sign Up'})
+    @ApiOkResponse({description: 'access token'})
     @ApiConflictResponse({description: 'Username or email already exist'})
 	/*******/
 	@Post('/signup')
@@ -42,7 +42,7 @@ export class UserController {
 	}
 
 	@ApiOperation({description: 'User Sign In'})
-	@ApiOkResponse({description: 'User Sign In'})
+	@ApiOkResponse({description: 'access token'})
     @ApiUnauthorizedResponse({description: 'Please check your login credentials'})
 	/*******/
 	@Post('/signin')
@@ -62,7 +62,7 @@ export class UserController {
 
 	@ApiOperation({description: 'Search User by name or email'})
 	@ApiQuery({name:'username',required:false})
-	@ApiBearerAuth()
+	@ApiBearerAuth('accessToken')
 	/*******/
 	@UseGuards(AuthGuard())
 	@Get('/search')
@@ -70,8 +70,12 @@ export class UserController {
 		return this.userService.getUserWithFilters(filterDto);
 	}
 
-	@ApiOkResponse({description: 'User Update'})
-	@ApiBearerAuth()
+	@ApiOperation({
+		summary: 'Update user info',
+		description: 'Update username, email or password'
+	})
+	@ApiOkResponse({description: 'User account'})
+	@ApiBearerAuth('accessToken')
 	/*******/
 	@UseGuards(AuthGuard())
 	@Patch('/settings')
@@ -80,8 +84,12 @@ export class UserController {
 		return this.userService.updateUser(updateUser, user);
 	}
 
+	@ApiOperation({
+		summary: 'delete user account',
+		description: 'Delete : User who wants to delete is account'
+	})
 	@ApiOkResponse({description: 'User Delete'})
-	@ApiBearerAuth()
+	@ApiBearerAuth('accessToken')
 	/*******/
 	@UseGuards(AuthGuard())
 	@Delete('/delete')
@@ -90,7 +98,8 @@ export class UserController {
 		return this.userService.deleteUser(user_id);
 	}
 
-	@ApiOkResponse({description: 'User Upload Image'})
+	@ApiOperation({summary: 'Upload profil picture'})
+	@ApiOkResponse({description: 'Picture File'})
 	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard())
@@ -101,7 +110,8 @@ export class UserController {
 		return this.userService.uploadImage(file, user);
 	}
 
-	@ApiOkResponse({description: 'User Get Profile Picture'})
+	@ApiOperation({summary: 'User Get Profile Picture'})
+	@ApiOkResponse({description: 'Picture File'})
 	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard())
@@ -111,7 +121,7 @@ export class UserController {
 		return this.userService.getProfilePicture(res, user.profile_picture);
 	}
 
-	@ApiOkResponse({description: 'User Add Friend'})
+	@ApiOperation({summary: 'User Add Friend'})
 	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard())
@@ -121,7 +131,7 @@ export class UserController {
 		return this.userService.addFriend(friend, user);
 	}
 
-	@ApiOkResponse({description: 'User Delete Friend'})
+	@ApiOperation({summary: 'User Delete Friend'})
 	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard())
@@ -131,6 +141,7 @@ export class UserController {
 		return this.userService.deleteFriend(friend, user);
 	}
 
+	@ApiOperation({summary: 'Show Friends'})
 	@ApiOkResponse({description: 'Friends List'})
 	@ApiBearerAuth()
 	/*******/

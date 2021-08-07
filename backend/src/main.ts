@@ -14,7 +14,14 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .addBearerAuth(
-      {type: 'http', scheme: 'bearer', bearerFormat: 'Token'},
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'jwt',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
       'accessToken',
     )
     .setTitle('ft_transcendence')
