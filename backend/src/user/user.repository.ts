@@ -72,7 +72,8 @@ export class UsersRepository extends Repository<User> {
 		} if (email) {
 			user.email = email;
 		} if (password) {
-			user.password = password;
+			const salt = await bcrypt.genSalt();
+			user.password = await bcrypt.hash(password, salt);
 		}
 		try {
 			await this.save(user);
