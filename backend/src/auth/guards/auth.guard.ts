@@ -19,5 +19,5 @@ export class IntraAuthGuard extends AuthGuard('42') {
 // 		const req = context.switchToHttp().getRequest();
 // 		// console.log(req.isAuthenticated());
 // 		return req.isAuthenticated();
-// 	}
+// 	} 
 // } 
