@@ -29,7 +29,6 @@ export class UserService {
 			const payload: JwtPayload = { username };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
-			console.log(accessToken);
 			return {accessToken};
         } else {
             throw new InternalServerErrorException('access token creation error')
