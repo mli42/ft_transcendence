@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, 
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
-import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiBodyOptions, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiConflictResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -50,7 +50,7 @@ export class UserController {
 		return this.userService.signIn(userData, res);
 	}
 
-	@ApiOperation({description: 'Partial User Information'})
+	@ApiOperation({summary: 'Partial User Information'})
 	@ApiOkResponse({description: 'Partial User Information'})
 	@ApiBearerAuth()
 	/*******/
@@ -60,7 +60,7 @@ export class UserController {
 		return this.userService.getPartialUserInfo(userId);
 	}
 
-	@ApiOperation({description: 'Search User by name or email'})
+	@ApiOperation({summary: 'Search User by name or email'})
 	@ApiQuery({name:'username',required:false})
 	@ApiBearerAuth('accessToken')
 	/*******/
