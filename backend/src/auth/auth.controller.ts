@@ -21,11 +21,13 @@ export class AuthController {
 
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
-	async redirect(@Res() res: Response, @Req() req: Request) {
+	async redirect(@Res({passthrough: true}) res: Response, @Req() req: Request) {
 		const username = req.user['username'];
 		const payload: JwtPayload = { username };
 		const accessToken: string = await this.jwtService.sign(payload);
 		res.cookie('jwt', accessToken, {httpOnly: true});
+		console.log("access token " + accessToken);
+		res.redirect("http://localhost:3030");
 	}
 
 	@Get('42/status')
@@ -35,11 +37,11 @@ export class AuthController {
 		return req.user;
 	}
 
-	@Get('42/logout')
-	// @UseGuards(AuthenticatedGuard)
-	logout(@Req() req: Request) {
-		req.logOut();
-	}
+	// @Get('42/logout')
+	// // @UseGuards(AuthenticatedGuard)
+	// logout(@Req() req: Request) {
+	// 	req.logOut();
+	// }
 
 	// two factor authentication
 	@Get('2fa/:user')
