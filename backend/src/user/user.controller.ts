@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, 
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
-import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiBodyOptions, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -33,8 +33,8 @@ export class UserController {
 	) {}
 
 	@ApiOperation({description: 'User Sign Up - Password : uppercase, lowercase, number and special character'})
-    @ApiOkResponse({description: 'access token'})
-    @ApiConflictResponse({description: 'Username or email already exist'})
+	@ApiOkResponse({description: 'access token'})
+	@ApiConflictResponse({description: 'Username or email already exist'})
 	/*******/
 	@Post('/signup')
 	async signUp(@Body() userData: CreateUserDto, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
@@ -43,7 +43,7 @@ export class UserController {
 
 	@ApiOperation({description: 'User Sign In'})
 	@ApiOkResponse({description: 'access token'})
-    @ApiUnauthorizedResponse({description: 'Please check your login credentials'})
+	@ApiUnauthorizedResponse({description: 'Please check your login credentials'})
 	/*******/
 	@Post('/signin')
 	async signIn(@Body() userData: SigInUserDto, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
@@ -79,9 +79,9 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard())
 	@Patch('/settings')
-	updateUser(@Body() updateUser: UpdateUserDto, @Req() req): Promise<User> {
+	updateUser(@Body() updateUser: UpdateUserDto, @Req() req, @Res({passthrough: true}) res: Response): Promise<User> {
 		const user: User = req.user;
-		return this.userService.updateUser(updateUser, user);
+		return this.userService.updateUser(updateUser, user, res);
 	}
 
 	@ApiOperation({

@@ -86,7 +86,15 @@ export class UserService {
 		return this.usersRepository.getUsersWithFilters(filterDto);
 	}
 
-	updateUser(updateUser: UpdateUserDto, user: User): Promise<User> {
+	async updateUser(updateUser: UpdateUserDto, user: User, @Res({passthrough: true}) res: Response): Promise<User> {
+		const { username } = updateUser;
+		if(username)
+		{
+			const payload: JwtPayload = { username };
+			const accessToken: string = await this.jwtService.sign(payload);
+			res.cookie('jwt', accessToken, {httpOnly: true});
+			console.log(accessToken)
+		}
 		return this.usersRepository.updateUser(updateUser, user);
 	}
 
