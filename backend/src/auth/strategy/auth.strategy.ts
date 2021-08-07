@@ -1,11 +1,11 @@
 import { PassportStrategy } from '@nestjs/passport'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { Strategy, Profile, CallBack } from 'passport-42'
-import { UserService } from 'src/user/user.service';
+import { AuthenticationProvider } from '../auth.provider';
 
 @Injectable()
 export class IntraStrategy extends PassportStrategy(Strategy, '42') {
-	constructor() {
+	constructor(@Inject('AUTH_SERVICE') private readonly authService: AuthenticationProvider) {
 		super({
 			clientID: process.env.UID,
 			clientSecret: process.env.SECRET,
@@ -14,12 +14,14 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
 		});
 	}
 
-	async validate(accessToken: string, refreshToken: string, profile: Profile, cb: CallBack){
-		// console.log(profile);
-		const  { username, displayName, name } = profile;
-		const user = {username, displayName, name, accessToken, refreshToken};
-		console.log(user);
-		// this.userService.signUp(newuser);
-		return cb(null, user);
+	async validate(accessToken: string, refreshToken: string, profile: Profile, cb: CallBack) {
+		const  { username } = profile;
+		const user = {
+			username: username,
+			email: profile['emails'][0]['value'],
+			password: username,
+		}
+		// console.log(user);
+		return this.authService.validateUser(user);
 	}
 }

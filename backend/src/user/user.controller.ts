@@ -1,8 +1,8 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Request, Patch, Param, Query, Delete, Res } from "@nestjs/common"
+import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Req, Patch, Param, Query, Delete, Res } from "@nestjs/common"
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
-import { CreateUserDto } from "./dto/user.dto";
-import { ApiConflictResponse, ApiOkResponse, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
+import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -11,6 +11,7 @@ import path = require("path")
 import { AuthGuard } from "@nestjs/passport";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
+import { Response, Request } from 'express';
 import { join } from "path";
 
 export const storage = {
@@ -31,65 +32,112 @@ export class UserController {
 		private readonly userService: UserService,
 	) {}
 
+	@ApiOperation({description: 'User Sign Up - Password : uppercase, lowercase, number and special character'})
     @ApiOkResponse({description: 'User Sign Up'})
     @ApiConflictResponse({description: 'Username or email already exist'})
+	/*******/
 	@Post('/signup')
-	async signUp(@Body() userData: CreateUserDto): Promise<{accessToken: string}> {
-		return this.userService.signUp(userData);
+	async signUp(@Body() userData: CreateUserDto, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
+		return this.userService.signUp(userData, res);
 	}
 
+	@ApiOperation({description: 'User Sign In'})
 	@ApiOkResponse({description: 'User Sign In'})
     @ApiUnauthorizedResponse({description: 'Please check your login credentials'})
+	/*******/
 	@Post('/signin')
-	async signIn(@Body('id') id: string, @Body('password') password: string): Promise<{accessToken: string}> {
-		return this.userService.signIn(id, password);
+	async signIn(@Body() userData: SigInUserDto, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
+		return this.userService.signIn(userData, res);
 	}
 
-	@ApiOkResponse({description: 'User Search'})
+	@ApiOperation({description: 'Partial User Information'})
+	@ApiOkResponse({description: 'Partial User Information'})
+	@ApiBearerAuth()
+	/*******/
+	@UseGuards(AuthGuard())
+	@Get('/partialInfo')
+	getPartialUserInfo(@Body('userId') userId: string): Promise<Partial<User>> {
+		return this.userService.getPartialUserInfo(userId);
+	}
+
+	@ApiOperation({description: 'Search User by name or email'})
+	@ApiQuery({name:'username',required:false})
+	@ApiBearerAuth()
+	/*******/
 	@UseGuards(AuthGuard())
 	@Get('/search')
-	getUser(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
+	getUserWithFilters(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
 		return this.userService.getUserWithFilters(filterDto);
 	}
 
 	@ApiOkResponse({description: 'User Update'})
+	@ApiBearerAuth()
+	/*******/
 	@UseGuards(AuthGuard())
 	@Patch('/settings')
-	updateUser(@Body() updateUser: UpdateUserDto, @Request() req): Promise<User> {
+	updateUser(@Body() updateUser: UpdateUserDto, @Req() req): Promise<User> {
 		const user: User = req.user;
 		return this.userService.updateUser(updateUser, user);
 	}
 
 	@ApiOkResponse({description: 'User Delete'})
+	@ApiBearerAuth()
+	/*******/
 	@UseGuards(AuthGuard())
 	@Delete('/delete')
-	deleteUser(@Request() req): Promise<void> {
+	deleteUser(@Req() req): Promise<void> {
 		const user_id = req.user.userId;
 		return this.userService.deleteUser(user_id);
 	}
 
 	@ApiOkResponse({description: 'User Upload Image'})
+	@ApiBearerAuth()
+	/*******/
 	@UseGuards(AuthGuard())
 	@Post('/upload')
 	@UseInterceptors(FileInterceptor('file', storage))
-	uploadImage(@UploadedFile() file, @Request() req): Promise<string> {
+	uploadImage(@UploadedFile() file, @Req() req): Promise<string> {
 		const user: User = req.user;
 		return this.userService.uploadImage(file, user);
 	}
 
 	@ApiOkResponse({description: 'User Get Profile Picture'})
+	@ApiBearerAuth()
+	/*******/
 	@UseGuards(AuthGuard())
 	@Get('/profile-picture')
-	getProfilePicture(@Res() res, @Request() req): Observable<object> {
+	getProfilePicture(@Res() res, @Req() req): Observable<object> {
 		const user: User = req.user;
 		return this.userService.getProfilePicture(res, user.profile_picture);
 	}
 
 	@ApiOkResponse({description: 'User Add Friend'})
+	@ApiBearerAuth()
+	/*******/
 	@UseGuards(AuthGuard())
 	@Patch('/addFriend')
-	addFriend(@Body('friend') friend: string, @Request() req): Promise<void> {
+	addFriend(@Body('friend') friend: string, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.addFriend(friend, user);
+	}
+
+	@ApiOkResponse({description: 'User Delete Friend'})
+	@ApiBearerAuth()
+	/*******/
+	@UseGuards(AuthGuard())
+	@Delete('/deleteFriend')
+	deleteFriend(@Body('friend') friend: string, @Req() req): Promise<void>  {
+		const user: User = req.user;
+		return this.userService.deleteFriend(friend, user);
+	}
+
+	@ApiOkResponse({description: 'Friends List'})
+	@ApiBearerAuth()
+	/*******/
+	@UseGuards(AuthGuard())
+	@Get('/friendList')
+	getFriendList(@Req() req): Promise<object> {
+		const user: User = req.user;
+		return this.userService.getFriendList(user);
 	}
 }
