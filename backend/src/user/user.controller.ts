@@ -50,6 +50,16 @@ export class UserController {
 		return this.userService.signIn(userData, res);
 	}
 
+	@ApiOperation({summary: 'Verify if User is Logging in'})
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/isLogin')
+	isLogin(@Req() req: Request): boolean{
+		const token = req.cookies['jwt'];
+		if (!token)
+			return false;
+		return true;
+	}
+
 	@ApiOperation({summary: 'Partial User Information'})
 	@ApiOkResponse({description: 'Partial User Information'})
 	@ApiBearerAuth()

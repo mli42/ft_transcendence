@@ -18,7 +18,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (request: Request) => {
                     let accessToken = request?.cookies["jwt"];
-                    // console.log(accessToken);
                     return accessToken;
                 }
             ]),
@@ -33,6 +32,5 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
             throw new UnauthorizedException();
         }
         return user;
-        // return payload ?
     }
 }
