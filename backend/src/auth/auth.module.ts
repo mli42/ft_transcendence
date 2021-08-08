@@ -8,14 +8,12 @@ import { IntraStrategy } from './strategy/auth.strategy';
 @Module({
 	imports: [
 		forwardRef(() => UserModule), 
-		HttpModule],
+		HttpModule
+	],
 	controllers: [AuthController],
 	providers: [
 		IntraStrategy,
-		{
-			provide: 'AUTH_SERVICE',
-			useClass: AuthService
-		},
+		AuthService,
 	],
 })
 export class AuthModule {}

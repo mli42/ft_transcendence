@@ -35,21 +35,17 @@ export class UserService {
         }
 	}
 
-	async validateUser42(userData: User42Dto) {
+	async validateUser42(userData: User42Dto): Promise<User> {
 		const { username } = userData;
-		const user = await this.usersRepository.findOne({username});
+		const user = this.usersRepository.findOne({username});
 		if (user)
 			return user;
-		const newUser = await this.createUser42(userData);
+		const newUser: User = await this.createUser42(userData);
 		return newUser;
 	}
 
-	createUser42(userData: User42Dto) {
+	createUser42(userData: User42Dto): Promise<User>{
 		return this.usersRepository.createUser42(userData)
-	}
-
-	findUser42(username: string): Promise<User | undefined> {
-		return this.usersRepository.findOne({username});
 	}
 
 	async signIn(userData: SigInUserDto, @Res({passthrough: true}) res: Response): Promise<{accessToken: string}> {
