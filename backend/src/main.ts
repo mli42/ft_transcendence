@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import * as passport from 'passport'
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +11,8 @@ async function bootstrap() {
     origin: 'http://localhost:3030',
     credentials: true
   });
+
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .addBearerAuth(

@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, UnauthorizedException, UploadedFile, Res, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UploadedFile, Res, InternalServerErrorException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -89,7 +89,6 @@ export class UserService {
 			const payload: JwtPayload = { username };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
-			console.log(accessToken)
 		}
 		return this.usersRepository.updateUser(updateUser, user);
 	}

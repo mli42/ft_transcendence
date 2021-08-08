@@ -54,7 +54,7 @@ export class UserController {
 	@ApiOkResponse({description: 'Partial User Information'})
 	@ApiBearerAuth()
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Get('/partialInfo')
 	getPartialUserInfo(@Body('userId') userId: string): Promise<Partial<User>> {
 		return this.userService.getPartialUserInfo(userId);
@@ -64,7 +64,7 @@ export class UserController {
 	@ApiQuery({name:'username',required:false})
 	@ApiBearerAuth('accessToken')
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Get('/search')
 	getUserWithFilters(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
 		return this.userService.getUserWithFilters(filterDto);
@@ -77,7 +77,7 @@ export class UserController {
 	@ApiOkResponse({description: 'User account'})
 	@ApiBearerAuth('accessToken')
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Patch('/settings')
 	updateUser(@Body() updateUser: UpdateUserDto, @Req() req, @Res({passthrough: true}) res: Response): Promise<User> {
 		const user: User = req.user;
@@ -91,7 +91,7 @@ export class UserController {
 	@ApiOkResponse({description: 'User Delete'})
 	@ApiBearerAuth('accessToken')
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Delete('/delete')
 	deleteUser(@Req() req): Promise<void> {
 		const user_id = req.user.userId;
@@ -102,7 +102,7 @@ export class UserController {
 	@ApiOkResponse({description: 'Picture File'})
 	@ApiBearerAuth()
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Post('/upload')
 	@UseInterceptors(FileInterceptor('file', storage))
 	uploadImage(@UploadedFile() file, @Req() req): Promise<string> {
@@ -114,7 +114,7 @@ export class UserController {
 	@ApiOkResponse({description: 'Picture File'})
 	@ApiBearerAuth()
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Get('/profile-picture')
 	getProfilePicture(@Res() res, @Req() req): Observable<object> {
 		const user: User = req.user;
@@ -124,7 +124,7 @@ export class UserController {
 	@ApiOperation({summary: 'User Add Friend'})
 	@ApiBearerAuth()
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Patch('/addFriend')
 	addFriend(@Body('friend') friend: string, @Req() req): Promise<void> {
 		const user: User = req.user;
@@ -134,7 +134,7 @@ export class UserController {
 	@ApiOperation({summary: 'User Delete Friend'})
 	@ApiBearerAuth()
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Delete('/deleteFriend')
 	deleteFriend(@Body('friend') friend: string, @Req() req): Promise<void>  {
 		const user: User = req.user;
@@ -145,7 +145,7 @@ export class UserController {
 	@ApiOkResponse({description: 'Friends List'})
 	@ApiBearerAuth()
 	/*******/
-	@UseGuards(AuthGuard())
+	@UseGuards(AuthGuard('jwt'))
 	@Get('/friendList')
 	getFriendList(@Req() req): Promise<object> {
 		const user: User = req.user;
