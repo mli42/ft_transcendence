@@ -1,11 +1,15 @@
 import loginInfos from '~/types/loginInfos';
 import signUpInfos from '~/types/signUpInfos';
 
+interface authApiInfos {
+  path: string,
+  body: unknown,
+};
+
 export const state = () => ({
   status: 'idle' as string,
   errorMsg: [] as string[],
   accessToken: '' as string,
-  ACCESS_TOKEN_LOCAL: 'accessToken' as string,
 });
 
 export type authState = ReturnType<typeof state>;
@@ -19,18 +23,16 @@ export const mutations = {
   },
   updateAccessToken(state: authState, accessToken: string): void {
     state.accessToken = accessToken;
-    localStorage.setItem(state.ACCESS_TOKEN_LOCAL, accessToken);
   },
   deleteAccessToken(state: authState): void {
     state.accessToken = '';
-    localStorage.removeItem(state.ACCESS_TOKEN_LOCAL);
   },
 };
 
 export const actions = {
   authSuccess(context: any, response: any): void {
     const _this: any = this;
-    context.commit('updateAccessToken', response.data.accessToken);
+    // context.commit('updateAccessToken', response.data.accessToken);
     _this.$router.push('/');
     _this.$axios.default.header.common['Authorization'] = "Bearer" + response.data.accessToken;
   },
@@ -38,37 +40,42 @@ export const actions = {
     context.commit('updateErrorMsg', error.response.data.message);
     setTimeout(() => context.commit('updateErrorMsg', []), 6000);
   },
+  _auth(context: any, authInfos: authApiInfos): void {
+    const _this: any = this;
+    const opt: unknown = { withCredentials: true };
+
+    context.commit('updateStatus', 'logging');
+    _this.$axios.post(authInfos.path, authInfos.body, opt)
+    .then((resp: any) => { context.dispatch('authSuccess', resp); })
+    .catch((err: any) => { context.dispatch('authFailed', err); })
+    .finally(() => { context.commit('updateStatus', 'idle'); } );
+  },
   delog(context: any): void {
     const _this: any = this;
     context.commit('deleteAccessToken');
     _this.$router.push('/login');
   },
-
   login(context: any, logInfos: loginInfos) : void {
-    const _this: any = this;
-
-    context.commit('updateStatus', 'logging');
-    _this.$axios.post('/api/user/signin', {
-      id: logInfos.id,
-      password: logInfos.password,
-    })
-    .then((resp: any) => { context.dispatch('authSuccess', resp); })
-    .catch((err: any) => { context.dispatch('authFailed', err); })
-    .finally(() => { context.commit('updateStatus', 'idle'); } );
+    const authInfos: authApiInfos = {
+      path: '/api/user/signin',
+      body: {
+        id: logInfos.id,
+        password: logInfos.password,
+      },
+    };
+    context.dispatch('_auth', authInfos);
   },
   signUp(context: any, signInfos: signUpInfos) : void {
-    const _this: any = this;
-
-    context.commit('updateStatus', 'logging');
-    _this.$axios.post('/api/user/signup', {
-      username: signInfos.username,
-      email: signInfos.email,
-      password: signInfos.password,
-      passwordConfirm: signInfos.password2,
-    })
-    .then((resp: any) => { context.dispatch('authSuccess', resp); })
-    .catch((err: any) => { context.dispatch('authFailed', err); })
-    .finally(() => { context.commit('updateStatus', 'idle'); } );
+    const authInfos: authApiInfos = {
+      path: '/api/user/signup',
+      body: {
+        username: signInfos.username,
+        email: signInfos.email,
+        password: signInfos.password,
+        passwordConfirm: signInfos.password2,
+      },
+    };
+    context.dispatch('_auth', authInfos);
   },
 };
 

@@ -1,3 +1,4 @@
+import { IsAlphanumeric, IsEmail } from 'class-validator';
 import { Entity, Column, PrimaryGeneratedColumn, IsNull } from 'typeorm';
 
 @Entity()
@@ -5,9 +6,11 @@ export class User {
   @PrimaryGeneratedColumn("uuid")
   userId: string;
 
+  @IsAlphanumeric()
   @Column({unique: true})
   username: string;
 
+  @IsEmail()
   @Column({unique: true})
   email: string;
 

@@ -1,53 +1,38 @@
-import { Controller, Get, Param, Post, Res, UseGuards } from '@nestjs/common'
-import { Response } from 'express';
-import { IntraAuthGuard } from './guards/auth.guard';
-import { ApiTags } from '@nestjs/swagger'
-import { Code } from 'typeorm';
+import { Controller, Get, Param, Post, Res, UseGuards, Req } from '@nestjs/common'
+import { Response, Request } from 'express';
+import {  IntraAuthGuard } from './guards/auth.guard';
+import { ApiTags, ApiOperation } from '@nestjs/swagger'
 import { HttpService } from '@nestjs/axios';
+import { JwtPayload } from '../user/interfaces/jwt-payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @ApiTags('42 authentication')
 @Controller('api/auth/')
 export class AuthController {
 	constructor (
 		private httpService: HttpService,
+		private jwtService: JwtService,
 	) {}
 
-	// 42 API
-	// GET /api/auth/login
-	// Route que le user visit pour s'authentifier
+	@ApiOperation({summary: 'Authentication with 42 Api'})
 	@Get('42/login')
 	@UseGuards(IntraAuthGuard)
 	login() {
-		console.log("ok login");
-		return;
 	}
 
-	// GET /api/auth/redirect
-	// redirect URL que OAuth2 va appeler pour rediriger l'utilisateur sur la page de connexion d'accueil
-	// Je n'est pas m'y @Get('redirect') car j'avais deja demandé l'url de redirection "http://localhost:3000"...
+	@ApiOperation({summary: 'Redirection to front home page after 42 authentication'})
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
-	redirect(@Res() res: Response) {
-		// res.send(200);
-		res.redirect('http://localhost:3030/');
+	async redirect(@Res({passthrough: true}) res: Response, @Req() req: Request) {
+		const username = req.user['username'];
+		const payload: JwtPayload = { username };
+		const accessToken: string = await this.jwtService.sign(payload);
+		res.cookie('jwt', accessToken, {httpOnly: true});
+		res.redirect("http://localhost:3030");
 	}
-
-	// to do
-	// GET /api/auth/status
-	// Recupérer le status d'anthentification
-
-	@Get('42/status')
-	status() {
-	}
-
-	// to do
-	// GET /api/auth/logout
-	// Supprimer la session
-	@Get('42/logout')
-	logout() {}
-
 
 	// two factor authentication
+	@ApiOperation({summary: 'QR code authentication - User'})
 	@Get('2fa/:user')
 	async getQrcode(@Param('user') user, @Param('code') code) {
 	  const resp = await this.httpService.get(
@@ -58,6 +43,7 @@ export class AuthController {
 	  return resp.data;
 	}
 
+	@ApiOperation({summary: 'QR code authentication - Secret'})
 	@Post('2fa/:secret')
 	async validate(@Param('secret') secret) {
 	  const resp = await this.httpService.get(
@@ -66,4 +52,5 @@ export class AuthController {
 		).toPromise();
 	  return resp.data;
 	}
+
 }
