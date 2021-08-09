@@ -13,7 +13,7 @@
           <p class="v-btn-content">Change your profile picture</p>
         </v-btn>
         <v-btn class="ChangeBtn">
-          <p class="v-btn-content" @click="modalBool.showQRC = true; getQRC">Show your current QR code</p>
+          <p class="v-btn-content" @click="modalBool.showQRC = true; getQRC()">Show your current QR code</p>
         </v-btn>
         <v-btn color="error" class="DeleteBtn">
           <p class="v-btn-content" @click="modalBool.showDelete = true">Delete my account</p>
@@ -37,7 +37,7 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
         <div class="QRCode"></div>
-        <v-btn id="QRCBtn" @click="modalBool.showQRC = false">
+        <v-btn id="QRCBtn" @click="modalBool.showQRC = false; activate2fa = true">
           <p class="v-btn-content">Done</p>
         </v-btn>
     </SettingModal>
@@ -65,9 +65,10 @@ export default Vue.extend({
       pictureFile: null as any,
       imgURL: '' as string,
       toSend: {},
-      curentUser: {},
+      currentUser: {},
       msgErr: [],
       validated: false as boolean,
+      activate2fa: false as boolean,
       modalBool : 
       {
         showPicture: false as boolean,
@@ -111,39 +112,55 @@ export default Vue.extend({
     fileSelected(): void{
         this.pictureFile = this.$refs.file.files[0];
         this.imgURL = URL.createObjectURL(this.$refs.file.files[0]);
+        console.log(this.$refs.file.files[0])
     },
     uploadFile(): void{
-      // const fd = new FormData();
-      // fd.append('image', this.pictureFile);
-      // this.$axios
-      // .post('/api/user/upload', fd)
-      // .then((response: any): void =>{
-      //   console.log('SUCCESS!!');
-      // })
-      // .catch((error: any): void => {
-      //   let errorTab = error.response.data.message;
-      //   console.log(errorTab);
-      //   setTimeout(() => {
-      //   this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600)
-      // });
+      const fd = new FormData();
+      fd.append('image', this.pictureFile);
+      this.$axios
+      .post('/api/user/upload', fd)
+      .then((response: any): void =>{
+        console.log('SUCCESS!!');
+      })
+      .catch((error: any): void => {
+        let errorTab = error.response.data.message;
+        console.log(errorTab);
+        setTimeout(() => {
+        this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600)
+      });
     },
     getQRC(): void{
-      // get QRC 
+      this.$axios
+      .get(`/api/auth/2fa/${this.currentUser.userId}`)
+      .then((response: any): void =>{
+        console.log(response.data);
+      })
+      .catch((error: any): void =>{
+        console.log("QRC FAILURE");
+      });
     },
     deleteAccount(): void{
       this.$axios
       .delete('/api/user/delete')
       .then((response: any): void =>{
-        console.log("SUCCESS");
+        console.log("DELETE SUCCESS");
       })
       .catch((error: any): void =>{
-        console.log("FAILURE");
+        console.log("DELETE FAILURE");
       });
     },
   },
   mounted(): void{
-    // get current user
-  }
+    this.$axios
+    .get('/api/user/currentUser')
+    .then((response: any): void =>{
+      this.currentUser = response.data;
+      console.log(this.currentUser);
+    })
+    .catch((error: any): void =>{
+      console.log("GET CURENT USER FAILURE");
+    });
+  },
 });
 </script>
 
