@@ -78,19 +78,20 @@ export default Vue.extend({
   },
   methods: {
     changeSettings(): void {
-        // this.axios
-        // .patch('/api/user/settings', {
-        //   username: this.nickName,
-        //   email: this.email,
-        //   password: this.passWord,})
-        // .then((response: any): void => {
-        //   this.validated = true;
-        // })
-        // .catch((error: any): void => {
-        //   let errorTab = error.response.data.message;
-        //   setTimeout(() => {
-        //     this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 6000) 
-        // })
+        this.axios
+        .patch('/api/user/settings', {
+          username: this.nickName,
+          email: this.email,
+          password: this.passWord,},  { withCredentials: true })
+        .then((response: any): void => {
+          this.validated = true;
+        })
+        .catch((error: any): void => {
+          let errorTab = error.response.data.message;
+          console.log(errorTab);
+          // setTimeout(() => {
+          //   this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 6000) 
+        })
     },
     hideModal(): void {
       this.modalBool.showPicture = false;
