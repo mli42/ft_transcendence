@@ -6,17 +6,15 @@
 </template>
 
 <script lang="ts">
-export default {
+import Vue from 'vue';
+
+export default Vue.extend({
   name: 'HomeBtn',
   data() {
     return {
     };
   },
-  methods: {
-  },
-  components: {
-  },
-}
+});
 </script>
 
 <style scoped lang="scss" src="./HomeBtn.scss">
