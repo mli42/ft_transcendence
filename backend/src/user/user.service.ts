@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, UploadedFile, Res, InternalServerErrorException, Req } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, UploadedFile, Res, InternalServerErrorException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -67,6 +67,16 @@ export class UserService {
         }
 	}
 
+	async currentUser(user: User): Promise<User> {
+		let userFound: User = undefined;
+		try {
+			userFound = await this.usersRepository.findOne(user.userId);
+		} catch {
+			throw new NotFoundException('No user found');
+		}
+		return userFound;
+	}
+	
 	async getPartialUserInfo(id: string): Promise<Partial<User>> {
 		let user: User = undefined;
 

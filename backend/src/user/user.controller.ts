@@ -50,14 +50,32 @@ export class UserController {
 		return this.userService.signIn(userData, res);
 	}
 
-	@ApiOperation({summary: 'Verify if User is Logging in'})
+	@ApiOperation({
+		summary: 'Verify if User is Log in in',
+		description: 'Indique si un user est actuellement connecté en vérifiant l\'existance d\'un cookie'
+	})
+	@ApiOkResponse({description: 'True'})
+	@ApiUnauthorizedResponse({description: 'Unauthorized if no cookie found'})
 	@UseGuards(AuthGuard('jwt'))
+	/*******/
 	@Get('/isLogin')
 	isLogin(@Req() req: Request): boolean{
 		const token = req.cookies['jwt'];
 		if (!token)
 			return false;
 		return true;
+	}
+
+	@ApiOperation({summary: 'Get all info of current user'})
+	@ApiBearerAuth('accessToken')
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/currentUser')
+	currentUser(@Req() req) : Promise<User> {
+		const user: User = req.user;
+		
+		console.log(user);
+		return this.userService.currentUser(user);
 	}
 
 	@ApiOperation({summary: 'Partial User Information'})
