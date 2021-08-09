@@ -32,8 +32,8 @@ export class User {
   @Column('int',  {default: -1})
   ration: number;
 
-  // @Column()
-  // status: string
+  @Column('text', {default: 'Offline'})
+  status: UserStatus;
 
   @Column('date', { default: () => '((CURRENT_DATE))' })
   sign_up_date: Date;
