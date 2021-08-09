@@ -54,11 +54,12 @@ export default Vue.extend ({
       let fpsCounter: number = 0;
 
       s.setup = () => {
-        s.createCanvas(window.innerWidth, window.innerHeight - 64);
+        s.createCanvas(window.innerWidth, window.innerHeight - 63);
         s.frameRate(60);
+        s.noStroke();
       }
       s.draw = () => {
-        s.background('grey');
+        s.background('#003566');
         if (fpsCounter <= 0) {
           draw1 = Math.trunc(s.random(0, 4));
           vectorSrc = arrPointGen[draw1]();
@@ -77,7 +78,7 @@ export default Vue.extend ({
           vectorSrc.add(delta.mult(speed));
           fpsCounter--;
         }
-        s.ellipse(vectorSrc.x, vectorSrc.y, 50, 50);
+        s.ellipse(vectorSrc.x, vectorSrc.y, 30, 30);
         s.ellipse(s.mouseX, s.mouseY, 20, 20);
       }
       // s.mouseClicked = () => {
@@ -86,7 +87,7 @@ export default Vue.extend ({
       // s.ellipse(newRect.x, newRect.y, ballSize, ballSize);
       // }
       s.windowResized = () => {
-        s.resizeCanvas(this.windowWidth, this.windowHeight);
+        s.resizeCanvas(this.windowWidth, this.windowHeight - 63);
       }
     };
     // eslint-disable-next-line no-unused-vars
