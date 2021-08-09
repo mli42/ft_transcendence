@@ -3,9 +3,9 @@
     <div class="content">
       <h1 class="contentTitle">Settings</h1>
       <form>
-        <SettingInput name="Change your nickname :" v-model="nickName"  placeHolder="Your nickname"></SettingInput>
-        <SettingInput name="Change your password :" v-model="passWord" :isPassword="true" placeHolder="Your super secret password"></SettingInput>
-        <SettingInput name="Change your mail :" v-model="email" placeHolder="Enter your new email"></SettingInput>
+        <SettingInput name="Change your nickname :" v-model.lazy="nickName"  placeHolder="Your nickname"></SettingInput>
+        <SettingInput name="Change your password :" v-model.lazy="passWord" :isPassword="true" placeHolder="Your super secret password"></SettingInput>
+        <SettingInput name="Change your mail :" v-model.lazy="email" placeHolder="Enter your new email"></SettingInput>
         <v-btn class="SaveBtn" @click.prevent="changeSettings">
           <p class="v-btn-content">Save changes</p>
         </v-btn>
@@ -13,10 +13,7 @@
           <p class="v-btn-content">Change your profile picture</p>
         </v-btn>
         <v-btn class="ChangeBtn">
-          <p class="v-btn-content">Reset your QR code</p>
-        </v-btn>
-        <v-btn class="ChangeBtn">
-          <p class="v-btn-content" @click="modalBool.showQRC = true">Show your current QR code</p>
+          <p class="v-btn-content" @click="modalBool.showQRC = true; getQRC">Show your current QR code</p>
         </v-btn>
         <v-btn color="error" class="DeleteBtn">
           <p class="v-btn-content" @click="modalBool.showDelete = true">Delete my account</p>
@@ -31,12 +28,11 @@
       </v-expand-transition>
     </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPicture">
-        <img class="profilePicture" src="~/assets/img/avatar.jpeg" alt="Profile image">
-        <v-btn class="modalBtn">
-          <p class="v-btn-content">Upload a picture</p>
-        </v-btn>
+        <img class="profilePicture" :src="imgURL" alt="Profile image">
+        <input type="file" name="file" id="file" ref="file" class="inputFile" @change="fileSelected"/>
+        <label class="labelFile" for="file">Upload a picture</label>
         <v-btn id="doneBtn" @click="modalBool.showPicture = false">
-          <p class="v-btn-content">Done</p>
+          <p class="v-btn-content" @click="uploadFile">Done</p>
         </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
@@ -48,7 +44,7 @@
     <SettingModal :hideModal="hideModal" v-if="modalBool.showDelete">
         <div class="deleteGif"></div>
         <v-btn id="deleteModalBtn" @click="modalBool.showDelete = false">
-          <p class="v-btn-content">Done</p>
+          <p class="v-btn-content" @click="deleteAccount">I’m sure i want to delete my account</p>
         </v-btn>
     </SettingModal>
   </div>
@@ -66,6 +62,10 @@ export default Vue.extend({
       nickName: '' as String,
       passWord: '' as String,
       email: '' as string,
+      pictureFile: null as any,
+      imgURL: '' as string,
+      toSend: {},
+      curentUser: {},
       msgErr: [],
       validated: false as boolean,
       modalBool : 
@@ -77,28 +77,73 @@ export default Vue.extend({
     };
   },
   methods: {
+    addPorp(): void{
+      if (this.nickName)
+        this.toSend.username = this.nickName;
+      if (this.email)
+        this.toSend.email = this.email;
+      if (this.passWord)
+        this.toSend.password = this.passWord;
+    },
     changeSettings(): void {
-        this.axios
-        .patch('/api/user/settings', {
-          username: this.nickName,
-          email: this.email,
-          password: this.passWord,},  { withCredentials: true })
-        .then((response: any): void => {
-          this.validated = true;
-        })
-        .catch((error: any): void => {
-          let errorTab = error.response.data.message;
-          console.log(errorTab);
-          // setTimeout(() => {
-          //   this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 6000) 
-        })
+        this.addPorp()
+        // console.log(this.toSend);
+        if (this.toSend)
+        {
+          this.$axios
+          .patch('/api/user/settings', this.toSend ,  { withCredentials: true })
+          .then((response: any): void => {
+            this.validated = true;
+          })
+          .catch((error: any): void => {
+            let errorTab = error.response.data.message;
+            console.log(errorTab);
+            setTimeout(() => {
+              this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600) 
+          })
+        }
     },
     hideModal(): void {
       this.modalBool.showPicture = false;
       this.modalBool.showDelete = false;
       this.modalBool.showQRC = false;
     },
+    fileSelected(): void{
+        this.pictureFile = this.$refs.file.files[0];
+        this.imgURL = URL.createObjectURL(this.$refs.file.files[0]);
+    },
+    uploadFile(): void{
+      // const fd = new FormData();
+      // fd.append('image', this.pictureFile);
+      // this.$axios
+      // .post('/api/user/upload', fd)
+      // .then((response: any): void =>{
+      //   console.log('SUCCESS!!');
+      // })
+      // .catch((error: any): void => {
+      //   let errorTab = error.response.data.message;
+      //   console.log(errorTab);
+      //   setTimeout(() => {
+      //   this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600)
+      // });
+    },
+    getQRC(): void{
+      // get QRC 
+    },
+    deleteAccount(): void{
+      this.$axios
+      .delete('/api/user/delete')
+      .then((response: any): void =>{
+        console.log("SUCCESS");
+      })
+      .catch((error: any): void =>{
+        console.log("FAILURE");
+      });
+    },
   },
+  mounted(): void{
+    // get current user
+  }
 });
 </script>
 

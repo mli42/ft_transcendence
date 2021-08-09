@@ -53,7 +53,7 @@ form {
 
 div.errMessages {
     position: absolute;
-    top: 10px;
+    top: 100px;
     display:flex;
     flex-direction: column;
 }
@@ -77,4 +77,26 @@ div.errMessages {
     background-color: white;
     border-radius: 10px;
     margin: 40px auto;
+}
+
+.inputFile {
+    display: none;
+}
+
+.inputFile + label {
+    width: 256px;
+    max-height: 32px;
+    color: #1B2636;
+    background-color: $pg-white;
+    padding: 7px 32px;
+    font-size: 18px;
+    margin: 0 40px 24px 40px;
+    display: inline-block;
+    border-radius: 5px;
+
+}
+
+.inputFile:focus + label,
+.inputFile + label:hover {
+    background-color:rgba(220, 225, 230, 0.95)
 }
