@@ -56,8 +56,8 @@ export class UserService {
 		if (user === undefined) {
 			user = await this.usersRepository.findOne({email: id});
 		}
-		const username = user.username;
 		if (user && (await bcrypt.compare(password, user.password))) {
+			const username = user.username;
 			const payload: JwtPayload = { username };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
@@ -103,7 +103,8 @@ export class UserService {
 		return this.usersRepository.updateUser(updateUser, user);
 	}
 
-	async deleteUser(id: string): Promise<void> {
+	async deleteUser(id: string, @Res({passthrough: true}) res: Response): Promise<void> {
+		res.clearCookie('jwt');
 		const result = await this.usersRepository.delete(id);
 	}
 
