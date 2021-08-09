@@ -54,7 +54,7 @@ export class UserController {
 		summary: 'Verify if User is Log in in',
 		description: 'Indique si un user est actuellement connecté en vérifiant l\'existance d\'un cookie'
 	})
-	@ApiOkResponse({description: 'True'})
+	@ApiOkResponse({description: 'True is a user is log in'})
 	@ApiUnauthorizedResponse({description: 'Unauthorized if no cookie found'})
 	@UseGuards(AuthGuard('jwt'))
 	/*******/
@@ -73,8 +73,6 @@ export class UserController {
 	@Get('/currentUser')
 	currentUser(@Req() req) : Promise<User> {
 		const user: User = req.user;
-		
-		console.log(user);
 		return this.userService.currentUser(user);
 	}
 
@@ -121,9 +119,9 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Delete('/delete')
-	deleteUser(@Req() req): Promise<void> {
+	deleteUser(@Req() req, @Res({passthrough: true}) res: Response): Promise<void> {
 		const user_id = req.user.userId;
-		return this.userService.deleteUser(user_id);
+		return this.userService.deleteUser(user_id, res);
 	}
 
 	@ApiOperation({summary: 'Upload profil picture'})
@@ -178,5 +176,13 @@ export class UserController {
 	getFriendList(@Req() req): Promise<object> {
 		const user: User = req.user;
 		return this.userService.getFriendList(user);
+	}
+
+	@ApiOperation({summary: 'Logout the user'})
+	@ApiBearerAuth()
+	/*******/
+	@Delete('/logout')
+	logout(@Res({passthrough: true}) res: Response) {
+		res.clearCookie('jwt');
 	}
 }
