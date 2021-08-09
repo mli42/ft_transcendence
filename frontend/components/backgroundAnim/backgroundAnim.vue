@@ -33,10 +33,10 @@ export default Vue.extend ({
     const sketch = (s: any) => {
       let ballSize: number = 30;
       let arrPointGen: { (): p5.Vector; } [] = [ // Get a random point of a screen border
-        () => {return (s.createVector(s.random(0, s.width) as Number, 0) as p5.Vector); }, // Top
-        () => {return (s.createVector(s.random(0, s.width) as Number, s.height) as p5.Vector); }, // Bot
-        () => {return (s.createVector(s.width, s.random(0, s.height) as Number) as p5.Vector); }, // Right
-        () => {return (s.createVector(0, s.random(0, s.height) as Number) as p5.Vector); } // Left
+        () => {return (s.createVector(s.random(0, s.width) as Number, -ballSize) as p5.Vector); }, // Top
+        () => {return (s.createVector(s.random(0, s.width) as Number, s.height + ballSize) as p5.Vector); }, // Bot
+        () => {return (s.createVector(s.width + ballSize, s.random(0, s.height) as Number) as p5.Vector); }, // Right
+        () => {return (s.createVector(-ballSize, s.random(0, s.height) as Number) as p5.Vector); } // Left
       ];
       let vectorDest: p5.Vector = s.createVector(0, 0);;
       let vectorSrc: p5.Vector = s.createVector(0, 0);
@@ -54,12 +54,11 @@ export default Vue.extend ({
 
       s.setup = () => {
         s.createCanvas(this.windowWidth, this.windowHeight - 64);
-        s.frameRate(60);
         s.noStroke();
       }
       s.draw = () => {
         s.background('#003566');
-        if (fpsCounter <= 0) { // New ball setup
+        if (fpsCounter == 0 && Math.trunc(s.random(0, 200)) == 42) { // New ball setup
           draw1 = Math.trunc(s.random(0, 4));
           vectorSrc = arrPointGen[draw1]();
           while ((draw2 = Math.trunc(s.random(0, 4))) == draw1)
@@ -70,14 +69,14 @@ export default Vue.extend ({
           delta = p5.Vector.sub(vectorDest, vectorSrc).normalize();
           newSrc = p5.Vector.add(vectorSrc, delta.mult(speed));
           d2 = newSrc.dist(vectorSrc);
-          fpsCounter = d1 / d2;
+          fpsCounter = Math.trunc(d1 / d2);
         }
-        else { // Ball progression
+        else if (fpsCounter > 0) { // Ball progression
           delta = p5.Vector.sub(vectorDest, vectorSrc).normalize();
           vectorSrc.add(delta.mult(speed));
           fpsCounter--;
+          s.ellipse(vectorSrc.x, vectorSrc.y, ballSize, ballSize);
         }
-        s.ellipse(vectorSrc.x, vectorSrc.y, ballSize, ballSize);
       }
       s.windowResized = () => {
         s.resizeCanvas(this.windowWidth, this.windowHeight - 64);
