@@ -1,0 +1,12 @@
+@import '~/assets/Palette.scss';
+
+div.usernameMain {
+  display: flex;
+  justify-content: center;
+  background-color: $pg-blue;
+}
+
+div.usernameContent {
+  position: relative;
+  top: 64px;
+}
