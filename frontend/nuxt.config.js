@@ -53,9 +53,14 @@ export default {
     '@nuxtjs/axios'
   ],
 
+  router: {
+    middleware: ['auth'],
+  },
+
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     baseURL: 'http://localhost:3000',
+    credentials: true,
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
