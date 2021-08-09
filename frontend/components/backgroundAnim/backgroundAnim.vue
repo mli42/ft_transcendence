@@ -17,15 +17,14 @@ export default Vue.extend ({
   name: 'backgroundAnim',
   data() {
     return {
-        windowHeight: window.innerHeight,
         windowWidth: window.innerWidth,
-        txt: ''
+        windowHeight: window.innerHeight,
     }
   },
   created() {
     window.addEventListener('resize', () => {
-      this.windowHeight = window.screen.height;
-      this.windowWidth = window.screen.width;
+      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
     })
   },
   async mounted () {
@@ -33,61 +32,55 @@ export default Vue.extend ({
 
     const sketch = (s: any) => {
       let ballSize: number = 30;
-      let arrPointGen: { (): p5.Vector; } [] = [
+      let arrPointGen: { (): p5.Vector; } [] = [ // Get a random point of a screen border
         () => {return (s.createVector(s.random(0, s.width) as Number, 0) as p5.Vector); }, // Top
         () => {return (s.createVector(s.random(0, s.width) as Number, s.height) as p5.Vector); }, // Bot
         () => {return (s.createVector(s.width, s.random(0, s.height) as Number) as p5.Vector); }, // Right
         () => {return (s.createVector(0, s.random(0, s.height) as Number) as p5.Vector); } // Left
       ];
-
       let vectorDest: p5.Vector = s.createVector(0, 0);;
       let vectorSrc: p5.Vector = s.createVector(0, 0);
       let delta: p5.Vector;
       let speed: number = 5;
-      let palette: Array<String> = ['#FA163F', '#54E346', '#3EDBF0', '#FFF338', '#D62AD0', '#FB7AFC'];
-
-      let newSrc: p5.Vector;
-      let draw1: number;
-      let draw2: number;
-      let d1: number;
-      let d2: number;
+      let palettePlayers: Array<String> = [
+        '#FA163F', '#54E346', '#3EDBF0', '#FFF338', '#D62AD0', '#FB7AFC'
+      ];
+      let newSrc: p5.Vector; // Position of one step to the destination
+      let draw1: number; // Source side selector
+      let draw2: number; // Dest side selector
+      let d1: number; // Value to get len from Scr to Dst
+      let d2: number; // Len of a single step of a single frame
       let fpsCounter: number = 0;
 
       s.setup = () => {
-        s.createCanvas(window.innerWidth, window.innerHeight - 63);
+        s.createCanvas(this.windowWidth, this.windowHeight - 64);
         s.frameRate(60);
         s.noStroke();
       }
       s.draw = () => {
         s.background('#003566');
-        if (fpsCounter <= 0) {
+        if (fpsCounter <= 0) { // New ball setup
           draw1 = Math.trunc(s.random(0, 4));
           vectorSrc = arrPointGen[draw1]();
           while ((draw2 = Math.trunc(s.random(0, 4))) == draw1)
             ;
           vectorDest = arrPointGen[draw2]();
-          s.fill(palette[Math.trunc(s.random(0, 6))]);
+          s.fill(palettePlayers[Math.trunc(s.random(0, 6))]);
           d1 = vectorSrc.dist(vectorDest);
           delta = p5.Vector.sub(vectorDest, vectorSrc).normalize();
           newSrc = p5.Vector.add(vectorSrc, delta.mult(speed));
           d2 = newSrc.dist(vectorSrc);
           fpsCounter = d1 / d2;
         }
-        else {
+        else { // Ball progression
           delta = p5.Vector.sub(vectorDest, vectorSrc).normalize();
           vectorSrc.add(delta.mult(speed));
           fpsCounter--;
         }
-        s.ellipse(vectorSrc.x, vectorSrc.y, 30, 30);
-        s.ellipse(s.mouseX, s.mouseY, 20, 20);
+        s.ellipse(vectorSrc.x, vectorSrc.y, ballSize, ballSize);
       }
-      // s.mouseClicked = () => {
-      //   let newRect: p5.Vector = arrPointGen[Math.trunc(s.random(0, 4))]();
-      //   console.log(Math.trunc(s.random(0, 4)));
-      // s.ellipse(newRect.x, newRect.y, ballSize, ballSize);
-      // }
       s.windowResized = () => {
-        s.resizeCanvas(this.windowWidth, this.windowHeight - 63);
+        s.resizeCanvas(this.windowWidth, this.windowHeight - 64);
       }
     };
     // eslint-disable-next-line no-unused-vars
@@ -106,11 +99,6 @@ export default Vue.extend ({
 });
 </script>
 
-<style scoped lang="scss">
-
-div {
-  position: absolute;
-  top: 0px;
-}
+<style lang="scss" src="./backgroundAnim.scss">
 
 </style>
