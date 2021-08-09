@@ -5,11 +5,12 @@ import * as bcrypt from 'bcrypt';
 import { ConflictException, HttpStatus, InternalServerErrorException, UnauthorizedException, UploadedFile } from "@nestjs/common";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { User42Dto } from "./dto/user42.dto";
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
 
-	async createUser(userData: CreateUserDto): Promise<Partial<User>> {
+	async createUser(userData: CreateUserDto): Promise<User> {
 		const user = this.create(userData);
 
 		const salt = await bcrypt.genSalt();
@@ -19,18 +20,24 @@ export class UsersRepository extends Repository<User> {
 		try {
 			await this.save(user);
 		} catch(error) {
-			if (error.code === '23505') { //duplicate username or email
+			if (error.code === '23505') {
 				throw new ConflictException('Username or email already exist')
 			} else {
 				console.log(error);
 				throw new InternalServerErrorException();
 			}
 		}
-		return {
-			userId: user.userId,
-			username: user.username,
-			email: user.email
-		}
+		return user;
+	}
+
+	async createUser42(userData: User42Dto): Promise<Partial<User>> {
+		console.log("Creating user");
+		const user = this.create(userData);
+		const salt = await bcrypt.genSalt();
+		user.password = await bcrypt.hash(user.password, salt);
+		user.friends = [];
+		user.user42 = true;
+		return this.save(user);
 	}
 
 	async getUsersWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
@@ -58,7 +65,6 @@ export class UsersRepository extends Repository<User> {
 			username,
 			email,
 			password,
-			profile_picture,
 		} = updateUser;
 
 		if (username) {
@@ -67,8 +73,6 @@ export class UsersRepository extends Repository<User> {
 			user.email = email;
 		} if (password) {
 			user.password = password;
-		} if (profile_picture) {
-			user.profile_picture = profile_picture;
 		}
 		try {
 			await this.save(user);
@@ -98,6 +102,23 @@ export class UsersRepository extends Repository<User> {
 				error: 'the user is already in your friend list',});
 		}
 		user.friends.push(friend);
+		try {
+			await this.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
+
+	async deleteFriend(friend: string, user: User): Promise<void> {
+		const index = user.friends.indexOf(friend);
+		if (index !== -1) {
+			user.friends.splice(index, 1);
+		} else {
+			throw new UnauthorizedException({
+				status: HttpStatus.FORBIDDEN,
+				error: 'user id isn\'t in your friends list',});
+		}
 		try {
 			await this.save(user);
 		} catch (e) {

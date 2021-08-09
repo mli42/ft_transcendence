@@ -23,4 +23,12 @@ canvas {
   display:block;
   position: absolute;
   top: 0px;
-} /* To remove the scrollbars */
+} // Make canvas fullscreen and responsive
+
+.useWholePage {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}

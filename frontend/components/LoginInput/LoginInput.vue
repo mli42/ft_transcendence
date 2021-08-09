@@ -2,10 +2,10 @@
   <div class="inputMain">
     <div class="label">
       <label :for="id">{{ name }}</label>
-      <img v-if="isPassword" alt="eye icon to show/hide password"
+      <Iconify :iconName="this.eyeType" param="color=white"
+      v-if="isPassword" alt="eye icon to show/hide password"
       @click="hidePassword = !hidePassword"
-      :src="`https://api.iconify.design/${eyeType}.svg?color=white`"
-      />
+      ></Iconify>
     </div>
     <input :type="inputType" :id="id" :name="id"
     @input="updateValue($event.target.value)" />

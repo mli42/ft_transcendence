@@ -21,8 +21,4 @@ export class UpdateUserDto {
 	})
 	@ApiProperty()
 	password: string;
-
-    @IsOptional()
-	@ApiProperty()
-	profile_picture: string;
 }
