@@ -15,5 +15,5 @@ export class GetUserFilterDto {
     elo?: string;
 
     @IsOptional()
-    status?: string
+    status?: UserStatus;
 }
