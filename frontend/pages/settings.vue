@@ -42,7 +42,8 @@
         </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showDelete">
-        <div class="deleteGif"></div>
+        <!-- <div class="deleteGif"></div> -->
+        <img class="deleteGif" src="~/assets/img/explosion.png"/>
         <v-btn id="deleteModalBtn" @click="modalBool.showDelete = false; deleteAccount()">
           <p class="v-btn-content">Delete my account</p>
         </v-btn>
