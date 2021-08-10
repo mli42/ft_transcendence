@@ -34,7 +34,7 @@ form {
     background: #219653 !important;
 }
 
-.ChangeBtn, .SaveBtn, .DeleteBtn, .modalBtn, #doneBtn,  #QRCBtn{
+.ChangeBtn, .SaveBtn, .DeleteBtn, .modalBtn, #doneBtn,  #QRCBtn, #deleteModalBtn{
     width: 320px;
     height: 32px;
     margin-top: 16px;
@@ -46,7 +46,7 @@ form {
     padding: 7px 32px;
 }
 
-.DeleteBtn, #QRCBtn{ 
+.DeleteBtn, #QRCBtn, #deleteModalBtn{ 
     margin: 16px 0;
     background: $pg-red !important;
 }
@@ -65,17 +65,17 @@ div.errMessages {
     margin: 40px;
 }
 
-.modalBtn, #doneBtn, #QRCBtn{
+.modalBtn, #doneBtn, #QRCBtn, #deleteModalBtn{
     width: 256px;
     max-height: 32px;
     margin: 0 40px 24px 40px;
 }
 
-#QRCBtn{
+#QRCBtn, #deleteModalBtn{
     color: white;
 }
 
-.QRCode{  //a voir avec le composant QRC
+.QRCode, .deleteGif{  //a voir avec le composant QRC
     width: 256px;
     height: 256px;
     background-color: white;

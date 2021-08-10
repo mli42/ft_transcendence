@@ -28,12 +28,12 @@
       </v-expand-transition>
     </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPicture">
-        <img class="profilePicture" :src="imgURL" alt="Profile image">
-        <input type="file" name="file" id="file" ref="file" class="inputFile" @change="fileSelected"/>
-        <label class="labelFile" for="file">Upload a picture</label>
-        <v-btn id="doneBtn" @click="modalBool.showPicture = false, uploadFile()">
-          <p class="v-btn-content">Done</p>
-        </v-btn>
+      <img class="profilePicture" :src="imgURL" alt="Profile image">
+      <input type="file" name="file" id="file" ref="file" class="inputFile" @change="fileSelected"/>
+      <label class="labelFile" for="file">Upload a picture</label>
+      <v-btn id="doneBtn" @click="modalBool.showPicture = false, uploadFile()">
+        <p class="v-btn-content">Done</p>
+      </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
         <div class="QRCode"></div>
@@ -43,8 +43,8 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showDelete">
         <div class="deleteGif"></div>
-        <v-btn id="deleteModalBtn" @click="modalBool.showDelete = false">
-          <p class="v-btn-content" @click="deleteAccount">I’m sure i want to delete my account</p>
+        <v-btn id="deleteModalBtn" @click="modalBool.showDelete = false; deleteAccount()">
+          <p class="v-btn-content">Delete my account</p>
         </v-btn>
     </SettingModal>
   </div>
@@ -115,9 +115,9 @@ export default Vue.extend({
         console.log(this.$refs.file.files[0])
     },
     uploadFile(): void{
-      this.pictureFile.filename = this.pictureFile.name;
+      // this.pictureFile.filename = this.pictureFile.name;
       const fd = new FormData();
-      fd.append('mypp', this.pictureFile, this.pictureFile.name);
+      fd.append('mypp', this.pictureFile);
       this.$axios
       .post('/api/user/upload', fd)
       .then((response: any): void =>{
@@ -145,6 +145,7 @@ export default Vue.extend({
       .delete('/api/user/delete')
       .then((response: any): void =>{
         console.log("DELETE SUCCESS");
+        this.$router.push({ name: 'login' })
       })
       .catch((error: any): void =>{
         console.log("DELETE FAILURE");
