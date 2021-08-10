@@ -14,11 +14,14 @@ img.pp {
   border-radius: 50%;
 }
 
-// Right side
-
 p {
   color: white;
+  font-size: 24px;
+  line-height: 24px;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
 }
+
+// Right side
 
 p.bigUsername {
   font-size: 64px;
@@ -41,7 +44,42 @@ div.primaryContent {
   border-radius: 10px;
 }
 
+div.primaryContentUp {
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+div.primaryContent div p {
+  margin-left: 16px;
+}
+
+div.primaryContent div {
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+  display: flex;
+  align-items: center;
+}
+
 .BigIcon {
   width: 32px;
   height: 32px;
 }
+
+div.bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+div.bullet.win {
+  background-color: green;
+}
+
+div.bullet.lose {
+  background-color: crimson;
+}
+
+div.bullet.ratio {
+  background-color: $pg-white;
+}
+
+// Game History

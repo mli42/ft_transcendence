@@ -7,18 +7,37 @@
 
     <div>
       <p class="bigUsername">{{this.username}}</p>
-      <div class="primaryContent">
-        <div>
+
+      <div class="primaryContent primaryContentUp flexAlignRow">
+        <div class="flexHVcenter flexAlignRow">
           <Iconify iconName="ant-design:trophy-outlined"
           param="color=white" class="BigIcon" ></Iconify>
+          <p>442 elo</p>
         </div>
-        <div>
+        <div class="flexHVcenter flexAlignRow">
           <Iconify iconName="ant-design:clock-circle-outlined"
           param="color=white" class="BigIcon" ></Iconify>
+          <p>X</p>
         </div>
       </div>
-      <div class="primaryContent"></div>
-      <div class="primaryContent"></div>
+
+      <div class="primaryContent primaryContentUp flexAlignRow">
+        <div> <div class="bullet win"></div> <p>245 wins</p> </div>
+        <div> <div class="bullet lose"></div> <p>442 looses</p> </div>
+        <div> <div class="bullet ratio"></div> <p>0.19 ratio</p> </div>
+      </div>
+      <div class="primaryContent GameHistory">
+        <p>Game History</p>
+        <hr />
+        <v-sheet
+          id="scrolling-techniques-2"
+          max-height="600"
+          style="overflow-y: auto;"
+        >
+          <!-- Replace with future v-for match card -->
+          <v-container style="height: 1000px;"></v-container>
+        </v-sheet>
+      </div>
     </div>
   </div>
 </template>
