@@ -1,5 +1,5 @@
 <template>
-  <div class="usernameMain useWholePage">
+  <div class="usernameMain">
     <div class="usernameContent">
       <Profile v-if="this.user !== undefined" :user="this.user"></Profile>
       <NotExistProfile v-else :username="this.username"></NotExistProfile>
