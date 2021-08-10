@@ -1,8 +1,14 @@
 <template>
   <div id="profileMain">
-    <div>
+    <div id="profileLeft">
       <!-- Left side content (pp, buttons, friend list) -->
-      <img src="" :alt="`${this.username}'s profile picture`" class="pp" />
+      <div class="pp">
+        <img src="" :alt="`${this.username}'s profile picture`" />
+      </div>
+
+      <div class="friendContainer">
+        <p>Friends</p> <hr />
+      </div>
     </div>
 
     <div>

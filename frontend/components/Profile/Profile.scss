@@ -7,11 +7,21 @@
 
 // Left side
 
-img.pp {
+#profileLeft {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+div.pp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid $pg-dark-blue;
   width: 192px;
   height: 192px;
-  border: 3px solid $pg-dark-blue;
   border-radius: 50%;
+  margin-bottom: 32px;
 }
 
 p {
@@ -19,6 +29,10 @@ p {
   font-size: 24px;
   line-height: 24px;
   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+div.friendContainer {
+  width: 256px;
 }
 
 // Right side
@@ -33,9 +47,9 @@ div.primaryContent {
   width: 664px;
   height: 64px;
   margin: 32px;
+}
 
-  /* Transparent light blue */
-  background: rgba(0, 53, 102, 0.02);
+div.friendContainer, div.primaryContent {
   /* Dark Blue */
   border: 3px solid $pg-dark-blue;
   box-sizing: border-box;
@@ -84,6 +98,7 @@ div.bullet.ratio {
 
 // Game History
 
+div.friendContainer,
 div.GameHistoryContainer {
   display: flex;
   align-items: center;
@@ -91,15 +106,27 @@ div.GameHistoryContainer {
   height: auto;
 }
 
-div.GameHistoryContainer p, div.GameHistoryContainer hr {
+div.friendContainer p, div.GameHistoryContainer p {
+  margin-top: 16px;
+}
+
+div.friendContainer hr, div.GameHistoryContainer hr {
   margin: 16px 0;
+}
+
+div.friendContainer hr,
+div.GameHistoryContainer hr {
+  border: 1px solid $pg-blue;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+}
+
+div.friendContainer hr {
+  width: 190px;
 }
 
 div.GameHistoryContainer hr {
   width: 536px;
-  border: 1px solid $pg-blue;
-  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-  border-radius: 5px;
 }
 
 div.GameHistory {
