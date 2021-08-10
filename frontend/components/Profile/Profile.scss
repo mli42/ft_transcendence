@@ -83,3 +83,31 @@ div.bullet.ratio {
 }
 
 // Game History
+
+div.GameHistoryContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: auto;
+}
+
+div.GameHistoryContainer p, div.GameHistoryContainer hr {
+  margin: 16px 0;
+}
+
+div.GameHistoryContainer hr {
+  width: 536px;
+  border: 1px solid $pg-blue;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+}
+
+div.GameHistory {
+  max-height: 600px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+div.placeholder {
+  height: 1000px;
+}

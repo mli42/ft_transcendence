@@ -26,17 +26,13 @@
         <div> <div class="bullet lose"></div> <p>442 looses</p> </div>
         <div> <div class="bullet ratio"></div> <p>0.19 ratio</p> </div>
       </div>
-      <div class="primaryContent GameHistory">
+      <div class="primaryContent GameHistoryContainer">
         <p>Game History</p>
         <hr />
-        <v-sheet
-          id="scrolling-techniques-2"
-          max-height="600"
-          style="overflow-y: auto;"
-        >
+        <div class="GameHistory">
           <!-- Replace with future v-for match card -->
-          <v-container style="height: 1000px;"></v-container>
-        </v-sheet>
+          <div class="placeholder"></div>
+        </div>
       </div>
     </div>
   </div>
