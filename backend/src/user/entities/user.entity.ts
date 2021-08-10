@@ -30,7 +30,7 @@ export class User {
   lost_game: number;
 
   @Column('int',  {default: -1})
-  ration: number;
+  ratio: number;
 
   @Column('text', {default: 'Offline'})
   status: UserStatus;
