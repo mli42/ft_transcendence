@@ -195,5 +195,6 @@ export class UserController {
 	@Delete('/logout')
 	logout(@Res({passthrough: true}) res: Response) {
 		res.clearCookie('jwt');
+		return "User is lougout";
 	}
 }

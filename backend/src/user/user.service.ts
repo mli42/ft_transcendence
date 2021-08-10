@@ -69,21 +69,17 @@ export class UserService {
 
 	async currentUser(user: User): Promise<User> {
 		let userFound: User = undefined;
-		try {
-			userFound = await this.usersRepository.findOne(user.userId);
-		} catch {
+		userFound = await this.usersRepository.findOne(user.userId);
+		if (!user)
 			throw new NotFoundException('No user found');
-		}
 		return userFound;
 	}
 	
 	async userInfo(username: string): Promise<Partial<User>> {
 		let user: User = undefined;
-		try {
-			user = await this.usersRepository.findOne({username: username});
-		} catch {
+		user = await this.usersRepository.findOne({username: username});
+		if (!user)
 			throw new NotFoundException('No user found');
-		}
 		return {
 			userId: user.userId,
 			username: user.username,
