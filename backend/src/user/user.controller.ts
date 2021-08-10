@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, 
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
-import { ApiBearerAuth, ApiConflictResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiConflictResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -67,7 +67,6 @@ export class UserController {
 	}
 
 	@ApiOperation({summary: 'Get all info of current user'})
-	@ApiBearerAuth('accessToken')
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/currentUser')
@@ -76,9 +75,17 @@ export class UserController {
 		return this.userService.currentUser(user);
 	}
 
+	@ApiOperation({summary: 'User Informations'})
+	@ApiOkResponse({description: 'User Informations'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/userInfo')
+	userInfo(@Query('username') username: string): Promise<Partial<User>> {
+		return this.userService.userInfo(username);
+	}
+
 	@ApiOperation({summary: 'Partial User Information'})
 	@ApiOkResponse({description: 'Partial User Information'})
-	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/partialInfo')
@@ -88,7 +95,6 @@ export class UserController {
 
 	@ApiOperation({summary: 'Search User by name or email'})
 	@ApiQuery({name:'username',required:false})
-	@ApiBearerAuth('accessToken')
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/search')
@@ -101,7 +107,6 @@ export class UserController {
 		description: 'Update username, email or password'
 	})
 	@ApiOkResponse({description: 'User account'})
-	@ApiBearerAuth('accessToken')
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/settings')
@@ -115,7 +120,6 @@ export class UserController {
 		description: 'Delete : User who wants to delete is account'
 	})
 	@ApiOkResponse({description: 'User Delete'})
-	@ApiBearerAuth('accessToken')
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Delete('/delete')
@@ -126,7 +130,6 @@ export class UserController {
 
 	@ApiOperation({summary: 'Upload profil picture'})
 	@ApiOkResponse({description: 'Picture File'})
-	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Post('/upload')
@@ -138,7 +141,6 @@ export class UserController {
 
 	@ApiOperation({summary: 'User Get Profile Picture'})
 	@ApiOkResponse({description: 'Picture File'})
-	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/profile-picture')
@@ -148,7 +150,6 @@ export class UserController {
 	}
 
 	@ApiOperation({summary: 'User Add Friend'})
-	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/addFriend')
@@ -158,7 +159,6 @@ export class UserController {
 	}
 
 	@ApiOperation({summary: 'User Delete Friend'})
-	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Delete('/deleteFriend')
@@ -169,7 +169,6 @@ export class UserController {
 
 	@ApiOperation({summary: 'Show Friends'})
 	@ApiOkResponse({description: 'Friends List'})
-	@ApiBearerAuth()
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/friendList')
@@ -179,8 +178,8 @@ export class UserController {
 	}
 
 	@ApiOperation({summary: 'Logout the user'})
-	@ApiBearerAuth()
 	/*******/
+	@UseGuards(AuthGuard('jwt'))
 	@Delete('/logout')
 	logout(@Res({passthrough: true}) res: Response) {
 		res.clearCookie('jwt');

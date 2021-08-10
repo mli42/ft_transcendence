@@ -77,6 +77,25 @@ export class UserService {
 		return userFound;
 	}
 	
+	async userInfo(username: string): Promise<Partial<User>> {
+		let user: User = undefined;
+		try {
+			user = await this.usersRepository.findOne({username: username});
+		} catch {
+			throw new NotFoundException('No user found');
+		}
+		return {
+			userId: user.userId,
+			username: user.username,
+			profile_picture: user.profile_picture,
+			elo: user.elo,
+			game_won: user.game_won,
+			status: user.status,
+			sign_up_date: user.sign_up_date,
+			friends: user. friends
+		}
+	}
+
 	async getPartialUserInfo(id: string): Promise<Partial<User>> {
 		let user: User = undefined;
 
