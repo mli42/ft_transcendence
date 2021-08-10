@@ -9,7 +9,7 @@ interface authApiInfos {
 export const state = () => ({
   status: 'idle' as string,
   errorMsg: [] as string[],
-  accessToken: '' as string,
+  user: {} as any,
 });
 
 export type authState = ReturnType<typeof state>;
@@ -21,18 +21,14 @@ export const mutations = {
   updateErrorMsg(state: authState, errorMsg: string | string[]): void {
     state.errorMsg = (typeof errorMsg == "string") ? [errorMsg] : errorMsg;
   },
-  updateAccessToken(state: authState, accessToken: string): void {
-    state.accessToken = accessToken;
-  },
-  deleteAccessToken(state: authState): void {
-    state.accessToken = '';
+  updateUser(state: authState, user: any): void {
+    state.user = user;
   },
 };
 
 export const actions = {
   authSuccess(context: any, response: any): void {
     const _this: any = this;
-    // context.commit('updateAccessToken', response.data.accessToken);
     _this.$router.push('/');
   },
   authFailed(context: any, error: any): void {
@@ -41,10 +37,9 @@ export const actions = {
   },
   _auth(context: any, authInfos: authApiInfos): void {
     const _this: any = this;
-    const opt: unknown = { withCredentials: true };
 
     context.commit('updateStatus', 'logging');
-    _this.$axios.post(authInfos.path, authInfos.body, opt)
+    _this.$axios.post(authInfos.path, authInfos.body)
     .then((resp: any) => { context.dispatch('authSuccess', resp); })
     .catch((err: any) => { context.dispatch('authFailed', err); })
     .finally(() => { context.commit('updateStatus', 'idle'); } );
@@ -79,7 +74,4 @@ export const actions = {
 };
 
 export const getters = {
-  isConnected(state: authState): boolean {
-    return (state.accessToken.length != 0);
-  },
 };
