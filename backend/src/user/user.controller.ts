@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, 
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
-import { ApiConflictResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiBody, ApiConflictResponse, ApiConsumes, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -130,6 +130,18 @@ export class UserController {
 
 	@ApiOperation({summary: 'Upload profil picture'})
 	@ApiOkResponse({description: 'Picture File'})
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				file: {
+					type : 'string',
+					format: 'binary',
+				},
+			},
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Post('/upload')
