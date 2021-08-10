@@ -1,4 +1,5 @@
 import { IsNumber, IsOptional, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class GetUserFilterDto {
 
@@ -14,5 +15,5 @@ export class GetUserFilterDto {
     elo?: string;
 
     @IsOptional()
-    status?: string
+    status?: UserStatus;
 }

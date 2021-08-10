@@ -16,3 +16,24 @@ html {
   justify-content: center;
   align-items: center;
 }
+
+canvas {
+  margin: 0;
+  padding: 0;
+  display:block;
+  position: absolute;
+  top: 0px;
+} // Make canvas fullscreen and responsive
+
+.useWholePage {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.flexAlignRow {
+  display: flex;
+  flex-direction: row;
+}
