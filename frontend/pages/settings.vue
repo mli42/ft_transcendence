@@ -62,7 +62,7 @@ export default Vue.extend({
       nickName: '' as String,
       passWord: '' as String,
       email: '' as string,
-      pictureFile: null as any,
+      pictureFile: null,
       imgURL: '' as string,
       QRChtml: '' as string,
       toSend: {},
@@ -116,11 +116,10 @@ export default Vue.extend({
         console.log(this.$refs.file.files[0])
     },
     uploadFile(): void{
-      // this.pictureFile.filename = this.pictureFile.name;
-      const fd = new FormData();
-      fd.append('mypp', this.pictureFile);
+      const formData = new FormData();
+      formData.append('mypp', this.pictureFile);
       this.$axios
-      .post('/api/user/upload', fd)
+      .post('/api/user/upload', formData)
       .then((response: any): void =>{
         console.log('SUCCESS!!');
       })
