@@ -12,11 +12,11 @@
         <v-btn class="ChangeBtn" @click="modalBool.showPicture = true">
           <p class="v-btn-content">Change your profile picture</p>
         </v-btn>
-        <v-btn class="ChangeBtn">
-          <p class="v-btn-content" @click="modalBool.showQRC = true; getQRC()">Show your current QR code</p>
+        <v-btn class="ChangeBtn" @click="modalBool.showQRC = true; getQRC()">
+          <p class="v-btn-content" >Show your current QR code</p>
         </v-btn>
-        <v-btn color="error" class="DeleteBtn">
-          <p class="v-btn-content" @click="modalBool.showDelete = true">Delete my account</p>
+        <v-btn color="error" class="DeleteBtn" @click="modalBool.showDelete = true">
+          <p class="v-btn-content" >Delete my account</p>
         </v-btn>
       </form>
     </div>
@@ -36,7 +36,7 @@
       </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
-        <div class="QRCode"></div>
+        <div class="QRCode" v-html="QRChtml"></div>
         <v-btn id="QRCBtn" @click="modalBool.showQRC = false; activate2fa = true">
           <p class="v-btn-content">Done</p>
         </v-btn>
@@ -64,6 +64,7 @@ export default Vue.extend({
       email: '' as string,
       pictureFile: null as any,
       imgURL: '' as string,
+      QRChtml: '' as string,
       toSend: {},
       currentUser: {},
       msgErr: [],
@@ -134,7 +135,7 @@ export default Vue.extend({
       this.$axios
       .get(`/api/auth/2fa/${this.currentUser.userId}`)
       .then((response: any): void =>{
-        console.log(response.data);
+        this.QRChtml = response.data;
       })
       .catch((error: any): void =>{
         console.log("QRC FAILURE");
