@@ -3,7 +3,7 @@
     <div id="profileLeft">
       <!-- Left side content (pp, buttons, friend list) -->
       <div class="pp">
-        <img src="" :alt="`${this.username}'s profile picture`" />
+        <img src="" :alt="`${this.user.username}'s profile picture`" />
       </div>
 
       <div class="friendContainer">
@@ -12,7 +12,7 @@
     </div>
 
     <div>
-      <p class="bigUsername">{{this.username}}</p>
+      <p class="bigUsername">{{this.user.username}}</p>
 
       <div class="primaryContent primaryContentUp flexAlignRow">
         <div class="flexHVcenter flexAlignRow">
@@ -53,7 +53,7 @@ export default Vue.extend({
     return {
     };
   },
-  props: ['username'],
+  props: ['user'],
 });
 </script>
 
