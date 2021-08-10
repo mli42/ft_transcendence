@@ -15,17 +15,6 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'jwt',
-        description: 'Enter JWT token',
-        in: 'header',
-      },
-      'accessToken',
-    )
     .setTitle('ft_transcendence')
     .setDescription('Deluxe Pong')
     .setVersion('1.0')

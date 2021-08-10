@@ -10,7 +10,7 @@
       </div>
       <div class="align-content">
         <!-- Buttons Profile/Settings/Quit -->
-        <NavBarRoundBtn route="" icone="icon-park-outline:people-safe"></NavBarRoundBtn>
+        <NavBarRoundBtn :route="profileRoute" icone="icon-park-outline:people-safe"></NavBarRoundBtn>
         <NavBarRoundBtn route="/settings" icone="ci:settings"></NavBarRoundBtn>
         <NavBarRoundBtn route="/login" icone="lucide:log-out" @click="logOut"></NavBarRoundBtn>
       </div>
@@ -25,6 +25,7 @@ export default Vue.extend({
   name: 'NavBar',
   data() {
     return {
+      profileRoute: `/profile/${this.$store.state.auth.user.username}` as string,
     };
   },
   methods: {

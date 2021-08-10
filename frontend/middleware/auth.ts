@@ -12,5 +12,8 @@ export default async function (context: any) {
   // Not LoginPage
   if (!isLogged) {
     context.redirect('/login');
+    return ;
   }
+  const res: any = await context.app.$axios.get('/api/user/currentUser');
+  context.store.commit('auth/updateUser', res.data);
 };
