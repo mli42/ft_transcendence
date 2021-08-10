@@ -5,8 +5,8 @@
     <div class="content">
       <h1>Two-factor Authentification</h1>
       <label for="code">Code :</label>
-      <input type="text" name="code" @input="updateValue($event.target.value)" />
-      <v-btn class="verify">
+      <input type="text" name="code" v-model.lazy="secretCode" />
+      <v-btn class="verify" @click="verifSecret">
         <p class="v-btn-content">Verify</p>
       </v-btn>
     </div>
@@ -21,12 +21,20 @@ export default Vue.extend({
   layout: 'empty',
   data(): any {
     return {
-      secretCode: "" as string,
+      secretCode: '' as string,
     };
   },
   methods: {
-    updateValue: function (value: string) {
-      // this.$emit('input', value);
+    verifSecret(): void{
+      this.$axios
+      .get(`/api/auth/2fa/${this.secretCode}`)
+      .then((response: any): void =>{
+        this.$router.push({ name: 'login' })
+        console.log("SECRET SUCCESSE");
+      })
+      .catch((error: any): void =>{
+        console.log("SECRET FAILURE");
+      });
     },
   },
 });
