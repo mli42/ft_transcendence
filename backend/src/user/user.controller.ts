@@ -51,7 +51,7 @@ export class UserController {
 	}
 
 	@ApiOperation({
-		summary: 'Verify if User is Log in in',
+		summary: 'Verify if User is Log in',
 		description: 'Indique si un user est actuellement connecté en vérifiant l\'existance d\'un cookie'
 	})
 	@ApiOkResponse({description: 'True is a user is log in'})
@@ -195,6 +195,6 @@ export class UserController {
 	@Delete('/logout')
 	logout(@Res({passthrough: true}) res: Response) {
 		res.clearCookie('jwt');
-		return "User is lougout";
+		return "User is logout";
 	}
 }
