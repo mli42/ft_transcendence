@@ -12,7 +12,7 @@
         <!-- Buttons Profile/Settings/Quit -->
         <NavBarRoundBtn route="" icone="icon-park-outline:people-safe"></NavBarRoundBtn>
         <NavBarRoundBtn route="/settings" icone="ci:settings"></NavBarRoundBtn>
-        <NavBarRoundBtn route="/login" icone="lucide:log-out"></NavBarRoundBtn>
+        <NavBarRoundBtn route="/login" icone="lucide:log-out" @click="logOut"></NavBarRoundBtn>
       </div>
     </nav>
   </div>
@@ -28,6 +28,16 @@ export default Vue.extend({
     };
   },
   methods: {
+    logOut(): void{
+      this.$axios
+      .delete('/api/user/logout')
+      .then((response: any): void =>{
+        console.log("LOGOUT SUCCESS");
+      })
+      .catch((error: any): void =>{
+        console.log("LOGOUT FAILURE");
+      });
+    }
   },
 });
 </script>

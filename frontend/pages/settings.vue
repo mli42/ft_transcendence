@@ -31,8 +31,8 @@
         <img class="profilePicture" :src="imgURL" alt="Profile image">
         <input type="file" name="file" id="file" ref="file" class="inputFile" @change="fileSelected"/>
         <label class="labelFile" for="file">Upload a picture</label>
-        <v-btn id="doneBtn" @click="modalBool.showPicture = false">
-          <p class="v-btn-content" @click="uploadFile">Done</p>
+        <v-btn id="doneBtn" @click="modalBool.showPicture = false, uploadFile()">
+          <p class="v-btn-content">Done</p>
         </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
@@ -115,8 +115,9 @@ export default Vue.extend({
         console.log(this.$refs.file.files[0])
     },
     uploadFile(): void{
+      this.pictureFile.filename = this.pictureFile.name;
       const fd = new FormData();
-      fd.append('image', this.pictureFile);
+      fd.append('mypp', this.pictureFile, this.pictureFile.name);
       this.$axios
       .post('/api/user/upload', fd)
       .then((response: any): void =>{
