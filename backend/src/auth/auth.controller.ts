@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Res, UseGuards, Req } from '@nestjs/common'
 import { Response, Request } from 'express';
 import {  IntraAuthGuard } from './guards/auth.guard';
-import { ApiTags, ApiOperation } from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger'
 import { HttpService } from '@nestjs/axios';
 import { JwtPayload } from '../user/interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
@@ -44,6 +44,12 @@ export class AuthController {
 	}
 
 	@ApiOperation({summary: 'Code authentication - Secret'})
+	@ApiParam(
+		name =  "firstName",
+		type = "String",
+		value = "First Name of the user",
+		example = "Vatsal",
+		required = true)
 	@Post('2fa/:secret')
 	async validate(@Param('secret') secret) {
 	  const resp = await this.httpService.get(
