@@ -7,7 +7,8 @@
       </div>
 
       <div v-if="!isMyself" class="modBtnContainer flexAlignRow">
-        <ProfileModBtn class="modAddFriend" @toggled="modFriend('add')" icon="bx:bx-user-plus"></ProfileModBtn>
+        <ProfileModBtn v-if="!isMyFriend" class="modAddFriend" @toggled="modFriend('add')" icon="bx:bx-user-plus"></ProfileModBtn>
+        <ProfileModBtn v-else class="modAddFriend" @toggled="modFriend('delete')" icon="bx:bx-user-minus"></ProfileModBtn>
         <ProfileModBtn class="modBan" @toggled="modBan" icon="jam:hammer"></ProfileModBtn>
         <ProfileModBtn class="modPromote" @toggled="modPromote" icon="bx:bx-key"></ProfileModBtn>
       </div>
@@ -61,11 +62,22 @@ export default Vue.extend({
   data() {
     return {
       isMyself: (this.user.username == this.$store.state.user.username) as boolean,
+      isMyFriend: this.$store.state.user.friends.includes(this.user.userId) as boolean,
     };
   },
   methods: {
     modFriend(toggle: string): void {
-      console.log(`${toggle} friend`);
+      const handleCatch: Function = (err: any) => { console.log(err.response.data.error) };
+
+      if (toggle == 'add') {
+        this.$axios.patch('/api/user/addFriend', {friend: this.user.userId})
+        .catch(handleCatch);
+      }
+      else {
+        this.$axios.delete('/api/user/deleteFriend', {friend: this.user.userId})
+        .catch(handleCatch);
+      }
+      this.$nuxt.refresh();
     },
     modBan(): void {
       console.log("Banning user");
