@@ -25,7 +25,7 @@ export default Vue.extend({
   name: 'NavBar',
   data() {
     return {
-      profileRoute: `/profile/${this.$store.state.auth.user.username}` as string,
+      profileRoute: `/profile/${this.$store.state.user.username}` as string,
     };
   },
   methods: {
