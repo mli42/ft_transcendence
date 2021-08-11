@@ -39,7 +39,7 @@ div.modBtnContainer {
 
 .modAddFriend { background: $pg-green; }
 .modBan { background: $pg-red; }
-.modPromote { background: $pg-dark-yellow; }
+.modPromote { background: $pg-dark-yellow; transform: rotate(45deg);}
 
 div.modBtnContainer,
 div.friendContainer {
