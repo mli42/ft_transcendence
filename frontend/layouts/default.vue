@@ -7,7 +7,9 @@
 
 <style scoped lang="scss">
 .NavBarShift {
-  position: absolute;
+  position: fixed;
   top: 64px;
+  height: 100%;
+  width: 100%;
 }
 </style>

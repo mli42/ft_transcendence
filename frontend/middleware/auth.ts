@@ -15,5 +15,5 @@ export default async function (context: any) {
     return ;
   }
   const res: any = await context.app.$axios.get('/api/user/currentUser');
-  context.store.commit('auth/updateUser', res.data);
+  context.store.commit('updateUser', res.data);
 };

@@ -43,7 +43,7 @@ export class AuthController {
 	  return resp.data;
 	}
 
-	@ApiOperation({summary: 'QR code authentication - Secret'})
+	@ApiOperation({summary: 'Code authentication - Secret'})
 	@Post('2fa/:secret')
 	async validate(@Param('secret') secret) {
 	  const resp = await this.httpService.get(

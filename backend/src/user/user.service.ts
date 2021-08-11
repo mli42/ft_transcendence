@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, NotFoundException, UploadedFile, Res, InternalServerErrorException, Req } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, UploadedFile, Res, InternalServerErrorException, Req, ConsoleLogger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -69,31 +69,19 @@ export class UserService {
 
 	async currentUser(user: User): Promise<User> {
 		let userFound: User = undefined;
-		try {
-			userFound = await this.usersRepository.findOne(user.userId);
-		} catch {
+		userFound = await this.usersRepository.findOne(user.userId);
+		if (!user)
 			throw new NotFoundException('No user found');
-		}
 		return userFound;
 	}
-	
+
 	async userInfo(username: string): Promise<Partial<User>> {
 		let user: User = undefined;
-		try {
-			user = await this.usersRepository.findOne({username: username});
-		} catch {
+		user = await this.usersRepository.findOne({username: username});
+		if (!user)
 			throw new NotFoundException('No user found');
-		}
-		return {
-			userId: user.userId,
-			username: user.username,
-			profile_picture: user.profile_picture,
-			elo: user.elo,
-			game_won: user.game_won,
-			status: user.status,
-			sign_up_date: user.sign_up_date,
-			friends: user. friends
-		}
+		let { password, ...res } = user;
+		return res;
 	}
 
 	async getPartialUserInfo(id: string): Promise<Partial<User>> {
@@ -147,7 +135,7 @@ export class UserService {
 		let i = 0;
 		let friendList = [];
 		while (user.friends[i]) {
-			
+
 			await this.getPartialUserInfo(user.friends[i]).then(function(result) {
 				friendList.push(result);
 				i++;
