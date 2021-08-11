@@ -77,3 +77,10 @@ input {
     text-transform: none;
     color: $pg-blue;
 }
+
+div.errMessages {
+    position: absolute;
+    top: 100px;
+    display:flex;
+    flex-direction: column;
+}

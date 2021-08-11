@@ -56,5 +56,5 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss" src="./definePassword.scss">
+<style scoped lang="scss" src="./authentification.scss">
 </style>
