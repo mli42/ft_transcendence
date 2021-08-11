@@ -6,6 +6,12 @@
         <img src="" :alt="`${user.username}'s profile picture`" />
       </div>
 
+      <div v-if="!isMyself" class="modBtnContainer flexAlignRow">
+        <ProfileModBtn class="modAddFriend" @toggled="modFriend('add')" icon="bx:bx-user-plus"></ProfileModBtn>
+        <ProfileModBtn class="modBan" @toggled="modBan" icon="jam:hammer"></ProfileModBtn>
+        <ProfileModBtn class="modPromote" @toggled="modPromote" icon="bx:bx-key"></ProfileModBtn>
+      </div>
+
       <div class="friendContainer">
         <p>Friends</p> <hr />
         <p class="NoFriend" v-if="user.friends.length == 0">
@@ -32,7 +38,7 @@
 
       <div class="primaryContent primaryContentUp flexAlignRow">
         <div> <div class="bullet win"></div> <p>{{user.game_won}} wins</p> </div>
-        <div> <div class="bullet lose"></div> <p>{{user.lost_game}} looses</p> </div>
+        <div> <div class="bullet lose"></div> <p>{{user.lost_game}} losses</p> </div>
         <div> <div class="bullet ratio"></div> <p>{{ratio}} ratio</p> </div>
       </div>
       <div class="primaryContent GameHistoryContainer">
@@ -54,7 +60,19 @@ export default Vue.extend({
   name: 'Profile',
   data() {
     return {
+      isMyself: (this.user.username == this.$store.state.user.username) as boolean,
     };
+  },
+  methods: {
+    modFriend(toggle: string): void {
+      console.log(`${toggle} friend`);
+    },
+    modBan(): void {
+      console.log("Banning user");
+    },
+    modPromote(): void {
+      console.log("Promoting user");
+    },
   },
   computed: {
     ratio(): number | string {
