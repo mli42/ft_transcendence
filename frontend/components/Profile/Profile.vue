@@ -7,8 +7,7 @@
       </div>
 
       <div v-if="!isMyself" class="modBtnContainer flexAlignRow">
-        <ProfileModBtn v-if="!isMyFriend" class="modAddFriend" @toggled="modFriend('add')" icon="bx:bx-user-plus"></ProfileModBtn>
-        <ProfileModBtn v-else class="modAddFriend" @toggled="modFriend('delete')" icon="bx:bx-user-minus"></ProfileModBtn>
+        <ProfileModBtn class="modAddFriend" @toggled="modFriend" :icon="modFriendIcon"></ProfileModBtn>
         <ProfileModBtn class="modBan" @toggled="modBan" icon="jam:hammer"></ProfileModBtn>
         <ProfileModBtn class="modPromote" @toggled="modPromote" icon="bx:bx-key"></ProfileModBtn>
       </div>
@@ -66,18 +65,24 @@ export default Vue.extend({
     };
   },
   methods: {
-    modFriend(toggle: string): void {
-      const handleCatch: Function = (err: any) => { console.log(err.response.data.error) };
+    modFriend(): void {
+      let url: string;
+      let method: string;
+      const handleThen: any = () => { this.isMyFriend = !this.isMyFriend; };
+      const handleCatch: any = (err: any) => { console.log(err.response.data.error) };
+      const data: any = { friend: this.user.userId };
 
-      if (toggle == 'add') {
-        this.$axios.patch('/api/user/addFriend', {friend: this.user.userId})
-        .catch(handleCatch);
+      if (!this.isMyFriend) {
+        url = '/api/user/addFriend';
+        method = 'patch';
       }
       else {
-        this.$axios.delete('/api/user/deleteFriend', {friend: this.user.userId})
-        .catch(handleCatch);
+        url = '/api/user/deleteFriend';
+        method = 'delete';
       }
-      this.$nuxt.refresh();
+      this.$axios.request({url, data, method})
+      .then(handleThen)
+      .catch(handleCatch);
     },
     modBan(): void {
       console.log("Banning user");
@@ -87,6 +92,9 @@ export default Vue.extend({
     },
   },
   computed: {
+    modFriendIcon(): string {
+      return (!this.isMyFriend) ? 'bx:bx-user-plus' : 'bx:bx-user-minus';
+    },
     ratio(): number | string {
       return (this.user.ratio == -1) ? 'N/A' : this.user.ratio;
     },
