@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
-import { ChatGateway } from 'src/chat/chat.gateway';
+import { ChatModule } from '../chat/chat.module';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { ChatGateway } from 'src/chat/chat.gateway';
     UserModule,
     AuthModule,
     PassportModule.register({ session: true }),
-    ChatGateway
+    ChatModule
   ]
 })
 export class AppModule {}
