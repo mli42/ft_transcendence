@@ -67,7 +67,7 @@ export default Vue.extend({
   methods: {
     modFriend(): void {
       let url: string;
-      let method: string;
+      let method: any;
       const handleThen: any = () => { this.isMyFriend = !this.isMyFriend; };
       const handleCatch: any = (err: any) => { console.log(err.response.data.error) };
       const data: any = { friend: this.user.userId };
