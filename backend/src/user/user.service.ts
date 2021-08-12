@@ -36,10 +36,20 @@ export class UserService {
 	}
 
 	async validateUser42(userData: User42Dto): Promise<User> {
-		const { username } = userData;
-		const user = this.usersRepository.findOne({username});
+		let user: User = undefined;
+		
+		const { email } = userData;
+		user = await this.usersRepository.findOne({email: email});
 		if (user)
 			return user;
+		let { username } = userData;
+		user = await this.usersRepository.findOne({username});
+		if (user)
+		{
+			const rand1 = Math.random().toString(16).substr(2, 5);
+			username = username + rand1;
+			userData.username = username;
+		}
 		const newUser: User = await this.createUser42(userData);
 		return newUser;
 	}
