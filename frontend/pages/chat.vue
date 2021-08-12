@@ -3,7 +3,7 @@
     <h1>WELCOME TO THE CHAT</h1>
     <form>
       <input type="text" name="myinput" id="myinput" v-model="txt">
-      <button>Send</button>
+      <button @click.prevent="sendMsg">Send</button>
     </form>
     <p>
       <ul>
@@ -37,12 +37,24 @@ export default Vue.extend({
       this.message.push(this.msg);
     }
   },
-  created(): void {
-    this.socket = io('wss://echo.websocket.org');
-    this.socket.on('msgToClient', (msg: string)=>{
-      this.recvMsg(msg);
-    })
-  }
+  mounted() {
+    this.socket = io('http://localhost:3000/');
+    // console.log(this.socket);
+    this.socket.on("connect", () => {
+      console.log('Connected to : ' + this.socket.id);
+    });
+    this.socket.on("disconnect", () => {
+      console.log('Disconnected to : ' + this.socket.id);
+    });
+    this.socket.onAny((event: any, ...args: any[]) => {
+      console.log(`New event : ${event}`);
+    });
+    this.socket.on("msgToClient", (data: any) => {
+      console.log('msgToClient : ');
+      console.log(data);
+      this.recvMsg(data);
+    });
+  },
 });
 </script>
 
