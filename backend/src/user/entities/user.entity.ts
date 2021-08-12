@@ -44,10 +44,6 @@ export class User {
   // @Column()
   // match_history: string;
 
-  @Column('boolean', {default: false})
-  auth: boolean;
-
-  @Column('boolean', {default: false})
-  user42: boolean;
-
+  @Column({unique: true})
+  login42: string;
 }

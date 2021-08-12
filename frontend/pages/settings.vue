@@ -120,7 +120,7 @@ export default Vue.extend({
       const formData = new FormData();
       formData.append('mypp', this.pictureFile);
       this.$axios
-      .post('/api/user/upload', formData)
+      .post('/api/user/upload', {file: formData})
       .then((response: any): void =>{
         console.log('SUCCESS!!');
       })
