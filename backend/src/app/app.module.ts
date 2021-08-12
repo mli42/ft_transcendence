@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { ChatGateway } from 'src/chat/chat.gateway';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PassportModule } from '@nestjs/passport';
     UserModule,
     AuthModule,
     PassportModule.register({ session: true }),
+    ChatGateway
   ]
 })
 export class AppModule {}
