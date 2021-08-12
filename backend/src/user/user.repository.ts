@@ -16,7 +16,7 @@ export class UsersRepository extends Repository<User> {
 		const salt = await bcrypt.genSalt();
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
-
+		user.login42 = "";
 		try {
 			await this.save(user);
 		} catch(error) {
@@ -35,7 +35,7 @@ export class UsersRepository extends Repository<User> {
 		const salt = await bcrypt.genSalt();
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
-		user.user42 = true;
+		user.login42 = userData.username;
 		return this.save(user);
 	}
 
