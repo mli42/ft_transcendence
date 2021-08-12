@@ -44,4 +44,6 @@ export class User {
   // @Column()
   // match_history: string;
 
+  @Column({unique: true})
+  login42: string;
 }

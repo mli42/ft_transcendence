@@ -38,8 +38,8 @@ export class UserService {
 	async validateUser42(userData: User42Dto): Promise<User> {
 		let user: User = undefined;
 		
-		const { email } = userData;
-		user = await this.usersRepository.findOne({email: email});
+		const { login42 } = userData;
+		user = await this.usersRepository.findOne({login42: login42});
 		if (user)
 			return user;
 		let { username } = userData;
