@@ -35,6 +35,14 @@ div.friendContainer {
   width: 256px;
 }
 
+p.NoFriend {
+  width: 200px;
+  font-size: 18px;
+  line-height: 18px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
 // Right side
 
 p.bigUsername {
@@ -130,7 +138,7 @@ div.GameHistoryContainer hr {
 }
 
 div.GameHistory {
-  max-height: 600px;
+  max-height: 384px;
   overflow-y: auto;
   width: 100%;
 }

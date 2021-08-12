@@ -1,0 +1,107 @@
+@import '~/assets/Palette.scss';
+
+.settings {
+    background-color: $pg-blue;
+    width: 100%;
+    height: 96%;
+}
+
+form {
+    margin: 0 48px 8px 48px;
+}
+
+.content {
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    border: 3px solid $pg-dark-blue;
+    justify-content: space-around;
+    width: 416px;
+    height: 600px;
+}
+
+.contentTitle {
+    text-align: center;
+    color: $pg-white;
+    margin: 32px 120px;
+    font-size: 45px;
+    width: 168px;
+    height: 40px;
+}
+
+.SaveBtn, #doneBtn{
+    margin: 0;
+    color: white;
+    background: #219653 !important;
+}
+
+.ChangeBtn, .SaveBtn, .DeleteBtn, .modalBtn, #doneBtn,  #QRCBtn, #deleteModalBtn{
+    width: 320px;
+    height: 32px;
+    margin-top: 16px;
+    text-transform: none;
+    font-size: 18px;
+    background-color: $pg-white;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 7px 32px;
+}
+
+.DeleteBtn, #QRCBtn, #deleteModalBtn{ 
+    margin: 16px 0;
+    background: $pg-red !important;
+}
+
+div.errMessages {
+    position: absolute;
+    top: 100px;
+    display:flex;
+    flex-direction: column;
+}
+
+.profilePicture {
+    width: 256px;
+    height: 256px;
+    border-radius: 150px;
+    margin: 40px;
+}
+
+.modalBtn, #doneBtn, #QRCBtn, #deleteModalBtn{
+    width: 256px;
+    max-height: 32px;
+    margin: 0 40px 24px 40px;
+}
+
+#QRCBtn, #deleteModalBtn{
+    color: white;
+}
+
+.QRCode, .deleteGif{  //a voir avec le composant QRC
+    width: 300px;
+    height: 300px;
+    background-color: white;
+
+    margin: 40px auto;
+    align-content: center;
+}
+
+.inputFile {
+    display: none;
+}
+
+.inputFile + label {
+    width: 256px;
+    max-height: 32px;
+    color: #1B2636;
+    background-color: $pg-white;
+    padding: 7px 32px;
+    font-size: 18px;
+    margin: 0 40px 24px 40px;
+    display: inline-block;
+    border-radius: 5px;
+
+}
+
+.inputFile:focus + label,
+.inputFile + label:hover {
+    background-color:rgba(220, 225, 230, 0.95)
+}
