@@ -46,8 +46,8 @@ export class UserService {
 		user = await this.usersRepository.findOne({username});
 		if (user)
 		{
-			const rand1 = Math.random().toString(16).substr(2, 5);
-			username = username + rand1;
+			const rand = Math.random().toString(16).substr(2, 5);
+			username = username + rand;
 			userData.username = username;
 		}
 		const newUser: User = await this.createUser42(userData);
