@@ -33,22 +33,12 @@ export default Vue.extend({
       this.txt = '';
     },
     recvMsg(msg: string): void {
-      console.log(msg);
-      this.message.push(this.msg);
+      this.message.push(msg);
     }
   },
   mounted() {
-    this.socket = io('http://localhost:3000/');
-    // console.log(this.socket);
-    this.socket.on("connect", () => {
-      console.log('Connected to : ' + this.socket.id);
-    });
-    this.socket.on("disconnect", () => {
-      console.log('Disconnected to : ' + this.socket.id);
-    });
-    this.socket.onAny((event: any, ...args: any[]) => {
-      console.log(`New event : ${event}`);
-    });
+    this.socket = io('ws://localhost:3000/');
+    console.log(this.socket);
     this.socket.on("msgToClient", (data: any) => {
       console.log('msgToClient : ');
       console.log(data);
@@ -59,4 +49,5 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss" src="./chat.scss">
+
 </style>
