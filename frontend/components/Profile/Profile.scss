@@ -22,6 +22,7 @@ div.pp {
   height: 192px;
   border-radius: 50%;
   margin-bottom: 32px;
+  text-align: center;
 }
 
 p {
@@ -31,6 +32,16 @@ p {
   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
 }
 
+div.modBtnContainer {
+  justify-content: space-evenly;
+  margin-bottom: 32px;
+}
+
+.modAddFriend { background: $pg-green; }
+.modBan { background: $pg-red; }
+.modPromote { background: $pg-dark-yellow; transform: rotate(45deg);}
+
+div.modBtnContainer,
 div.friendContainer {
   width: 256px;
 }
