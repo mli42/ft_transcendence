@@ -16,7 +16,17 @@ p.title {
   line-height: 64px;
   text-align: center;
   text-transform: uppercase;
-  margin: 24px 0;
+  margin-top: 24px;
+}
+
+p.tip {
+  font-size: 18px;
+  line-height: 18px;
+  text-align: center;
+}
+
+div.search {
+  margin: 32px 0;
 }
 
 input.search {
@@ -29,4 +39,11 @@ input.search {
   font-size: 36px;
   line-height: 36px;
   color: $pg-blue;
+}
+
+.searchIcon {
+  margin-left: 24px;
+  width: 56px;
+  height: 56px;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
 }

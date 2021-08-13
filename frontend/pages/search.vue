@@ -4,7 +4,11 @@
     <div class="searchPage useWholePage">
       <div class="flexAlignCol">
         <p class="title">Search</p>
-        <input class="search" type="text" name="whoInput" id="whoInput" v-model="who">
+        <div class="search flexHVcenter">
+          <input class="search" type="text" name="whoInput" id="whoInput" v-model="who">
+          <Iconify class="searchIcon" iconName="ant-design:search-outlined"></Iconify>
+        </div>
+        <p class="tip" v-if="users === undefined">Here you can search for player profiles</p>
       </div>
     </div>
   </div>
