@@ -1,5 +1,6 @@
 import { IsAlphanumeric, IsEmail } from 'class-validator';
-import { Entity, Column, PrimaryGeneratedColumn, IsNull } from 'typeorm';
+import { Channel } from '../../chat/entities/channel.entity';
+import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany } from 'typeorm';
 
 @Entity()
 export class User {
@@ -46,4 +47,7 @@ export class User {
 
   @Column({unique: true})
   login42: string;
+
+  @ManyToMany(() => Channel, channel => channel.user)
+  channels: Channel[]
 }
