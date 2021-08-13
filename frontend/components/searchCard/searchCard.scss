@@ -12,13 +12,17 @@ div.searchUserCard{
   backdrop-filter: blur(6px);
 }
 
-div.pp {
+.pp {
   width: 64px;
   height: 64px;
   border: 3px solid $pg-dark-blue;
   border-radius: 50%;
   text-align: center;
   margin: 16px;
+}
+
+a {
+  text-decoration: none;
 }
 
 div.mainInfos {

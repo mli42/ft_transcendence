@@ -1,12 +1,14 @@
 <template>
   <div class="searchUserCard flexAlignRow">
 
-    <div class="pp flexHVcenter">
+    <NuxtLink :to="userProfile" class="pp flexHVcenter">
       <img src="" :alt="`${user.username}'s profile picture`">
-    </div>
+    </NuxtLink>
 
     <div class="mainInfos flexAlignCol">
-      <p class="username">{{user.username}}</p>
+      <NuxtLink :to="userProfile">
+        <p class="username">{{user.username}}</p>
+      </NuxtLink>
       <p class="elo">elo: {{user.elo}}</p>
     </div>
 
@@ -27,6 +29,7 @@ export default Vue.extend({
   data() {
     return {
       ratio: (this.user.ratio == -1 ? 'N/A' : this.user.ratio) as any,
+      userProfile: `/profile/${this.user.username}` as string,
     };
   },
   props: ['user'],
