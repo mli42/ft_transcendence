@@ -45,7 +45,7 @@ export class User {
   // @Column()
   // match_history: string;
 
-  @Column({unique: true})
+  @Column("text", {default: ""})
   login42: string;
 
   @ManyToMany(() => Channel, channel => channel.users)
