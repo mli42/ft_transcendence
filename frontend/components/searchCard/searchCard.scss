@@ -9,7 +9,7 @@ div.searchUserCard{
   border-radius: 10px;
   margin-bottom: 32px;
   align-items: center;
-  background: $pg-blue;
+  backdrop-filter: blur(6px);
 }
 
 div.pp {
