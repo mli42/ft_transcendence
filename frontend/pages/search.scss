@@ -9,6 +9,8 @@ div.searchPage {
   position: absolute;
   display: flex;
   justify-content: center;
+  overflow-y: auto;
+  margin-bottom: 64px; // Size of the NavBar
 }
 
 p.title {
