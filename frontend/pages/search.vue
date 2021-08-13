@@ -3,12 +3,21 @@
     <backgroundAnim></backgroundAnim>
     <div class="searchPage useWholePage">
       <div class="flexAlignCol">
+        <!-- Title -->
         <p class="title">Search</p>
+        <!-- Search bar + search icon -->
         <div class="search flexHVcenter">
-          <input class="search" type="text" name="whoInput" id="whoInput" v-model="who">
-          <Iconify class="searchIcon" iconName="ant-design:search-outlined"></Iconify>
+          <input @keyup.enter="fetchData" class="search"
+          type="text" name="whoInput" id="whoInput" v-model.lazy="who">
+          <Iconify @click.native="fetchData" class="searchIcon"
+          iconName="ant-design:search-outlined"></Iconify>
         </div>
+        <!-- User cards -->
         <p class="tip" v-if="users === undefined">Here you can search for player profiles</p>
+        <p class="tip" v-else-if="users.length == 0">No match for '{{who}}', sorry!</p>
+        <div v-else v-for="(user, index) in users" :key="index">
+          <search-card :user="user"></search-card>
+        </div>
       </div>
     </div>
   </div>
