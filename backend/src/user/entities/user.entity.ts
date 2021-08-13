@@ -48,6 +48,6 @@ export class User {
   @Column({unique: true})
   login42: string;
 
-  @ManyToMany(() => Channel, channel => channel.user)
+  @ManyToMany(() => Channel, channel => channel.users)
   channels: Channel[]
 }

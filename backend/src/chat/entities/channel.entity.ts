@@ -1,5 +1,5 @@
 
-import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
 @Entity()
@@ -14,11 +14,11 @@ export class Channel {
 	// @Column()
 	// adminChannel: string;
 
-	@Column('boolean', {default: false})
-	private: boolean;
+	// @Column('boolean', {default: false})
+	// private: boolean;
 
 	@ManyToMany(() => User)
 	@JoinTable()
-	user: User[];
+	users: User[];
 
 }
