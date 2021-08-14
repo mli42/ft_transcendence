@@ -1,11 +1,21 @@
-import { Logger } from '@nestjs/common';
+import { Logger, Req } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
+import { ChatService } from './chat.service'
 
 @WebSocketGateway({ cors: true })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-    
-    @WebSocketServer() server: Server;
+
+    constructor(
+        private readonly userService: UserService,
+        private readonly chatService: ChatService,
+    ) {}
+
+    @WebSocketServer() 
+    server: Server;
+
     private logger: Logger = new Logger('ChatGateway');
 
     afterInit(server: Server) {
@@ -31,11 +41,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         client.emit('leftRoom', room);
     }
 
+
+
+
     handleDisconnect(client: Socket) {
+        client.disconnect();
         this.logger.log(`Client diconnect: ${client.id}`);
     }
 
-    handleConnection(client: Socket, ...args: any[]) {
+    async handleConnection(client: Socket) {
+        // const user: User = await this.chatService.getUserFromSocket(client)
+        this.server.emit('message', 'test');
         this.logger.log(`Client connected: ${client.id}`);
     }
 
