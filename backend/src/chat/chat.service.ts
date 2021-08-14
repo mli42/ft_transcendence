@@ -40,10 +40,10 @@ export class ChatService {
 	}
 
 	async getUserFromSocket(client: Socket): Promise<User> {
-		const cookie = client.handshake.headers.cookie;
-		const { Authentication: authenticationToken } = parse(cookie);
-
-		const payload: JwtPayload = this.jwtService.verify(authenticationToken, {secret: process.env.SECRET_JWT});
+		
+		const cookie = client.request.headers.cookie;
+		const { Authentication: token } = parse(cookie);
+		const payload: JwtPayload = this.jwtService.verify(token, {secret: process.env.SECRET_JWT});
 		console.log(payload);
 		const {username} = payload;
 		const user: User = await this.usersRepository.findOne({username});
