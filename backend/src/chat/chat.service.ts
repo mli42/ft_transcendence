@@ -40,16 +40,11 @@ export class ChatService {
 	}
 
 	async getUserFromSocket(client: Socket): Promise<User> {
-		
-		const cookie = client.request.headers.cookie;
-		const { Authentication: token } = parse(cookie);
+		const cookie = client.handshake.headers['cookie'];
+		const { jwt: token } = parse(cookie);
 		const payload: JwtPayload = this.jwtService.verify(token, {secret: process.env.SECRET_JWT});
-		console.log(payload);
 		const {username} = payload;
 		const user: User = await this.usersRepository.findOne({username});
-		if (!user) {
-			throw new WsException('Invalid credentials.');
-		}
 		return user;
 	}
 }
