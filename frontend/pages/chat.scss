@@ -52,6 +52,7 @@
     height: 1080px;
     margin : 100px auto 100px auto;
     background-color: white;
+    overflow-y: scroll;
 }
 
 ul {
@@ -112,16 +113,12 @@ ul {
     margin-left: 16px;
 }
 
-.newMsg p{
-    font-size: 18px;
-    margin-bottom: 8px;
-}
-
 .msgContent{
-    display: inline;
     background-color: $pg-blue;
-    max-width: 540px;
-    border-radius: 5px 5px 5px 0;
+    border-radius: 10px 10px 10px 0;
+    max-width: 500px;
     padding: 7px;
     color: $pg-white;
+    margin-top: 8px;
+    overflow-wrap: anywhere;
 }
