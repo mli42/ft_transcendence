@@ -227,6 +227,15 @@ export class UserController {
 		return "User is logout";
 	}
 
+	@ApiOperation({summary: 'Get Boolean TwoFactorAuth'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/twoFactorAuth')
+	getTwoFactorAuth(@Req() req): boolean {
+		const user: User = req.user;
+		return this.userService.getTwoFactorAuth(user);
+	}
+
 	@ApiOperation({summary: 'Update Two Factor Auth'})
 	@ApiConsumes('application/json')
 	@ApiBody({
@@ -240,7 +249,7 @@ export class UserController {
 	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
-	@Patch('/twoFactorAuth')
+	@Patch('/updateTwoFactorAuth')
 	updateTwoFactorAuth(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateTwoFactorAuth(bool, user);

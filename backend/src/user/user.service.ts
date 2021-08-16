@@ -157,6 +157,10 @@ export class UserService {
 		return friendList;
 	}
 
+	getTwoFactorAuth(user: User): boolean {
+		return user.twoFactorAuth;
+	}
+
 	async updateTwoFactorAuth(bool: boolean, user: User): Promise<void> {
 		user.twoFactorAuth = bool;
 		try {
