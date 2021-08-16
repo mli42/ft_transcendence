@@ -6,8 +6,8 @@
       <div class="contentCol">
         <h1 class="contentTitle">Login</h1>
         <form>
-          <LoginInput name="Username/Email" v-model="logInfos.id"></LoginInput>
-          <LoginInput name="Password" v-model="logInfos.password" :isPassword="true"></LoginInput>
+          <LoginInput name="Username/Email" v-model="logInfos.id" @keyup.enter.native="loginSubmit"></LoginInput>
+          <LoginInput name="Password" v-model="logInfos.password" :isPassword="true" @keyup.enter.native="loginSubmit"></LoginInput>
           <v-btn block elevation="2" class="logOpt" @click.prevent="loginSubmit">
             <p class="v-btn-content">Login</p>
           </v-btn>
@@ -23,10 +23,10 @@
       <div class="contentCol">
         <h1 class="contentTitle">Sign-up</h1>
         <form>
-          <LoginInput name="Username" v-model="signInfos.username"></LoginInput>
-          <LoginInput name="Email" v-model="signInfos.email"></LoginInput>
-          <LoginInput name="Password" v-model="signInfos.password" :isPassword="true" :idNb=1></LoginInput>
-          <LoginInput name="Confirm password" v-model="signInfos.password2" :isPassword="true"></LoginInput>
+          <LoginInput name="Username" v-model="signInfos.username" @keyup.enter.native="signUp"></LoginInput>
+          <LoginInput name="Email" v-model="signInfos.email" @keyup.enter.native="signUp"></LoginInput>
+          <LoginInput name="Password" v-model="signInfos.password" :isPassword="true" :idNb=1 @keyup.enter.native="signUp"></LoginInput>
+          <LoginInput name="Confirm password" v-model="signInfos.password2" :isPassword="true" @keyup.enter.native="signUp"></LoginInput>
           <v-btn block elevation="2" class="logOpt" @click.prevent="signUp">
             <p class="v-btn-content">Sign up</p>
           </v-btn>

@@ -98,6 +98,8 @@ export class UserService {
 		let user: User = undefined;
 
 		user = await this.usersRepository.findOne({userId: id});
+		if (!user)
+			return user;
 		return {
 			userId: user.userId,
 			username: user.username,

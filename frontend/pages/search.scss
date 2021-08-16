@@ -1,0 +1,51 @@
+@import '~/assets/Palette.scss';
+
+p {
+  color: $pg-white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+div.searchPage {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+  margin-bottom: 64px; // Size of the NavBar
+}
+
+p.title {
+  font-size: 64px;
+  line-height: 64px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 24px;
+}
+
+p.tip {
+  font-size: 18px;
+  line-height: 18px;
+  text-align: center;
+}
+
+div.search {
+  margin: 32px 0;
+}
+
+input.search {
+  width: 664px;
+  height: 56px;
+  background: $pg-dark-blue;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 36px;
+  line-height: 36px;
+  color: $pg-white;
+}
+
+.searchIcon {
+  margin-left: 24px;
+  width: 56px;
+  height: 56px;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
