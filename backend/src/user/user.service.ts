@@ -77,12 +77,13 @@ export class UserService {
         }
 	}
 
-	async currentUser(user: User): Promise<User> {
+	async currentUser(user: User): Promise<Partial<User>>{
 		let userFound: User = undefined;
 		userFound = await this.usersRepository.findOne(user.userId);
 		if (!user)
 			throw new NotFoundException('No user found');
-		return userFound;
+		let { password, ...res } = user;
+		return res;
 	}
 
 	async userInfo(username: string): Promise<Partial<User>> {
@@ -107,11 +108,11 @@ export class UserService {
 		}
 	}
 
-	getUserWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
+	getUserWithFilters(filterDto: GetUserFilterDto):  Promise<Partial<User[]>> {
 		return this.usersRepository.getUsersWithFilters(filterDto);
 	}
 
-	async updateUser(updateUser: UpdateUserDto, user: User, @Res({passthrough: true}) res: Response): Promise<User> {
+	async updateUser(updateUser: UpdateUserDto, user: User, @Res({passthrough: true}) res: Response): Promise<void> {
 		const { username } = updateUser;
 		if(username)
 		{

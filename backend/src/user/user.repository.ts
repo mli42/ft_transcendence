@@ -40,14 +40,22 @@ export class UsersRepository extends Repository<User> {
 		return this.save(user);
 	}
 
-	async getUsersWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
+	async getUsersWithFilters(filterDto: GetUserFilterDto):  Promise<Partial<User[]>> {
 		const {
 			username,
 			email,
 			elo,
 			status,
 		} = filterDto;
-		const query = this.createQueryBuilder('user');
+		const query = this.createQueryBuilder('user') .select([
+			"user.userId",
+			"user.username",
+			"user.profile_picture",
+			"user.elo",
+			"user.game_won",
+			"user.lost_game",
+			"user.ratio"
+		]);
 
 		if (username) {
 			query.andWhere(
@@ -60,7 +68,7 @@ export class UsersRepository extends Repository<User> {
 		return users;
 	}
 
-	async updateUser(updateUser: UpdateUserDto, user: User): Promise<User> {
+	async updateUser(updateUser: UpdateUserDto, user: User): Promise<void> {
 		const {
 			username,
 			email,
@@ -81,7 +89,6 @@ export class UsersRepository extends Repository<User> {
 			console.log(e);
 			throw new InternalServerErrorException();
 		}
-		return user;
 	}
 
 	async saveImage(@UploadedFile() file, user: User): Promise<string> {

@@ -5,7 +5,7 @@
 }
 
 .chatChamp{
-    width: 944px;
+    width: 1087px;
     height: 100vh;
     background-color: $pg-dark-blue;
     position: relative;
@@ -18,9 +18,10 @@
 }
 
 .chatfield{
+    display: flex;
     position: absolute;
-    bottom: 5%;
-    margin: 16px 166px;
+    bottom: 6%;
+    margin-left: 240px;
 }
 
 .chatfield input {
@@ -31,7 +32,6 @@
     margin-right: 16px;
     color: $pg-white;
     padding: 7px;
-
 }
 
 .sendBtn, .settingBtn {
@@ -61,7 +61,7 @@ ul {
 
 .chatRoomName {
     position: absolute;
-    width: 912px;
+    width: 1058px;
     height: 72px;
     left: 16px;
     top: 16px;
