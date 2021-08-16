@@ -70,7 +70,7 @@ export default Vue.extend({
       let method: any;
       const handleThen: any = () => { this.isMyFriend = !this.isMyFriend; };
       const handleCatch: any = (err: any) => { console.log(err.response.data.error) };
-      const data: any = { friend: this.user.userId };
+      const data: any = { userId: this.user.userId };
 
       if (!this.isMyFriend) {
         url = '/api/user/addFriend';
