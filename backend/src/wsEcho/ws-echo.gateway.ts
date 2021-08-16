@@ -10,7 +10,10 @@ export class WsEchoGateway {
 
   @SubscribeMessage('msgToServer')
   handleMessage(client: any, payload: any): string {
-    this.server.emit('msgToClient', payload);
+    console.log(client.rooms);
+    let it: IterableIterator<string> = client.rooms.values();
+    it.next();
+    this.server.to(it.next().value).emit('msgToClient', payload);
     this.logger.log('Client send msgToServer : ' + payload);
     return ('ok');
   }
@@ -24,6 +27,9 @@ export class WsEchoGateway {
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-   this.logger.log(`Client connected: ${client.id}`);
+    client.join(client.handshake.query.channel as string);
+    let it: IterableIterator<string> = client.rooms.values();
+    it.next();
+    this.logger.log(`Client connected: ${client.id}` + ' in room: ' + it.next().value);
   }
 }

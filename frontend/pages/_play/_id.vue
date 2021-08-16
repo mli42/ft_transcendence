@@ -3,10 +3,10 @@
     <h1>Welcome to websocket POC</h1>
     <p>Enter text in this box and the text will be send in a websocket.</p>
     <p>The response must be the same as the input you send.</p>
-    <form>
+    <form onchange="console.log('changed')">
       <label for="text">Enter the text you want to send:</label>
       <br>
-      <input v-model.lazy="inputText" @change="sendMessage" type="text" id="text">
+      <input v-model="inputText" @change="sendMessage" v-on:input="sendMessage()" type="text" id="text">
       <p>This is the response:</p>
       <p class="txtBox">{{ response }}</p>
     </form>
@@ -16,6 +16,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import io from 'socket.io-client'
+
+let getMethods = (obj: any) => Object.getOwnPropertyNames(obj).filter(item => typeof obj[item] === 'function')
 
 export default Vue.extend({
   name: 'Play',
@@ -30,14 +32,17 @@ export default Vue.extend({
   },
   methods: {
     sendMessage() {
+      console.log('message send : ' + this.inputText);
+      
       this.socket.emit('msgToServer', this.inputText);
     },
   },
   mounted() {
-    this.socket = io('ws://localhost:3000/');
+    this.socket = io('ws://localhost:3000/', {
+      query: { channel: this.$route.params.id as string }
+    });
     console.log(this.socket);
     this.socket.on("connect", () => {
-      console.log('Connected to : ' + this.socket.id);
     });
     this.socket.on("disconnect", () => {
       console.log('Disconnected to : ' + this.socket.id);
