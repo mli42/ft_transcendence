@@ -4,9 +4,10 @@
       <div class="search flexHVcenter">
         <input  type="text" name="mysearch" id="mysearch">
       </div>
+      <UserCard name="Name" imgsrc="~/assets/img/avatar.jpeg" @click="activeConvo = 'name'"></UserCard>
       <div class="creatChatRoom flexHVcenter">
         <v-btn id="createChatRoomBtn">
-          <p class="v-btn-content" @click="createChannel">Create a channel</p>
+          <p class="v-btn-content" @click="modalBool.showCreate = true">Create a channel</p>
         </v-btn>
       </div>
     </div>
@@ -23,18 +24,20 @@
           <li class="newMsg" v-for="(msg, index) in message" :key="index">
             <img src="~/assets/img/avatar.jpeg">
             <div class="msgDiv">
-              <p>User name</p>
+              <p>Name</p>
               <div class="msgContent"> {{ msg }} </div>
             </div>
           </li>
         </ul>
       </div>
-      <form class="chatfield flexHVcenter">
+      <div class="chatfield">
         <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
           <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
             <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
           </div>
-      </form>
+      </div>
+      <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
+      </SettingModal>
     </div>
   </div>
 </template>
@@ -53,21 +56,30 @@ export default Vue.extend({
       isChannel: false as Boolean,
       channelName: 'mychannel' as string,
       channels: [],
+      currentUser: '' as string,
+      activeConvo: 'convparDef' as string,
+      modalBool : {
+        showCreate: false as boolean,
+      }
     }
   },
   methods: {
     sendMsg(): void {
       this.socket.emit('msgToServer', this.txt);
       this.txt = '';
+      // this.currentUser = this.$store.state.user.username;
     },
     recvMsg(msg: string): void {
       this.message.push(msg);
     },
     createChannel(): void{
-      this.socket.emit('createChannel', this.channelName);
+      this.socket.emit('createChannel', {channelName: this.channelName});
       this.channelName = '';
       console.log('SUCCESSE');
-    }
+    },
+    hideModal(): void {
+      this.modalBool.showCreate = false;
+    },
   },
   mounted() {
     this.socket = io('ws://localhost:3000/', {withCredentials: true});
