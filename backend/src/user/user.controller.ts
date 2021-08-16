@@ -86,6 +86,16 @@ export class UserController {
 
 	@ApiOperation({summary: 'Partial User Information'})
 	@ApiOkResponse({description: 'Partial User Information'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				userId: {
+					type: 'string',
+				}
+			}
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/partialInfo')
@@ -162,19 +172,39 @@ export class UserController {
 	}
 
 	@ApiOperation({summary: 'User Add Friend'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				userId: {
+					type: 'string',
+				}
+			}
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/addFriend')
-	addFriend(@Body('friend') friend: string, @Req() req): Promise<void> {
+	addFriend(@Body('userId') friend: string, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.addFriend(friend, user);
 	}
 
 	@ApiOperation({summary: 'User Delete Friend'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				userId: {
+					type: 'string',
+				}
+			}
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Delete('/deleteFriend')
-	deleteFriend(@Body('friend') friend: string, @Req() req): Promise<void>  {
+	deleteFriend(@Body('userId') friend: string, @Req() req): Promise<void>  {
 		const user: User = req.user;
 		return this.userService.deleteFriend(friend, user);
 	}
