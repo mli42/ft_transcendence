@@ -9,7 +9,7 @@ export class Channel {
 	channelId: string;
 
 	@Column()
-	name: string;
+	channelName: string;
 
 	// @Column()
 	// adminChannel: string;
