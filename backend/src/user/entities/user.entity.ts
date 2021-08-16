@@ -46,4 +46,7 @@ export class User {
 
   @Column("text", {default: ""})
   login42: string;
+
+  @Column("boolean", {default: false})
+  twoFactorAuth: boolean;
 }

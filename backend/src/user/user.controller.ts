@@ -143,7 +143,6 @@ export class UserController {
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
-			type: 'object',
 			properties: {
 				file: {
 					type : 'string',
@@ -226,5 +225,24 @@ export class UserController {
 	logout(@Res({passthrough: true}) res: Response) {
 		res.clearCookie('jwt');
 		return "User is logout";
+	}
+
+	@ApiOperation({summary: 'Update Two Factor Auth'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				toogle: {
+					type: 'boolean',
+				}
+			}
+		}
+	})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Patch('/twoFactorAuth')
+	updateTwoFactorAuth(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
+		const user: User = req.user;
+		return this.userService.updateTwoFactorAuth(bool, user);
 	}
 }

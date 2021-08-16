@@ -156,4 +156,14 @@ export class UserService {
 		}
 		return friendList;
 	}
+
+	async updateTwoFactorAuth(bool: boolean, user: User): Promise<void> {
+		user.twoFactorAuth = bool;
+		try {
+			await this.usersRepository.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
 }
