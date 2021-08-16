@@ -70,7 +70,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/currentUser')
-	currentUser(@Req() req) : Promise<User> {
+	currentUser(@Req() req) : Promise<Partial<User>> {
 		const user: User = req.user;
 		return this.userService.currentUser(user);
 	}
@@ -86,6 +86,16 @@ export class UserController {
 
 	@ApiOperation({summary: 'Partial User Information'})
 	@ApiOkResponse({description: 'Partial User Information'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				userId: {
+					type: 'string',
+				}
+			}
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/partialInfo')
@@ -98,7 +108,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/search')
-	getUserWithFilters(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
+	getUserWithFilters(@Query() filterDto: GetUserFilterDto):  Promise<Partial<User[]>> {
 		return this.userService.getUserWithFilters(filterDto);
 	}
 
@@ -110,7 +120,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/settings')
-	updateUser(@Body() updateUser: UpdateUserDto, @Req() req, @Res({passthrough: true}) res: Response): Promise<User> {
+	updateUser(@Body() updateUser: UpdateUserDto, @Req() req, @Res({passthrough: true}) res: Response): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateUser(updateUser, user, res);
 	}
@@ -162,19 +172,39 @@ export class UserController {
 	}
 
 	@ApiOperation({summary: 'User Add Friend'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				userId: {
+					type: 'string',
+				}
+			}
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/addFriend')
-	addFriend(@Body('friend') friend: string, @Req() req): Promise<void> {
+	addFriend(@Body('userId') friend: string, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.addFriend(friend, user);
 	}
 
 	@ApiOperation({summary: 'User Delete Friend'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				userId: {
+					type: 'string',
+				}
+			}
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Delete('/deleteFriend')
-	deleteFriend(@Body('friend') friend: string, @Req() req): Promise<void>  {
+	deleteFriend(@Body('userId') friend: string, @Req() req): Promise<void>  {
 		const user: User = req.user;
 		return this.userService.deleteFriend(friend, user);
 	}

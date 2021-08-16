@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Res, UseGuards, Req } from '@nestjs/common'
 import { Response, Request } from 'express';
 import {  IntraAuthGuard } from './guards/auth.guard';
-import { ApiTags, ApiOperation } from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger'
 import { HttpService } from '@nestjs/axios';
 import { JwtPayload } from '../user/interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
@@ -33,22 +33,23 @@ export class AuthController {
 
 	// two factor authentication
 	@ApiOperation({summary: 'QR code authentication - User'})
-	@Get('2fa/:user')
-	async getQrcode(@Param('user') user, @Param('code') code) {
+	@ApiParam({name: 'username', required: true, description: 'username'})
+	@ApiParam({name: 'userId', required: true, description: 'userId'})
+	@Get('2fa/:username/:userId')
+	async getQrcode(@Param('username') username, @Param('userId') userId) {
 	  const resp = await this.httpService.get(
-		  `https://www.authenticatorApi.com/pair.aspx?AppName=${process.env.TWO_FACTOR_AUTH_APP_NAME}
-		  &AppInfo=${user}
-		  &SecretCode=${process.env.TWO_FACTOR_AUTH_SECRET_CODE}`,
+		  `https://www.authenticatorApi.com/pair.aspx?AppName=${process.env.TWO_FACTOR_AUTH_APP_NAME}&AppInfo=${username}&SecretCode=${userId}`,
 		).toPromise();
 	  return resp.data;
 	}
 
 	@ApiOperation({summary: 'Code authentication - Secret'})
-	@Post('2fa/:secret')
-	async validate(@Param('secret') secret) {
+	@ApiParam({name: 'secret', required: true, description: 'Code authentication - Google Authenticator'})
+	@ApiParam({name: 'userId', required: true, description: 'userId'})
+	@Post('2fa/:secret/:userId')
+	async validate(@Param('secret') secret, @Param('userId') userId) {
 	  const resp = await this.httpService.get(
-		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}
-		  &SecretCode=${process.env.TWO_FACTOR_AUTH_SECRET_CODE}`,
+		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}&SecretCode=${userId}`,
 		).toPromise();
 	  return resp.data;
 	}
