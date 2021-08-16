@@ -6,12 +6,17 @@
       </div>
       <div class="creatChatRoom flexHVcenter">
         <v-btn id="createChatRoomBtn">
-          <p class="v-btn-content">Create a channel</p>
+          <p class="v-btn-content" @click="createChannel">Create a channel</p>
         </v-btn>
       </div>
     </div>
     <div class="chatChamp boxHVcenter">
       <div class="chatRoomName">
+        <img class="chanelImg" src="~/assets/img/avatar.jpeg">
+        <p>User name</p>
+        <div class="settingBtn flexHVcenter" v-if="isChannel">
+          <Iconify class="imgIcone" iconName="ci:settings"></Iconify>
+        </div>
       </div>
       <div class="received">
         <ul>
@@ -45,6 +50,9 @@ export default Vue.extend({
       txt: '' as string,
       message: [] as string[],
       socket: {} as any,
+      isChannel: false as Boolean,
+      channelName: 'mychannel' as string,
+      channels: [],
     }
   },
   methods: {
@@ -54,6 +62,11 @@ export default Vue.extend({
     },
     recvMsg(msg: string): void {
       this.message.push(msg);
+    },
+    createChannel(): void{
+      this.socket.emit('createChannel', this.channelName);
+      this.channelName = '';
+      console.log('SUCCESSE');
     }
   },
   mounted() {

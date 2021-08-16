@@ -34,7 +34,7 @@
 
 }
 
-.sendBtn {
+.sendBtn, .settingBtn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -98,6 +98,23 @@ ul {
     padding: 7px 32px;
 }
 
+.chatRoomName{
+    display: flex;
+}
+
+.chanelImg{
+    margin: auto 7px;
+    width: 40px;
+    height: 40px;
+    border-radius: 150px;
+}
+
+.chatRoomName p{
+    margin: auto 0px;
+    font-size: 20px;
+    color: $pg-white;
+}
+
 .newMsg{
     display: flex;
     margin: 16px 7px;
@@ -121,4 +138,11 @@ ul {
     color: $pg-white;
     margin-top: 8px;
     overflow-wrap: anywhere;
+}
+
+.settingBtn{
+    position: absolute;
+    right: 0;
+    top: 16;
+    margin: 16px 7px;
 }
