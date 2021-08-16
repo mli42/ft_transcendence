@@ -67,12 +67,11 @@ export default Vue.extend({
       imgURL: '' as string,
       QRChtml: '' as string,
       toSend: {},
-      currentUser: {},
+      currentUser: this.$store.state.user as any,
       msgErr: [],
       validated: false as boolean,
       activate2fa: false as boolean,
-      modalBool : 
-      {
+      modalBool : {
         showPicture: false as boolean,
         showDelete: false as boolean,
         showQRC: false as boolean,
@@ -102,7 +101,7 @@ export default Vue.extend({
             let errorTab = error.response.data.message;
             console.log(errorTab);
             setTimeout(() => {
-              this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600) 
+              this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600)
           })
         }
     },
@@ -117,10 +116,10 @@ export default Vue.extend({
         console.log(this.$refs.file.files[0])
     },
     uploadFile(): void{
-      const formData = new FormData();
-      formData.append('mypp', this.pictureFile);
+      let file = new FormData();
+      file.append('file', this.pictureFile);
       this.$axios
-      .post('/api/user/upload', {file: formData})
+      .post('/api/user/upload', file)
       .then((response: any): void =>{
         console.log('SUCCESS!!');
       })
@@ -152,17 +151,6 @@ export default Vue.extend({
         console.log("DELETE FAILURE");
       });
     },
-  },
-  mounted(): void{
-    this.$axios
-    .get('/api/user/currentUser')
-    .then((response: any): void =>{
-      this.currentUser = response.data;
-      console.log(this.currentUser);
-    })
-    .catch((error: any): void =>{
-      console.log("GET CURENT USER FAILURE");
-    });
   },
 });
 </script>
