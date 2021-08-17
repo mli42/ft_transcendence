@@ -86,20 +86,10 @@ export class UserController {
 
 	@ApiOperation({summary: 'Partial User Information'})
 	@ApiOkResponse({description: 'Partial User Information'})
-	@ApiConsumes('application/json')
-	@ApiBody({
-		schema: {
-			properties: {
-				userId: {
-					type: 'string',
-				}
-			}
-		}
-	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/partialInfo')
-	getPartialUserInfo(@Body('userId') userId: string): Promise<Partial<User>> {
+	getPartialUserInfo(@Query('userId') userId: string): Promise<Partial<User>> {
 		return this.userService.getPartialUserInfo(userId);
 	}
 
