@@ -70,4 +70,7 @@ export const actions = {
 };
 
 export const getters = {
+  getStatus: (state: authState) => {
+    return state.status;
+  },
 };
