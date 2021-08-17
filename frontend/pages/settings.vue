@@ -62,7 +62,7 @@ export default Vue.extend({
       passWord: '' as String,
       email: '' as string,
       pictureFile: null,
-      imgURL: '' as string,
+      imgURL: `${this.$store.state.avatarURL}` as string,
       QRChtml: '' as string,
       toSend: {} as Object,
       currentUser: this.$store.state.user as any,
