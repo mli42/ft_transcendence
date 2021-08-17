@@ -1,7 +1,7 @@
 import { User } from '../../user/entities/user.entity';
 
 export interface ChannelI {
-	channelId: string;
-	name: string;
-	users: User[];
+	channelId?: string;
+	channelName?: string;
+	users?: User[];
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelRepository } from './channel.repository'
 import { User } from '../user/entities/user.entity';
@@ -8,6 +8,7 @@ import { parse } from 'cookie';
 import { JwtPayload } from '../user/interfaces/jwt-payload.interface'
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../user/user.repository';
+import { Channel } from './entities/channel.entity';
 
 @Injectable()
 export class ChannelService {
@@ -19,6 +20,10 @@ export class ChannelService {
 	) {}
 
 	async createChannel(channel: ChannelI, creator: User): Promise<ChannelI> {
+		const { channelName } = channel;
+		const name = await this.channelRepository.findOne({channelName: channelName});
+		if (name)
+			throw new UnauthorizedException('This channel name already exist');
 		const newChannel = await this.channelRepository.addCreatorToChannel(channel, creator);
 		return this.channelRepository.createChannel(newChannel);
 	}

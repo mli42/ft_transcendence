@@ -1,3 +1,4 @@
+
 <template>
   <div class="content flexHVcenter">
     <div class="connected">

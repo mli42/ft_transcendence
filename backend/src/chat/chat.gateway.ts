@@ -6,6 +6,7 @@ import { User } from '../user/entities/user.entity';
 import { ChannelService } from './channel.service'
 import { ChannelRepository } from './channel.repository';
 import { ChannelI } from "./interfaces/channel.interface";
+import { Channel } from './entities/channel.entity';
 
 @WebSocketGateway( { cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -58,18 +59,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     /********************* CONNECTION ********************** */
     async handleConnection(client: Socket) {
         try {
-            const user: User = await this.channelService.getUserFromSocket(client);
+            const user: User = await this.channelService.getUserFromSocket(client);            
             if (!user) {
                 return this.disconnectClient(client);
             } 
-            // else {
-            //     client.data.user = user;
-            //     const channels = await this.channelRepository.getChannelForUser(user.userId, {page: 1, limit: 10});
-            //     // emit channels for the specific user
-            //     return this.server.to(client.id).emit('channel', channels);
-            // }
+            else {
+                client.data.user = user;
+                console.log(user.username);
+                const channels = await this.channelRepository.getChannelsForUser(user.userId);
+                // emit channels for the specific user
+                return this.server.to(client.id).emit('channel', channels);
+            }
         } catch {
-            console.log("ok");
+            console.log("ok disc.");
             return this.disconnectClient(client);
         }
     }
