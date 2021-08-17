@@ -21,10 +21,10 @@ export class UsersRepository extends Repository<User> {
 		let nameProfilePicture= "";
 
 		await replaceColor({
-		  image: '../upload/image/deluxe_pong_default_picture.png',
+		  image: process.env.DEFAULT_PROFILE_PICTURE,
 		  colors: {
 		    type: 'hex',
-		    targetColor: '#001D3D',
+		    targetColor: '#00FF2A',
 		    replaceColor: this.randomHexColorCode()
 		  }
 		}).then((jimpObject) => {
