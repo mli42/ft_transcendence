@@ -1,4 +1,3 @@
-
 <template>
   <div class="content flexHVcenter">
     <div class="connected">
@@ -47,27 +46,8 @@
           <label for="public">Public</label>
         </div>
         <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :isdisabled="newChannel.private"></ModalInput>
-        <v-container fluid>
-          <v-select v-model="newChannel.admin" :items="friends" label="Choose administrators" multiple>
-            <template v-slot:selection="{ item, index }">
-              <v-chip v-if="index === 0">
-                <span>{{ item }}</span>
-              </v-chip>
-              <span v-if="index === 1" class="grey--text text-caption">(+{{ value.length - 1 }} others)</span>
-            </template>
-          </v-select>
-        </v-container>
-        <v-container fluid>
-          <v-select v-model="newChannel.members" :items="friends" label="Choose members" multiple>
-            <template v-slot:selection="{ item, index }">
-              <v-chip v-if="index === 0">
-                <span>{{ item }}</span>
-              </v-chip>
-              <span v-if="index === 1" class="grey--text text-caption">(+{{ value.length - 1 }} others)</span>
-            </template>
-          </v-select>
-        </v-container>
-        <v-btn class="DoneBtn" @click="modalBool.showCreate = false">
+        <Dropdown toselect="Choose administrators" :items="friends" :value="newChannel.admin"></Dropdown>
+        <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
           <p class="v-btn-content">Create</p>
         </v-btn>
       </SettingModal>
@@ -78,7 +58,9 @@
 <script lang="ts">
 import Vue from 'vue';
 import io from 'socket.io-client';
+import Dropdown from '../components/Dropdown/Dropdown.vue';
 export default Vue.extend({
+  components: { Dropdown },
   name: 'chat',
   layout: 'default',
   data(): any {
@@ -101,7 +83,7 @@ export default Vue.extend({
         members: [] as string[],
         admin: [] as string[],
       },
-      friends: ['sarah', 'tom'] as string[],
+      friends: ['sarah', 'tom', 'Alice'] as string[],
     }
   },
   methods: {

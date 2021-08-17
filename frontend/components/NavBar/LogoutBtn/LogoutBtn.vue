@@ -1,6 +1,6 @@
 <template>
   <div class="pg-button bannerbtn" @click="logOut">
-    <Iconify class="imgIcone" :iconName="this.icone"></Iconify>
+    <Iconify class="logoutIcone" :iconName="this.icone"></Iconify>
   </div>
 </template>
 

@@ -6,9 +6,43 @@ import { ConflictException, HttpStatus, InternalServerErrorException, Unauthoriz
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User42Dto } from "./dto/user42.dto";
+import { v4 as uuidv4 } from "uuid";
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
+
+	randomHexColorCode(): string {
+		let n = (Math.random() * 0xfffff * 1000000).toString(16);
+		return '#' + n.slice(0, 6);
+	}
+
+	replaceColor(): string {
+		const replaceColor = require('replace-color')
+		let pathProfilePicture = "";
+
+		replaceColor({
+		  image: '../upload/image/logo@0,1x.png',
+		  colors: {
+		    type: 'hex',
+		    targetColor: '#00FF2A',
+		    replaceColor: this.randomHexColorCode()
+		  }
+		})
+		  .then((jimpObject) => {
+			pathProfilePicture = '../upload/image/deluxe_pong_default_picture_' + uuidv4() + '.png';
+		    jimpObject.write(pathProfilePicture, (err) => {
+		      if (err) return console.log(err)
+		    })
+		  })
+		  .catch((err) => {
+		    console.log(err)
+		  })
+		return pathProfilePicture;
+	}
+
+	generateProfilePicture(): string {
+		return this.replaceColor();
+	}
 
 	async createUser(userData: CreateUserDto): Promise<User> {
 		const user = this.create(userData);
@@ -16,7 +50,7 @@ export class UsersRepository extends Repository<User> {
 		const salt = await bcrypt.genSalt();
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
-		user.profile_picture = "deluxe_pong_default_picture.png";
+		user.profile_picture = this.generateProfilePicture();
 
 		try {
 			await this.save(user);

@@ -3,7 +3,7 @@
     <div id="profileLeft">
       <!-- Left side content (pp, buttons, friend list) -->
       <div class="pp">
-        <img src="" :alt="`${user.username}'s profile picture`" />
+        <Avatar :user="user"></Avatar>
       </div>
 
       <div v-if="!isMyself" class="modBtnContainer flexAlignRow">
