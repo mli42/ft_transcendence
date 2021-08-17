@@ -1,5 +1,5 @@
 <template>
   <div>
-    Play
+    <gameCanvas></gameCanvas>
   </div>
 </template>
