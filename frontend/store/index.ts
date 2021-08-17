@@ -1,7 +1,8 @@
 export const state = () => ({
   user: {} as any,
   isLogged: false as boolean,
-  avatar: undefined as any,
+  avatarBaseURL: '' as string,
+  avatarURL: '' as string,
 });
 
 export type indexState = ReturnType<typeof state>;
@@ -13,8 +14,11 @@ export const mutations = {
   updateLogState(state: indexState, isLogged: boolean): void {
     state.isLogged = isLogged;
   },
-  updateAvatar(state: indexState, avatar: any): void {
-    state.avatar = avatar;
+  updateAvatarBaseURL(state: indexState, avatarBaseURL: string): void {
+    state.avatarBaseURL = avatarBaseURL;
+  },
+  updateAvatar(state: indexState, avatarURL: string): void {
+    state.avatarURL = avatarURL;
   },
 };
 
