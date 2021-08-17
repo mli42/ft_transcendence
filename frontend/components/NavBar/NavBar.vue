@@ -10,7 +10,7 @@
       </div>
       <div class="align-content">
         <!-- Buttons Profile/Settings/Quit -->
-        <NavBarRoundBtn :route="profileRoute" icone="icon-park-outline:people-safe"></NavBarRoundBtn>
+        <NavBarProfileBtn :route="profileRoute"></NavBarProfileBtn>
         <NavBarRoundBtn route="/settings" icone="ci:settings"></NavBarRoundBtn>
         <NavBarLogoutBtn icone="lucide:log-out" :logOut="logOut"></NavBarLogoutBtn>
       </div>
