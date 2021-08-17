@@ -59,9 +59,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     /********************* CONNECTION ********************** */
     async handleConnection(client: Socket) {
         try {
-            const user: User = await this.channelService.getUserFromSocket(client);
-            client.data.user = user;
-            
+            const user: User = await this.channelService.getUserFromSocket(client);            
             if (!user) {
                 return this.disconnectClient(client);
             } 

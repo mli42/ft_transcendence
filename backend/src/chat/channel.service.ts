@@ -25,7 +25,7 @@ export class ChannelService {
 		if (name)
 			throw new UnauthorizedException('This channel name already exist');
 		const newChannel = await this.channelRepository.addCreatorToChannel(channel, creator);
-		return this.channelRepository.createChannel(channel);
+		return this.channelRepository.createChannel(newChannel);
 	}
 
 	async getUserFromSocket(client: Socket): Promise<User> {
