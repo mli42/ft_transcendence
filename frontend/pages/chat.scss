@@ -146,3 +146,46 @@ ul {
     top: 16;
     margin: 16px 7px;
 }
+
+h1{
+    font-size: 35px;
+    margin: 16px auto;
+    color: $pg-white;
+    text-align: center;
+    font-weight: normal;
+}
+
+.DoneBtn{
+    width: 256px;
+    height: 32px;
+    margin-top: 16px;
+    text-transform: none;
+    font-size: 18px;
+    background-color: $pg-green !important;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 7px 32px;
+    color: $pg-white;
+}
+
+.SettingInput{
+    width: 256px !important;
+    max-height: 32px !important;
+}
+
+.visibility{
+    margin: 7px auto;
+    width: 200px;
+    // display: flex;
+    // justify-content: space-between;
+    color: $pg-white;
+}
+
+.visibility input{
+    margin: 0 0 7px 16px;
+}
+
+v-select label{
+    // background-color: yellow !important;
+    color: $pg-white !important;
+}

@@ -8,7 +8,7 @@
 <script lang="ts">
 import Vue from 'vue';
 export default Vue.extend({
-  name: 'chat',
+  name: 'userCard',
   layout: 'default',
   data(): any {
     return {

@@ -6,8 +6,8 @@
       </div>
       <UserCard name="Name" imgsrc="~/assets/img/avatar.jpeg" @click="activeConvo = 'name'"></UserCard>
       <div class="creatChatRoom flexHVcenter">
-        <v-btn id="createChatRoomBtn">
-          <p class="v-btn-content" @click="modalBool.showCreate = true">Create a channel</p>
+        <v-btn id="createChatRoomBtn" @click="modalBool.showCreate = true">
+          <p class="v-btn-content" >Create a channel</p>
         </v-btn>
       </div>
     </div>
@@ -37,6 +37,38 @@
           </div>
       </div>
       <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
+        <h1>Create Channel</h1>
+        <ModalInput name="Name of the channel :" v-model.lazy="newChannel.name"  placeHolder="" :isdisabled="false"></ModalInput>
+        <div class="visibility">
+          <input type="radio" name="private" @click="newChannel.private = true">
+          <label for="private">Private</label>
+          <input type="radio" name="private" @click="newChannel.private = false" checked>
+          <label for="public">Public</label>
+        </div>
+        <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :isdisabled="newChannel.private"></ModalInput>
+        <v-container fluid>
+          <v-select v-model="newChannel.admin" :items="friends" label="Choose administrators" multiple>
+            <template v-slot:selection="{ item, index }">
+              <v-chip v-if="index === 0">
+                <span>{{ item }}</span>
+              </v-chip>
+              <span v-if="index === 1" class="grey--text text-caption">(+{{ value.length - 1 }} others)</span>
+            </template>
+          </v-select>
+        </v-container>
+        <v-container fluid>
+          <v-select v-model="newChannel.members" :items="friends" label="Choose members" multiple>
+            <template v-slot:selection="{ item, index }">
+              <v-chip v-if="index === 0">
+                <span>{{ item }}</span>
+              </v-chip>
+              <span v-if="index === 1" class="grey--text text-caption">(+{{ value.length - 1 }} others)</span>
+            </template>
+          </v-select>
+        </v-container>
+        <v-btn class="DoneBtn" @click="modalBool.showCreate = false">
+          <p class="v-btn-content">Create</p>
+        </v-btn>
       </SettingModal>
     </div>
   </div>
@@ -55,12 +87,20 @@ export default Vue.extend({
       socket: {} as any,
       isChannel: false as Boolean,
       channelName: 'mychannel' as string,
-      channels: [],
+      channels: [] as string[],
       currentUser: '' as string,
       activeConvo: 'convparDef' as string,
       modalBool : {
         showCreate: false as boolean,
-      }
+      },
+      newChannel:{
+        name: '' as string,
+        private: false as boolean,
+        password: '' as string,
+        members: [] as string[],
+        admin: [] as string[],
+      },
+      friends: ['sarah', 'tom'] as string[],
     }
   },
   methods: {
