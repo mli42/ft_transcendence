@@ -17,6 +17,11 @@
         <p class="NoFriend" v-if="user.friends.length == 0">
           Search some profiles to add new friends!
         </p>
+        <div v-else class="friendList">
+          <div v-for="(userId, index) in user.friends" :key="index">
+            <ProfileFriendCard :userId="userId"></ProfileFriendCard>
+          </div>
+        </div>
       </div>
     </div>
 
