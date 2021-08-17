@@ -1,6 +1,6 @@
 <template>
   <NuxtLink class="pg-button bannerbtn" :to="route">
-    <Avatar :user="this.$store.state.user"></Avatar>
+    <Avatar :showStatus=false :user="this.$store.state.user"></Avatar>
   </NuxtLink>
 </template>
 

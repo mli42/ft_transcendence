@@ -1,0 +1,26 @@
+@import '~/assets/Palette.scss';
+
+div.avatarContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+div.status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+}
+
+.profileAvatar {
+  width: 25%;
+  height: 25%;
+  border: 6px solid $pg-blue;
+}
+
+.smallAvatar {
+  width: 40%;
+  height: 40%;
+  border: 2px solid $pg-blue;
+}
