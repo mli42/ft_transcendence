@@ -2,7 +2,7 @@
   <div class="searchUserCard flexAlignRow">
 
     <NuxtLink :to="userProfile" class="pp flexHVcenter">
-      <img src="" :alt="`${user.username}'s profile picture`">
+      <Avatar :user="user"></Avatar>
     </NuxtLink>
 
     <div class="mainInfos flexAlignCol">
