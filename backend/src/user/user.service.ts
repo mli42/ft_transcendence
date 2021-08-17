@@ -132,8 +132,9 @@ export class UserService {
 		return this.usersRepository.saveImage(file, user);
 	}
 
-	getProfilePicture(@Res() res, picture: string): Observable<object> {
-		return of(res.sendFile(join(process.cwd(), '../upload/image/' + picture)));
+	async getProfilePicture(@Res() res, userId: string): Promise<Observable<object>> {
+		let user: User = await this.usersRepository.findOne({userId: userId});
+		return of(res.sendFile(join(process.cwd(), '../upload/image/' + user.profile_picture)));
 	}
 
 	addFriend(friend: string, user: User): Promise<void> {
