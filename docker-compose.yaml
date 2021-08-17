@@ -48,7 +48,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8082:8082
+      - 8085:8082
     networks:
       - database
     restart: always
