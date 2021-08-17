@@ -71,6 +71,7 @@ export class UsersRepository extends Repository<User> {
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
 		user.login42 = userData.login42;
+		user.profile_picture = this.generateProfilePicture();
 		return this.save(user);
 	}
 
