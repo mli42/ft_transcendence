@@ -21,15 +21,15 @@ export class UsersRepository extends Repository<User> {
 		let pathProfilePicture = "";
 
 		replaceColor({
-		  image: '../upload/image/logo@0,1x.png',
+		  image: '../upload/image/deluxe_pong_default_picture.png',
 		  colors: {
 		    type: 'hex',
-		    targetColor: '#00FF2A',
+		    targetColor: '#001D3D',
 		    replaceColor: this.randomHexColorCode()
 		  }
 		})
 		  .then((jimpObject) => {
-			pathProfilePicture = '../upload/image/deluxe_pong_default_picture_' + uuidv4() + '.png';
+			pathProfilePicture = '../upload/image/deluxe_pong_default_picture' + uuidv4() + '.png';
 		    jimpObject.write(pathProfilePicture, (err) => {
 		      if (err) return console.log(err)
 		    })
@@ -71,7 +71,6 @@ export class UsersRepository extends Repository<User> {
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
 		user.login42 = userData.login42;
-		user.profile_picture = this.generateProfilePicture();
 		return this.save(user);
 	}
 
