@@ -4,13 +4,13 @@
       <div class="align-content">
         <!-- Buttons Home/Play/Chat/Search -->
         <div class="homebtn"><NavBarHomeBtn></NavBarHomeBtn></div>
-        <NavBarRoundBtn route="/play" icone="ion:tennisball-outline"></NavBarRoundBtn>
+        <NavBarRoundBtn route="/pre-game" icone="ion:tennisball-outline"></NavBarRoundBtn>
         <NavBarRoundBtn route="/chat" icone="carbon-send-alt"></NavBarRoundBtn>
         <NavBarRoundBtn route="/search" icone="ant-design:search-outlined"></NavBarRoundBtn>
       </div>
       <div class="align-content">
         <!-- Buttons Profile/Settings/Quit -->
-        <NavBarRoundBtn :route="profileRoute" icone="icon-park-outline:people-safe"></NavBarRoundBtn>
+        <NavBarProfileBtn :route="profileRoute"></NavBarProfileBtn>
         <NavBarRoundBtn route="/settings" icone="ci:settings"></NavBarRoundBtn>
         <NavBarLogoutBtn icone="lucide:log-out" :logOut="logOut"></NavBarLogoutBtn>
       </div>

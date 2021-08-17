@@ -49,5 +49,8 @@ export class User {
   login42: string;
 
   @ManyToMany(() => Channel, channel => channel.users)
-  channels: Channel[]
+  channels: Channel[];
+
+  @Column("boolean", {default: false})
+  twoFactorAuth: boolean;
 }

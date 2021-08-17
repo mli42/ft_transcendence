@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, 
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
-import { ApiBody, ApiConflictResponse, ApiConsumes, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiBody, ApiConflictResponse, ApiConsumes, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -143,7 +143,6 @@ export class UserController {
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
-			type: 'object',
 			properties: {
 				file: {
 					type : 'string',
@@ -154,7 +153,7 @@ export class UserController {
 	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
-	@Post('/upload')
+	@Post('/upload/avatar')
 	@UseInterceptors(FileInterceptor('file', storage))
 	uploadImage(@UploadedFile() file, @Req() req): Promise<string> {
 		const user: User = req.user;
@@ -163,12 +162,12 @@ export class UserController {
 
 	@ApiOperation({summary: 'User Get Profile Picture'})
 	@ApiOkResponse({description: 'Picture File'})
+	@ApiParam({name: 'userId', required: true, description: 'userId'})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
-	@Get('/profile-picture')
-	getProfilePicture(@Res() res, @Req() req): Observable<object> {
-		const user: User = req.user;
-		return this.userService.getProfilePicture(res, user.profile_picture);
+	@Get('/avatar/:userId')
+	getProfilePicture(@Res() res, @Param('userId') userId): Promise<Observable<object>> {
+		return this.userService.getProfilePicture(res, userId);
 	}
 
 	@ApiOperation({summary: 'User Add Friend'})
@@ -226,5 +225,33 @@ export class UserController {
 	logout(@Res({passthrough: true}) res: Response) {
 		res.clearCookie('jwt');
 		return "User is logout";
+	}
+
+	@ApiOperation({summary: 'Get Boolean TwoFactorAuth'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/twoFactorAuth')
+	getTwoFactorAuth(@Req() req): boolean {
+		const user: User = req.user;
+		return this.userService.getTwoFactorAuth(user);
+	}
+
+	@ApiOperation({summary: 'Update Two Factor Auth'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				toogle: {
+					type: 'boolean',
+				}
+			}
+		}
+	})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Patch('/updateTwoFactorAuth')
+	updateTwoFactorAuth(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
+		const user: User = req.user;
+		return this.userService.updateTwoFactorAuth(bool, user);
 	}
 }
