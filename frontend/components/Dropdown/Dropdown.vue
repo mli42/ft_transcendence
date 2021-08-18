@@ -11,7 +11,7 @@
           <ul  v-if="show">
               <li v-for="(item, index) in items" :key="index">
                 <div class="option">
-                  <input type="checkbox" :value="item" id="item" name="category" v-model="result"/>
+                  <input type="checkbox" :value="item" class="item" name="category" v-model="result"/>
                   <label for="item">{{ item.username }}</label>
                 </div>
               </li>

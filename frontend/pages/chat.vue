@@ -6,7 +6,6 @@
       </div>
       <ul>
         <li v-for="(item, index) in channels" :key="index">
-          <!-- <span>---{{ channels }}---</span> -->
           <UserCard :name="item.channelName" @click="activeConvo = item"></UserCard>
         </li>
       </ul>
@@ -92,7 +91,6 @@ export default Vue.extend({
     sendMsg(): void {
       this.socket.emit('msgToServer', this.txt);
       this.txt = '';
-      // this.currentUser = this.$store.state.user.username;
     },
     fillMembers(data: string[]): void{
       this.newChannel.members = data;
@@ -125,6 +123,8 @@ export default Vue.extend({
       this.channels = data;
       console.log(this.channels);
     });
+    // console.log('channeles42: ');
+    // console.log(this.channels);
     this.$store.state.user.friends.forEach((element: any) => {
       this.$axios
       .get(`/api/user/partialInfo?userId=${element}`)
