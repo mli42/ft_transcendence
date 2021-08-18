@@ -89,7 +89,8 @@ export class UsersRepository extends Repository<User> {
 			"user.elo",
 			"user.game_won",
 			"user.lost_game",
-			"user.ratio"
+			"user.ratio",
+			"user.status"
 		]);
 
 		if (username) {
