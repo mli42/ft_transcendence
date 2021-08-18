@@ -171,4 +171,32 @@ export class UserService {
 			throw new InternalServerErrorException();
 		}
 	}
+
+	getIsBan(user: User): boolean {
+		return user.isBan;
+	}
+
+	async updateIsBan(bool: boolean, user: User): Promise<void> {
+		user.isBan = bool;
+		try {
+			await this.usersRepository.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
+
+	getIsAdmin(user: User): boolean {
+		return user.isAdmin;
+	}
+
+	async updateIsAdmin(bool: boolean, user: User): Promise<void> {
+		user.isAdmin = bool;
+		try {
+			await this.usersRepository.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
 }

@@ -49,4 +49,10 @@ export class User {
 
   @Column("boolean", {default: false})
   twoFactorAuth: boolean;
+
+  @Column("boolean", {default: false})
+  isBan: boolean;
+
+  @Column("boolean", {default: false})
+  isAdmin: boolean;
 }
