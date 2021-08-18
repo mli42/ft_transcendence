@@ -1,14 +1,14 @@
 <template>
   <div>
-    {{ this.$route.path }}
+    <gameCanvas :gameId="$route.path" />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue from "vue";
 
-export default Vue.extend ({
-  name: 'gameIdPage',
+export default Vue.extend({
+  name: "gameIdPage" as string,
 });
 </script>
 
