@@ -72,8 +72,7 @@ export default Vue.extend ({
           fpsCounter = Math.trunc(d1 / d2);
         }
         else if (fpsCounter > 0) { // Ball progression
-          delta = p5.Vector.sub(vectorDest, vectorSrc).normalize();
-          vectorSrc.add(delta.mult(speed));
+          vectorSrc.add(delta);
           fpsCounter--;
           s.ellipse(vectorSrc.x, vectorSrc.y, ballSize, ballSize);
         }
