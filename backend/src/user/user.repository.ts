@@ -127,7 +127,14 @@ export class UsersRepository extends Repository<User> {
 		}
 	}
 
+	deleteOldImage(image: string): void {
+		let fs = require('fs');
+		let filePath = "../upload/image/" + image;
+		fs.unlinkSync(filePath);
+	}
+
 	async saveImage(@UploadedFile() file, user: User): Promise<string> {
+		this.deleteOldImage(user.profile_picture);
 		user.profile_picture = file.filename;
 		try {
 			await this.save(user);
