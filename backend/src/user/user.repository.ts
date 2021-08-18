@@ -131,7 +131,7 @@ export class UsersRepository extends Repository<User> {
 		let fs = require('fs');
 		let filePath = "../upload/image/" + image;
 		fs.stat(filePath, function (err, stats) {
-			console.log(stats);
+			// console.log(stats);
 			if (err) {
 				return console.error(err);
 			}
