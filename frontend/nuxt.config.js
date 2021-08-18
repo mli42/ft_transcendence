@@ -34,8 +34,8 @@ export default {
     '~/plugins/user.ts',
   ],
 
-  pageTransition: 'fade',
-  layoutTransition: 'fade',
+  // pageTransition: 'fade',
+  // layoutTransition: 'fade',
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
