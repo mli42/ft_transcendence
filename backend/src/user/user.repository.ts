@@ -127,10 +127,16 @@ export class UsersRepository extends Repository<User> {
 		}
 	}
 
-	deleteOldImage(image: string): void {
+	deleteOldImage(image: string) {
 		let fs = require('fs');
 		let filePath = "../upload/image/" + image;
-		fs.unlinkSync(filePath);
+		fs.stat(filePath, function (err, stats) {
+			console.log(stats);
+			if (err) {
+				return console.error(err);
+			}
+			fs.unlinkSync(filePath);
+		})
 	}
 
 	async saveImage(@UploadedFile() file, user: User): Promise<string> {
