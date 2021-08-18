@@ -1,8 +1,6 @@
 <template>
   <div class="wrapperCanvas">
     <div class="gameCanvas">
-      <p>{{ gameId }}</p>
-      <div>{{ game }}</div>
     </div>
   </div>
 </template>
@@ -15,16 +13,14 @@ import {
 
 export default Vue.extend({
   name: "gameCanvas" as string,
-  props: {
-    gameId: {
-      type: String,
-      default: "",
-    },
-  },
   data() {
     return {
       game: new Game(),
+      id: this.$route.path.match("[^/]+$"), // Get the id of the path
     }
+  },
+  mounted() {
+    console.log("id = " + this.id);
   },
 },
 );

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <gameCanvas :gameId="$route.path" />
+    <gameCanvas />
   </div>
 </template>
 
