@@ -172,11 +172,22 @@ export class UserService {
 		}
 	}
 
-	getIsBan(user: User): boolean {
+	async getIsBan(userId: string): Promise<boolean> {
+		let user: User = undefined;
+
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
 		return user.isBan;
 	}
 
-	async updateIsBan(bool: boolean, user: User): Promise<void> {
+	async updateIsBan(bool: boolean, userId: string): Promise<void> {
+		let user: User = undefined;
+
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+
 		user.isBan = bool;
 		try {
 			await this.usersRepository.save(user);
@@ -186,11 +197,22 @@ export class UserService {
 		}
 	}
 
-	getIsAdmin(user: User): boolean {
+	async getIsAdmin(userId: string): Promise<boolean> {
+		let user: User = undefined;
+
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
 		return user.isAdmin;
 	}
 
-	async updateIsAdmin(bool: boolean, user: User): Promise<void> {
+	async updateIsAdmin(bool: boolean, userId: string): Promise<void> {
+		let user: User = undefined;
+
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+
 		user.isAdmin = bool;
 		try {
 			await this.usersRepository.save(user);
