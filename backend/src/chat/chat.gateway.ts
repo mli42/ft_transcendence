@@ -7,6 +7,8 @@ import { ChannelService } from './channel.service'
 import { ChannelRepository } from './channel.repository';
 import { ChannelI } from "./interfaces/channel.interface";
 import { Channel } from './entities/channel.entity';
+import { ConnectedUserService } from './connected-user.service';
+import { ConnectedUserI } from './interfaces/user-connected.interface';
 
 @WebSocketGateway( { cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -15,6 +17,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         private readonly userService: UserService,
         private readonly channelService: ChannelService,
         private readonly channelRepository: ChannelRepository,
+        private readonly connectedUserService: ConnectedUserService,
     ) {}
 
     @WebSocketServer() 
@@ -28,8 +31,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
-    async onCreateChannel(client: Socket, channel: ChannelI): Promise<ChannelI> {
-        return this.channelService.createChannel(channel, client.data.user)
+    async onCreateChannel(client: Socket, channel: ChannelI) {
+        const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
+        
+        for (const user of createChannel.users) {
+            const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
+            const channels = await this.channelRepository.getChannelsForUser(user.userId);
+
+            for (const connection of connections) {
+                await this.server.to(connection.socketId).emit('channel', channels);
+            }
+        }
     }
 
 
@@ -67,6 +79,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 client.data.user = user;
                 console.log(user.username);
                 const channels = await this.channelRepository.getChannelsForUser(user.userId);
+
+                // save connection
+                await this.connectedUserService.create({socketId: client.id, user});
                 // emit channels for the specific user
                 return this.server.to(client.id).emit('channel', channels);
             }
@@ -77,7 +92,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     /********************* DISCONNECTION ****************** */
-    handleDisconnect(client: Socket) {
+    async handleDisconnect(client: Socket) {
+        // remove connection from db
+        await this.connectedUserService.deleteBySoketId(client.id);
         client.disconnect();
         this.logger.log(`Client diconnect: ${client.id}`);
     }

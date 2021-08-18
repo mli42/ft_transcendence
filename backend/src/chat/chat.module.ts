@@ -6,14 +6,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Channel } from './entities/channel.entity'
 import { ChannelRepository } from './channel.repository';
 import { UsersRepository } from '../user/user.repository';
+import { ConnectedUser } from './entities/connected-user.entity';
+import { ConnectedUserService } from './connected-user.service';
+import { Message } from './entities/message.entity';
+import { JoinedChannel } from './entities/joined-channel.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ChannelRepository]),
-    TypeOrmModule.forFeature([Channel]),
+    TypeOrmModule.forFeature([Channel, ConnectedUser, Message, JoinedChannel]),
     TypeOrmModule.forFeature([UsersRepository]),
     UserModule,
   ],
-  providers: [ChatGateway, ChannelService],
+  providers: [ChatGateway, ChannelService, ConnectedUserService],
 })
 export class ChatModule {}
