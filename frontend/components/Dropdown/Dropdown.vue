@@ -3,16 +3,16 @@
       <h2>{{ toselect }}</h2>
       <div class="selectBox">
         <div class="selected">
-          <span>{{ value[0] }} ...</span>
-          <img src="~/assets/img/arrow.svg" @click="toggleModal(); fillTab(value)">
+          <!-- <span>{{ result }} ...</span> -->
+          <img src="~/assets/img/arrow.svg" @click="toggleModal(); fillTab(result)">
         </div>
         <hr>
         <form class="options">
           <ul  v-if="show">
               <li v-for="(item, index) in items" :key="index">
                 <div class="option">
-                  <input type="checkbox" :value="item" id="item" name="category" v-model="value"/>
-                  <label for="item">{{ item }}</label>
+                  <input type="checkbox" :value="item" id="item" name="category" v-model="result"/>
+                  <label for="item">{{ item.username }}</label>
                 </div>
               </li>
           </ul>
@@ -29,7 +29,7 @@ export default Vue.extend({
   data(): any {
     return {
       show: false as boolean,
-      // result: [] as string[],
+      result: [],
     }
   },
   methods: {

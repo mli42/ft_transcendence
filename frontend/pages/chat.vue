@@ -6,7 +6,8 @@
       </div>
       <ul>
         <li v-for="(channel, index) in channels" :key="index">
-          <UserCard :name="channel.channelName" imgsrc="/assets/img/chatbubble.svg" @click="activeConvo = channel.channelName"></UserCard>
+          <!-- <span>{{ channel.channelName }}</span> -->
+          <UserCard :name="channel.channelName" imgsrc="/assets/img/chatbubble.svg" @click="activeConvo = channel"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter">
@@ -42,7 +43,7 @@
       </div>
       <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
         <h1>Create Channel</h1>
-        <ModalInput name="Name of the channel :" v-model.lazy="newChannel.name"  placeHolder="" :isdisabled="false"></ModalInput>
+        <ModalInput name="Name of the channel :" v-model.lazy="newChannel.name"  placeHolder="" :isdisabled="true"></ModalInput>
         <div class="visibility">
           <input type="radio" name="private" @click="newChannel.private = true">
           <label for="private">Private</label>
@@ -50,8 +51,8 @@
           <label for="public">Public</label>
         </div>
         <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :isdisabled="newChannel.private"></ModalInput>
-        <Dropdown toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillTab"></Dropdown>
-        <Dropdown toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin"></Dropdown>
+        <Dropdown toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
+        <Dropdown toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
         <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
           <p class="v-btn-content">Create</p>
         </v-btn>
@@ -72,8 +73,8 @@ export default Vue.extend({
       message: [] as string[],
       socket: {} as any,
       isChannel: false as Boolean,
-      channels: [] as string[],
-      activeConvo: '' as string,
+      channels: [],
+      activeConvo: {},
       modalBool : {
         showCreate: false as boolean,
       },
@@ -84,7 +85,7 @@ export default Vue.extend({
         members: [] as string[],
         admin: [] as string[],
       },
-      friends: this.$store.state.user.friends as string[],
+      friends: [],
     }
   },
   methods: {
@@ -93,8 +94,11 @@ export default Vue.extend({
       this.txt = '';
       // this.currentUser = this.$store.state.user.username;
     },
-    fillTab(data: string[]): void{
+    fillMembers(data: string[]): void{
       this.newChannel.members = data;
+    },
+    fillAdmin(data: string[]): void{
+      this.newChannel.admin = data;
     },
     recvMsg(msg: string): void {
       this.message.push(msg);
@@ -102,8 +106,7 @@ export default Vue.extend({
     createChannel(): void{
       this.socket.emit('createChannel', {channelName: this.newChannel.name,
       users: this.newChannel.members});
-      this.channelName = '';
-      console.log('SUCCESSE');
+      console.log(this.newChannel.members);
     },
     hideModal(): void {
       this.modalBool.showCreate = false;
@@ -119,8 +122,14 @@ export default Vue.extend({
     });
     this.socket.on("channel", (data: any) => {
       console.log('channels : ');
-      console.log(data[0]);
-      this.channels.push(data[0]);
+      this.channels.push(data);
+      console.log(this.channels);
+    });
+    this.$store.state.user.friends.forEach((element: any) => {
+      this.$axios
+      .get(`/api/user/partialInfo?userId=${element}`)
+      .then((resp: any) => this.friends.push(resp.data))
+      .catch(() => console.log('Oh no'));
     });
   },
 });
