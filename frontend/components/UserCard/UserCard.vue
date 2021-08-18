@@ -1,6 +1,6 @@
 <template>
   <div :class="{ red : selected }" @click="selected = true">
-      <img src="~/assets/img/avatar.jpeg">
+      <img src="~/assets/img/chatbubble.svg">
       <p>{{ name }}</p>
   </div>
 </template>

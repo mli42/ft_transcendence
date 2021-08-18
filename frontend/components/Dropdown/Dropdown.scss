@@ -2,7 +2,6 @@
 
 .container{
     padding: 7px;
-    // background-color: yellow;
     width: 280px;
  
 }
@@ -20,20 +19,14 @@ h2 {
 }
 .options{
     background-color: $pg-dark-blue;
-    // max-height: 0px;
-    // opacity: 0;
+    max-height: 40px;
+    opacity: 1;
+    overflow-y: scroll;
     width: 100%;
     color: $pg-white;
     transition: all 0.4s;
     border-radius: 5px;
-    overflow: hidden;
     text-align: left;
-}
-
-.options.active{
-    max-height: 40px;
-    opacity: 1;
-    overflow-y: scroll;
 }
 
 .options::-webkit-scrollbar{
@@ -52,36 +45,25 @@ h2 {
 }
 
 .selected, .options{
-    
     cursor: pointer;
 }
 
 li{
     list-style: none;
-   
 }
 
 .selected{
     color: $pg-white;
     text-align: left;
     position: relative;
+    width: 280px;
 }
 
-.selected::after{
-    content: "";
-    background: url("~/assets/img/arrow.svg");
-    background-repeat: no-repeat;
-    background-size: contain;
-
+img{
+    width: 15px;
+    height: 15px;
     position: absolute;
-    height: 100%;
-    width: 32px;
-    right: 10px;
-    top: 5px;
-    transition: all 0.4s;
-}
-
-.options + .selected::after{
-    transform: rotateX(180deg);
-    top: -6px;
+    right: 6%;
+    bottom: 0;
+    // transition: all 0.4s;
 }

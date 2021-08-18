@@ -4,7 +4,11 @@
       <div class="search flexHVcenter">
         <input  type="text" name="mysearch" id="mysearch">
       </div>
-      <UserCard name="Name" imgsrc="~/assets/img/avatar.jpeg" @click="activeConvo = 'name'"></UserCard>
+      <ul>
+        <li v-for="(channel, index) in channels" :key="index">
+          <UserCard :name="channel.channelName" imgsrc="/assets/img/chatbubble.svg" @click="activeConvo = channel.channelName"></UserCard>
+        </li>
+      </ul>
       <div class="creatChatRoom flexHVcenter">
         <v-btn id="createChatRoomBtn" @click="modalBool.showCreate = true">
           <p class="v-btn-content" >Create a channel</p>
@@ -46,7 +50,8 @@
           <label for="public">Public</label>
         </div>
         <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :isdisabled="newChannel.private"></ModalInput>
-        <Dropdown toselect="Choose administrators" :items="friends" :value="newChannel.admin"></Dropdown>
+        <Dropdown toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillTab"></Dropdown>
+        <Dropdown toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin"></Dropdown>
         <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
           <p class="v-btn-content">Create</p>
         </v-btn>
@@ -58,9 +63,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import io from 'socket.io-client';
-import Dropdown from '../components/Dropdown/Dropdown.vue';
 export default Vue.extend({
-  components: { Dropdown },
   name: 'chat',
   layout: 'default',
   data(): any {
@@ -69,10 +72,8 @@ export default Vue.extend({
       message: [] as string[],
       socket: {} as any,
       isChannel: false as Boolean,
-      channelName: 'mychannel' as string,
       channels: [] as string[],
-      currentUser: '' as string,
-      activeConvo: 'convparDef' as string,
+      activeConvo: '' as string,
       modalBool : {
         showCreate: false as boolean,
       },
@@ -83,7 +84,7 @@ export default Vue.extend({
         members: [] as string[],
         admin: [] as string[],
       },
-      friends: ['sarah', 'tom', 'Alice'] as string[],
+      friends: this.$store.state.user.friends as string[],
     }
   },
   methods: {
@@ -92,11 +93,15 @@ export default Vue.extend({
       this.txt = '';
       // this.currentUser = this.$store.state.user.username;
     },
+    fillTab(data: string[]): void{
+      this.newChannel.members = data;
+    },
     recvMsg(msg: string): void {
       this.message.push(msg);
     },
     createChannel(): void{
-      this.socket.emit('createChannel', {channelName: this.channelName});
+      this.socket.emit('createChannel', {channelName: this.newChannel.name,
+      users: this.newChannel.members});
       this.channelName = '';
       console.log('SUCCESSE');
     },
@@ -111,6 +116,11 @@ export default Vue.extend({
       console.log('msgToClient : ');
       console.log(data);
       this.recvMsg(data);
+    });
+    this.socket.on("channel", (data: any) => {
+      console.log('channels : ');
+      console.log(data[0]);
+      this.channels.push(data[0]);
     });
   },
 });
