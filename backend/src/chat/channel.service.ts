@@ -36,4 +36,8 @@ export class ChannelService {
 		const user: User = await this.usersRepository.findOne({username});
 		return user;
 	}
+
+	async getChannel(channelId: string): Promise<ChannelI> {
+		return this.channelRepository.findOne(channelId, {relations: ['users']});
+    }
 }

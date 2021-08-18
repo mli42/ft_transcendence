@@ -10,6 +10,8 @@ import { ConnectedUser } from './entities/connected-user.entity';
 import { ConnectedUserService } from './connected-user.service';
 import { Message } from './entities/message.entity';
 import { JoinedChannel } from './entities/joined-channel.entity';
+import { MessageService } from './massage.service';
+import { JoinedChannelService } from './joined-channel.service';
 
 @Module({
   imports: [
@@ -18,6 +20,6 @@ import { JoinedChannel } from './entities/joined-channel.entity';
     TypeOrmModule.forFeature([UsersRepository]),
     UserModule,
   ],
-  providers: [ChatGateway, ChannelService, ConnectedUserService],
+  providers: [ChatGateway, ChannelService, ConnectedUserService, MessageService, JoinedChannelService],
 })
 export class ChatModule {}

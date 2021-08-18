@@ -11,9 +11,9 @@ export class JoinedChannel {
 	@Column()
 	socketId: string;
 
-	@ManyToMany(() => User, user => user.joinedChannels)
+	@ManyToOne(() => User, user => user.joinedChannels)
 	@JoinColumn()
-	users: User;
+	user: User;
 
 	@ManyToOne(() => Channel, channel => channel.joinedUsers)
 	@JoinColumn()

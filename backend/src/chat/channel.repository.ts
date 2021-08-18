@@ -24,7 +24,7 @@ export class ChannelRepository extends Repository<Channel> {
 		.leftJoin('channel.users', 'users')
 		.where('users.userId =  :userId', {userId})
 		const channels: ChannelI[] = await query.getMany();
-		console.log(channels)
+		// console.log(channels)
 		return channels;
 	}
 }
