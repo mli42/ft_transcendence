@@ -3,7 +3,7 @@
     <div id="profileLeft">
       <!-- Left side content (pp, buttons, friend list) -->
       <div class="pp">
-        <Avatar :user="user"></Avatar>
+        <Avatar :isBig=true :user="user"></Avatar>
       </div>
 
       <div v-if="!isMyself" class="modBtnContainer flexAlignRow">
@@ -17,6 +17,11 @@
         <p class="NoFriend" v-if="user.friends.length == 0">
           Search some profiles to add new friends!
         </p>
+        <div v-else class="friendList">
+          <div v-for="(userId, index) in user.friends" :key="index">
+            <ProfileFriendCard :userId="userId"></ProfileFriendCard>
+          </div>
+        </div>
       </div>
     </div>
 

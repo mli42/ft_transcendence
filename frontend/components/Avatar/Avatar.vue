@@ -1,7 +1,11 @@
 <template>
-  <img :src="avatarURL"
-  style="width: 100%; height: 100%; border-radius: 50%;"
-  :alt="`${user.username}'s profile picture`" />
+  <div class="avatarContainer">
+    <img :src="avatarURL"
+    style="width: 100%; height: 100%; border-radius: 50%;"
+    :alt="`${user.username}'s profile picture`" />
+    <div v-if="showStatus" :title="title"
+    :class="statusClass" :style="statusStyle"></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -12,11 +16,41 @@ export default Vue.extend({
   data() {
     return {
       avatarURL: `${this.$store.state.avatarBaseURL}/${this.user.userId}` as string,
+      title: `is ${this.user.status}` as string,
     };
   },
-  props: ['user'],
+  computed: {
+    statusClass(): Object {
+      return {
+        status: true,
+        profileAvatar: this.isBig,
+        smallAvatar: !this.isBig,
+      };
+    },
+    statusStyle(): Object {
+      return {
+        background: (this.user.status == 'Offline' ? 'grey' : 'green'),
+      };
+    },
+  },
+  props: {
+    user: {
+      type: Object,
+      required: true,
+    },
+    showStatus: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    isBig: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="scss" src="./Avatar.scss">
 </style>

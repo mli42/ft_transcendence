@@ -41,6 +41,10 @@
         </v-alert>
       </v-expand-transition>
     </div>
+
+    <LoadingModale v-if="this.$store.getters['auth/getStatus'] !== 'idle'"
+    label="Logging in"></LoadingModale>
+
   </div>
 </template>
 

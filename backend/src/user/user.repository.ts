@@ -16,20 +16,20 @@ export class UsersRepository extends Repository<User> {
 		return '#' + n.slice(0, 6);
 	}
 
-	replaceColor(): string {
+	async replaceColor(): Promise<string> {
 		const replaceColor = require('replace-color')
-		let pathProfilePicture = "";
+		let nameProfilePicture= "";
 
-		replaceColor({
-		  image: '../upload/image/logo@0,1x.png',
+		await replaceColor({
+		  image: process.env.DEFAULT_PROFILE_PICTURE,
 		  colors: {
 		    type: 'hex',
 		    targetColor: '#00FF2A',
 		    replaceColor: this.randomHexColorCode()
 		  }
-		})
-		  .then((jimpObject) => {
-			pathProfilePicture = '../upload/image/deluxe_pong_default_picture_' + uuidv4() + '.png';
+		}).then((jimpObject) => {
+			nameProfilePicture = 'deluxe_pong_default_picture_' + uuidv4() + '.png';
+			let pathProfilePicture = "../upload/image/" + nameProfilePicture;
 		    jimpObject.write(pathProfilePicture, (err) => {
 		      if (err) return console.log(err)
 		    })
@@ -37,10 +37,10 @@ export class UsersRepository extends Repository<User> {
 		  .catch((err) => {
 		    console.log(err)
 		  })
-		return pathProfilePicture;
+		return nameProfilePicture;
 	}
 
-	generateProfilePicture(): string {
+	generateProfilePicture(): Promise<string> {
 		return this.replaceColor();
 	}
 
@@ -50,7 +50,7 @@ export class UsersRepository extends Repository<User> {
 		const salt = await bcrypt.genSalt();
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
-		user.profile_picture = this.generateProfilePicture();
+		user.profile_picture = await this.generateProfilePicture();
 
 		try {
 			await this.save(user);
@@ -71,6 +71,7 @@ export class UsersRepository extends Repository<User> {
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
 		user.login42 = userData.login42;
+		user.profile_picture = await this.generateProfilePicture();
 		return this.save(user);
 	}
 
@@ -88,7 +89,8 @@ export class UsersRepository extends Repository<User> {
 			"user.elo",
 			"user.game_won",
 			"user.lost_game",
-			"user.ratio"
+			"user.ratio",
+			"user.status"
 		]);
 
 		if (username) {
