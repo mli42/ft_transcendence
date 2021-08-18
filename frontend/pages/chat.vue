@@ -5,9 +5,9 @@
         <input  type="text" name="mysearch" id="mysearch">
       </div>
       <ul>
-        <li v-for="(channel, index) in channels" :key="index">
-          <!-- <span>{{ channel.channelName }}</span> -->
-          <UserCard :name="channel.channelName" imgsrc="/assets/img/chatbubble.svg" @click="activeConvo = channel"></UserCard>
+        <li v-for="(item, index) in channels" :key="index">
+          <!-- <span>---{{ channels }}---</span> -->
+          <UserCard :name="item.channelName" @click="activeConvo = item"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter">
@@ -82,8 +82,8 @@ export default Vue.extend({
         name: '' as string,
         private: false as boolean,
         password: '' as string,
-        members: [] as string[],
-        admin: [] as string[],
+        members: [],
+        admin: [],
       },
       friends: [],
     }
@@ -122,7 +122,7 @@ export default Vue.extend({
     });
     this.socket.on("channel", (data: any) => {
       console.log('channels : ');
-      this.channels.push(data);
+      this.channels = data;
       console.log(this.channels);
     });
     this.$store.state.user.friends.forEach((element: any) => {

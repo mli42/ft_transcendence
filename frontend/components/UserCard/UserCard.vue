@@ -17,7 +17,7 @@ export default Vue.extend({
   },
   methods: {
   },
-  props: ['name', 'imgsrc'],
+  props: ['name'],
 });
 </script>
 
