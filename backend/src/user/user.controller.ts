@@ -249,9 +249,8 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/isBan')
-	getIsBan(@Req() req): boolean {
-		const user: User = req.user;
-		return this.userService.getIsBan(user);
+	getIsBan(@Query('userId') userId: string): Promise<boolean> {
+		return this.userService.getIsBan(userId);
 	}
 
 	@ApiOperation({summary: 'Update isBan'})
@@ -268,18 +267,16 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateIsBan')
-	updateIsBan(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
-		const user: User = req.user;
-		return this.userService.updateIsBan(bool, user);
+	updateIsBan(@Body('toogle') bool: boolean, @Query('userId') userId: string): Promise<void> {
+		return this.userService.updateIsBan(bool, userId);
 	}
 
 	@ApiOperation({summary: 'Get Boolean isAdmin'})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/isAdmin')
-	getIsAdmin(@Req() req): boolean {
-		const user: User = req.user;
-		return this.userService.getIsAdmin(user);
+	getIsAdmin(@Query('userId') userId: string): Promise<boolean> {
+		return this.userService.getIsAdmin(userId);
 	}
 
 	@ApiOperation({summary: 'Update isAdmin'})
@@ -296,8 +293,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateIsAdmin')
-	updateIsAdmin(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
-		const user: User = req.user;
-		return this.userService.updateIsAdmin(bool, user);
+	updateIsAdmin(@Body('toogle') bool: boolean, @Query('userId') userId: string): Promise<void> {
+		return this.userService.updateIsAdmin(bool, userId);
 	}
 }
