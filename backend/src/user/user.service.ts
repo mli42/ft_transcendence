@@ -172,23 +172,23 @@ export class UserService {
 		}
 	}
 
-	async getIsBan(userId: string): Promise<boolean> {
+	async getIsBan(userId: string, userIsAdmin: User): Promise<boolean> {
 		let user: User = undefined;
 
-		user = await this.usersRepository.findOne({userId: userId});
-		if (user.isAdmin === false)
+		if (userIsAdmin.isAdmin === false)
 			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');
 		return user.isBan;
 	}
 
-	async updateIsBan(bool: boolean, userId: string): Promise<void> {
+	async updateIsBan(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
 		let user: User = undefined;
 
-		user = await this.usersRepository.findOne({userId: userId});
-		if (user.isAdmin === false)
+		if (userIsAdmin.isAdmin === false)
 			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');
 
@@ -201,23 +201,23 @@ export class UserService {
 		}
 	}
 
-	async getIsAdmin(userId: string): Promise<boolean> {
+	async getIsAdmin(userId: string, userIsAdmin: User): Promise<boolean> {
 		let user: User = undefined;
 
-		user = await this.usersRepository.findOne({userId: userId});
-		if (user.isAdmin === false)
+		if (userIsAdmin.isAdmin === false)
 			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');
 		return user.isAdmin;
 	}
 
-	async updateIsAdmin(bool: boolean, userId: string): Promise<void> {
+	async updateIsAdmin(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
 		let user: User = undefined;
 
-		user = await this.usersRepository.findOne({userId: userId});
-		if (user.isAdmin === false)
+		if (userIsAdmin.isAdmin === false)
 			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');
 
