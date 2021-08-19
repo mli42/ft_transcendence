@@ -1,0 +1,36 @@
+@import '~/assets/Palette.scss';
+
+div.inputMain {
+  margin-bottom: 15px;
+}
+
+div.label {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  font-size: 20px;
+  line-height: 20px;
+  width: 280px;
+  margin: 7px 24px;
+}
+
+input {
+  background: $pg-dark-blue;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  width: 280px;
+  height: 30px;
+  font-size: 24px;
+  line-height: 24px;
+  color: $pg-white;
+  padding: 7px 7px;
+}
+
+img {
+  width: 22px;
+  height: 22px;
+}
+
+input[type="password"]:disabled { 
+  background: $pg-grey;
+}

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="HomePage">
     Homepage
   </div>
 </template>
@@ -22,3 +22,6 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped lang="scss" src="./index.scss">
+</style>

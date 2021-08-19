@@ -31,10 +31,11 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/user.ts',
   ],
 
-  pageTransition: 'fade',
-  layoutTransition: 'fade',
+  // pageTransition: 'fade',
+  // layoutTransition: 'fade',
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -59,7 +60,6 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'http://localhost:3000',
     credentials: true,
   },
 

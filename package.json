@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "connect-typeorm": "^1.1.4"
-  }
-}

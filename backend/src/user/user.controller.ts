@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Req, Patch, Param, Query, Delete, Res } from "@nestjs/common"
+import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Req, Patch, Param, Query, Delete, Res, ForbiddenException } from "@nestjs/common"
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
@@ -13,6 +13,16 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { Response, Request } from 'express';
 import { join } from "path";
+import multer = require("multer");
+
+type validMimeType =  'image/png' | 'image/jpg' | 'image/jpeg' | 'image/gif'
+
+const validMimeTypes: validMimeType [] = [
+	'image/png',
+	'image/jpg',
+	'image/jpeg',
+	'image/gif'
+]
 
 export const storage = {
 	storage: diskStorage({
@@ -23,6 +33,13 @@ export const storage = {
 			cb(null, `${filename}${extension}`)
 		}
 	}),
+	fileFilter: (req, file, cb) => {
+		const allowedMimeTypes: validMimeType[] =  validMimeTypes;
+		allowedMimeTypes.includes(file.mimetype) ? cb(null, true) : cb(null, false);
+	},
+	limits: {
+		fileSize: 1000000
+    }
 }
 
 @ApiTags('users')
@@ -231,7 +248,7 @@ export class UserController {
 	@ApiBody({
 		schema: {
 			properties: {
-				toogle: {
+				toggle: {
 					type: 'boolean',
 				}
 			}
@@ -240,7 +257,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateTwoFactorAuth')
-	updateTwoFactorAuth(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
+	updateTwoFactorAuth(@Body('toggle') bool: boolean, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateTwoFactorAuth(bool, user);
 	}
@@ -249,9 +266,9 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/isBan')
-	getIsBan(@Req() req): boolean {
+	getIsBan(@Query('userId') userId: string, @Req() req): Promise<boolean> {
 		const user: User = req.user;
-		return this.userService.getIsBan(user);
+		return this.userService.getIsBan(userId, user);
 	}
 
 	@ApiOperation({summary: 'Update isBan'})
@@ -259,7 +276,7 @@ export class UserController {
 	@ApiBody({
 		schema: {
 			properties: {
-				toogle: {
+				toggle: {
 					type: 'boolean',
 				}
 			}
@@ -268,18 +285,18 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateIsBan')
-	updateIsBan(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
+	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
 		const user: User = req.user;
-		return this.userService.updateIsBan(bool, user);
+		return this.userService.updateIsBan(bool, userId, user);
 	}
 
 	@ApiOperation({summary: 'Get Boolean isAdmin'})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/isAdmin')
-	getIsAdmin(@Req() req): boolean {
+	getIsAdmin(@Query('userId') userId: string, @Req() req): Promise<boolean> {
 		const user: User = req.user;
-		return this.userService.getIsAdmin(user);
+		return this.userService.getIsAdmin(userId, user);
 	}
 
 	@ApiOperation({summary: 'Update isAdmin'})
@@ -287,7 +304,7 @@ export class UserController {
 	@ApiBody({
 		schema: {
 			properties: {
-				toogle: {
+				toggle: {
 					type: 'boolean',
 				}
 			}
@@ -296,8 +313,8 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateIsAdmin')
-	updateIsAdmin(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
+	updateIsAdmin(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
 		const user: User = req.user;
-		return this.userService.updateIsAdmin(bool, user);
+		return this.userService.updateIsAdmin(bool, userId, user);
 	}
 }
