@@ -176,6 +176,8 @@ export class UserService {
 		let user: User = undefined;
 
 		user = await this.usersRepository.findOne({userId: userId});
+		if (user.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
 		if (!user)
 			throw new NotFoundException('No user found');
 		return user.isBan;
@@ -185,6 +187,8 @@ export class UserService {
 		let user: User = undefined;
 
 		user = await this.usersRepository.findOne({userId: userId});
+		if (user.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
 		if (!user)
 			throw new NotFoundException('No user found');
 
@@ -201,6 +205,8 @@ export class UserService {
 		let user: User = undefined;
 
 		user = await this.usersRepository.findOne({userId: userId});
+		if (user.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
 		if (!user)
 			throw new NotFoundException('No user found');
 		return user.isAdmin;
@@ -210,6 +216,8 @@ export class UserService {
 		let user: User = undefined;
 
 		user = await this.usersRepository.findOne({userId: userId});
+		if (user.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
 		if (!user)
 			throw new NotFoundException('No user found');
 
