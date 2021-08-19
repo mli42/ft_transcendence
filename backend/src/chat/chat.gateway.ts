@@ -12,6 +12,8 @@ import { ConnectedUserI } from './interfaces/user-connected.interface';
 import { MessageService } from './massage.service';
 import { JoinedChannelService } from './joined-channel.service';
 import { MessageI } from './interfaces/message.interface';
+import { Message } from './entities/message.entity';
+import { JoinedChannelI } from './interfaces/joined-channel.interface';
 
 @WebSocketGateway( { cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -48,9 +50,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             } 
             else {
                 client.data.user = user;
-                console.log(user.username);
+                
                 const channels = await this.channelRepository.getChannelsForUser(user.userId);
-
+                
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
                 // emit channels for the specific user
@@ -102,10 +104,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.server.emit('msgToClient',text);
     }
 
-    // @SubscribeMessage('newMessage')
-    // async onAddMessage(socket: Socket, message: MessageI) {
-    //     const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user})
-    // }
+
+    @SubscribeMessage('newMessage')
+    async onAddMessage(client: Socket, message: MessageI) {
+        const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
+        const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
+
+        const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
+        for (const user of joinedUsers) {
+            await this.server.to(user.socketId).emit('messageAdded', createMessage);
+        }
+    }
 
 
     /********************* Join Channel *********************/
@@ -116,7 +125,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
 
-        // send last message fron channel to user
+        // send last message from channel to user
         await this.server.to(client.id).emit('messages', messages);
         // client.join(room);
         // client.emit('joinedRoom', room);
@@ -129,9 +138,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         // client.leave(room);
         // client.emit('leftRoom', room);
     }
-
-
-
 
 
 }

@@ -12,7 +12,7 @@ export class MessageService {
         private readonly messageRepository: Repository<Message>
     ) {}
 
-    async create(message: Message): Promise<MessageI> {
+    async create(message: MessageI): Promise<MessageI> {
         return this.messageRepository.save(this.messageRepository.create(message));
     }
 
