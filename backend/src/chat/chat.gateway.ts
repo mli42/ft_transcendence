@@ -56,6 +56,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
                 // emit channels for the specific user
+
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -81,8 +82,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
-        console.log(channel);
-        console.log('-----');
+
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
 
         for (const user of createChannel.users) {
@@ -107,6 +107,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     @SubscribeMessage('newMessage')
     async onAddMessage(client: Socket, message: MessageI) {
+        console.log("- NEW MESSAGE -")
+        console.log(message)
         const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
         const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
 
@@ -120,20 +122,27 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     /********************* Join Channel *********************/
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
+
+        // const { channelId } = channel;
+        // const channelFound = await this.channelService.getChannel(channelId);
+
+        console.log("- JOIN CHANNEL -")
+        console.log(channel)
         const messages = await this.messageService.findMessagesForChannel(channel)
-        
+        console.log("- OK1 -")
         // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
-
+        console.log("- OK2 -")
         // send last message from channel to user
         await this.server.to(client.id).emit('messages', messages);
         // client.join(room);
         // client.emit('joinedRoom', room);
+        console.log("- OK3 -")
     }
 
     /********************* Leave Channel ********************/
     @SubscribeMessage('leaveChannel')
-    async handleLeaveChannel(client: Socket, room: string) {
+    async handleLeaveChannel(client: Socket) {
         await this.joinedChannelService.deleteBySocketId(client.id);
         // client.leave(room);
         // client.emit('leftRoom', room);

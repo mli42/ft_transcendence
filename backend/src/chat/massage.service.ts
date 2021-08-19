@@ -20,10 +20,11 @@ export class MessageService {
         const query = this.messageRepository
         .createQueryBuilder('message')
         .leftJoin('message.channel', 'channel')
-        .where('channel.channelId =: channelId', {channelId: channel.channelId})
+        .where('channel.channelId = :channelId', {channelId: channel.channelId})
         .leftJoinAndSelect('message.user', 'user')
         .orderBy('message.date', 'DESC');
-		const messagesFound: MessageI[] = await query.getMany();
+        const messagesFound: MessageI[] = await query.getMany();
+        console.log(messagesFound)
 		return messagesFound;
     }
 

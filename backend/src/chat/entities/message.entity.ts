@@ -11,7 +11,7 @@ export class Message {
 	text: string;
 
 	@ManyToMany(() => User, user => user.messages)
-	@JoinColumn()
+	@JoinTable()
 	user: User;
 
 	@ManyToMany(() => Channel, channel => channel.messages)
