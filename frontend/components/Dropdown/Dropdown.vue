@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {UserStatus, User} from '~/types/userTypes';
+import {UserStatus, User} from '~/types/chatTypes';
 export default Vue.extend({
   name: 'dropdown',
   layout: 'default',
