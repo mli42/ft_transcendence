@@ -2,7 +2,7 @@ import { EntityRepository, Repository } from "typeorm";
 import { User } from './entities/user.entity'
 import { CreateUserDto } from "./dto/user.dto";
 import * as bcrypt from 'bcrypt';
-import { ConflictException, HttpStatus, InternalServerErrorException, UnauthorizedException, UploadedFile } from "@nestjs/common";
+import { ConflictException, ForbiddenException, HttpStatus, InternalServerErrorException, UnauthorizedException, UploadedFile } from "@nestjs/common";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User42Dto } from "./dto/user42.dto";
@@ -140,6 +140,9 @@ export class UsersRepository extends Repository<User> {
 	}
 
 	async saveImage(@UploadedFile() file, user: User): Promise<string> {
+		if (!file?.filename)
+			throw new ForbiddenException('Only image files are allowed !');
+
 		this.deleteOldImage(user.profile_picture);
 		user.profile_picture = file.filename;
 		try {
