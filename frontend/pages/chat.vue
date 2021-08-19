@@ -6,7 +6,7 @@
       </div>
       <ul>
         <li v-for="(item, index) in channels" :key="index">
-          <UserCard :name="item.channelName" @click="activeConvo = item, joinChannel(index), currentChannel = channels[index]"></UserCard>
+          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter">
@@ -111,21 +111,18 @@ export default Vue.extend({
     }
   },
   methods: {
-    joinChannel(index: number){
+    joinChannel(index: number): void{
+      console.log(index);
+      this.currentChannel = this.channels[index];
+      console.log('channel id: ', this.currentChannel)
       this.socket.emit('joinChannel', this.channels[index]);
-      // this.socket.on('message', (message: Message) => {
-      //   console.log(message);
-      //   this.messages = message;
-      // });
     },
     sendMsg(): void {
+      // console.log(this.currentChannel.id)
       this.socket.emit('newMessage', 
-      	{msgId: '',
-        text: this.txt,
-        user : new User,
+      	{text: this.txt,
         channel: this.currentChannel,
-        date: new Date,
-        update_at: new Date,}
+        }
       );
       this.txt = '';
     },
