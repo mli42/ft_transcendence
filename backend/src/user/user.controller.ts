@@ -231,7 +231,7 @@ export class UserController {
 	@ApiBody({
 		schema: {
 			properties: {
-				toogle: {
+				toggle: {
 					type: 'boolean',
 				}
 			}
@@ -240,8 +240,64 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateTwoFactorAuth')
-	updateTwoFactorAuth(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
+	updateTwoFactorAuth(@Body('toggle') bool: boolean, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateTwoFactorAuth(bool, user);
+	}
+
+	@ApiOperation({summary: 'Get Boolean isBan'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/isBan')
+	getIsBan(@Query('userId') userId: string, @Req() req): Promise<boolean> {
+		const user: User = req.user;
+		return this.userService.getIsBan(userId, user);
+	}
+
+	@ApiOperation({summary: 'Update isBan'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				toggle: {
+					type: 'boolean',
+				}
+			}
+		}
+	})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Patch('/updateIsBan')
+	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
+		const user: User = req.user;
+		return this.userService.updateIsBan(bool, userId, user);
+	}
+
+	@ApiOperation({summary: 'Get Boolean isAdmin'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/isAdmin')
+	getIsAdmin(@Query('userId') userId: string, @Req() req): Promise<boolean> {
+		const user: User = req.user;
+		return this.userService.getIsAdmin(userId, user);
+	}
+
+	@ApiOperation({summary: 'Update isAdmin'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				toggle: {
+					type: 'boolean',
+				}
+			}
+		}
+	})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Patch('/updateIsAdmin')
+	updateIsAdmin(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
+		const user: User = req.user;
+		return this.userService.updateIsAdmin(bool, userId, user);
 	}
 }
