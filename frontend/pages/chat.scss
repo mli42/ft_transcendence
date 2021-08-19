@@ -186,9 +186,7 @@ h1{
 }
 
 v-select label{
-    // background-color: yellow !important;
-    color: $pg-white !important;
-    
+    color: $pg-white !important; 
 }
 
 .addPassword{
@@ -198,6 +196,5 @@ v-select label{
 }
 
 #settingModal{
-    margin: 38px;
-    display: inline;
+    margin: 40px 0;
 }
