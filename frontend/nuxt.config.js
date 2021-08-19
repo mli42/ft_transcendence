@@ -31,10 +31,11 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/user.ts',
   ],
 
-  pageTransition: 'fade',
-  layoutTransition: 'fade',
+  // pageTransition: 'fade',
+  // layoutTransition: 'fade',
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -54,7 +55,7 @@ export default {
   ],
 
   router: {
-    middleware: ['auth'],
+    middleware: ['auth', 'index'],
   },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

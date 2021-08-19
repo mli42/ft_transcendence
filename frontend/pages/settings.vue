@@ -53,26 +53,23 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import SettingModal from '../components/SettingModal/SettingModal.vue';
 
 export default Vue.extend({
   name: 'settings',
-  layout: 'default',
   data(): any {
     return {
       nickName: '' as String,
       passWord: '' as String,
       email: '' as string,
       pictureFile: null,
-      imgURL: '' as string,
+      imgURL: `${this.$store.state.avatarURL}` as string,
       QRChtml: '' as string,
-      toSend: {},
-      currentUser: {},
+      toSend: {} as Object,
+      currentUser: this.$store.state.user as any,
       msgErr: [],
       validated: false as boolean,
       activate2fa: false as boolean,
-      modalBool : 
-      {
+      modalBool : {
         showPicture: false as boolean,
         showDelete: false as boolean,
         showQRC: false as boolean,
@@ -81,6 +78,7 @@ export default Vue.extend({
   },
   methods: {
     addPorp(): void{
+      this.toSend = {};
       if (this.nickName)
         this.toSend.username = this.nickName;
       if (this.email)
@@ -88,23 +86,22 @@ export default Vue.extend({
       if (this.passWord)
         this.toSend.password = this.passWord;
     },
+    catchErr(err: any): void {
+      const errorTab = err.response.data.message;
+      this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;
+      setTimeout(() => { this.msgErr = [];}, 6000);
+    },
     changeSettings(): void {
-        this.addPorp()
-        // console.log(this.toSend);
-        if (this.toSend)
-        {
-          this.$axios
-          .patch('/api/user/settings', this.toSend ,  { withCredentials: true })
-          .then((response: any): void => {
-            this.validated = true;
-          })
-          .catch((error: any): void => {
-            let errorTab = error.response.data.message;
-            console.log(errorTab);
-            setTimeout(() => {
-              this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600) 
-          })
-        }
+      this.addPorp();
+      if (this.toSend.length == 0) {
+        return ;
+      }
+      this.$axios
+      .patch('/api/user/settings', this.toSend)
+      .then((response: any): void => {
+        this.validated = true;
+      })
+      .catch(this.catchErr);
     },
     hideModal(): void {
       this.modalBool.showPicture = false;
@@ -117,19 +114,11 @@ export default Vue.extend({
         console.log(this.$refs.file.files[0])
     },
     uploadFile(): void{
-      const formData = new FormData();
-      formData.append('mypp', this.pictureFile);
+      let file = new FormData();
+      file.append('file', this.pictureFile);
       this.$axios
-      .post('/api/user/upload', {file: formData})
-      .then((response: any): void =>{
-        console.log('SUCCESS!!');
-      })
-      .catch((error: any): void => {
-        let errorTab = error.response.data.message;
-        console.log(errorTab);
-        setTimeout(() => {
-        this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600)
-      });
+      .post('/api/user/upload/avatar', file)
+      .catch(this.catchErr);
     },
     getQRC(): void{
       this.$axios
@@ -152,17 +141,6 @@ export default Vue.extend({
         console.log("DELETE FAILURE");
       });
     },
-  },
-  mounted(): void{
-    this.$axios
-    .get('/api/user/currentUser')
-    .then((response: any): void =>{
-      this.currentUser = response.data;
-      console.log(this.currentUser);
-    })
-    .catch((error: any): void =>{
-      console.log("GET CURENT USER FAILURE");
-    });
   },
 });
 </script>

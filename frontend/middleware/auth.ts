@@ -8,16 +8,12 @@ export default async function (context: any) {
   .then(() => true)
   .catch(() => false);
 
-  if (isLoginPage) {
-    if (isLogged)
+  context.store.commit('updateLogState', isLogged);
+  if (isLogged) {
+    if (isLoginPage)
       context.redirect('/');
-    return ;
+  } else { // Not logged
+    if (!isLoginPage)
+      context.redirect('/login');
   }
-  // Not LoginPage
-  if (!isLogged) {
-    context.redirect('/login');
-    return ;
-  }
-  const res: any = await context.app.$axios.get('/api/user/currentUser');
-  context.store.commit('updateUser', res.data);
 };

@@ -1,0 +1,29 @@
+@import '~/assets/Palette.scss';
+
+a {
+  text-decoration: none;
+}
+
+.friendCard {
+  margin: 16px;
+  align-items: center;
+}
+
+div.pp {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 1px solid $pg-dark-blue;
+}
+
+p {
+  color: $pg-white;
+  font-size: 24px;
+  line-height: 24px;
+  margin: 0 8px;
+}
+
+img.playing {
+  width: 20px;
+  height: 20px;
+}

@@ -44,16 +44,6 @@ services:
     restart: always
     container_name: db_app
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8082:8082
-    networks:
-      - database
-    restart: always
-    container_name: adminer
-
   pgadmin:
     image: dpage/pgadmin4
     environment:

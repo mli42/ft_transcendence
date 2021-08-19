@@ -6,9 +6,43 @@ import { ConflictException, HttpStatus, InternalServerErrorException, Unauthoriz
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User42Dto } from "./dto/user42.dto";
+import { v4 as uuidv4 } from "uuid";
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
+
+	randomHexColorCode(): string {
+		let n = (Math.random() * 0xfffff * 1000000).toString(16);
+		return '#' + n.slice(0, 6);
+	}
+
+	async replaceColor(): Promise<string> {
+		const replaceColor = require('replace-color')
+		let nameProfilePicture= "";
+
+		await replaceColor({
+		  image: process.env.DEFAULT_PROFILE_PICTURE,
+		  colors: {
+		    type: 'hex',
+		    targetColor: '#00FF2A',
+		    replaceColor: this.randomHexColorCode()
+		  }
+		}).then((jimpObject) => {
+			nameProfilePicture = 'deluxe_pong_default_picture_' + uuidv4() + '.png';
+			let pathProfilePicture = "../upload/image/" + nameProfilePicture;
+		    jimpObject.write(pathProfilePicture, (err) => {
+		      if (err) return console.log(err)
+		    })
+		  })
+		  .catch((err) => {
+		    console.log(err)
+		  })
+		return nameProfilePicture;
+	}
+
+	generateProfilePicture(): Promise<string> {
+		return this.replaceColor();
+	}
 
 	async createUser(userData: CreateUserDto): Promise<User> {
 		const user = this.create(userData);
@@ -16,6 +50,8 @@ export class UsersRepository extends Repository<User> {
 		const salt = await bcrypt.genSalt();
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
+		user.profile_picture = await this.generateProfilePicture();
+
 		try {
 			await this.save(user);
 		} catch(error) {
@@ -35,17 +71,27 @@ export class UsersRepository extends Repository<User> {
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
 		user.login42 = userData.login42;
+		user.profile_picture = await this.generateProfilePicture();
 		return this.save(user);
 	}
 
-	async getUsersWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
+	async getUsersWithFilters(filterDto: GetUserFilterDto):  Promise<Partial<User[]>> {
 		const {
 			username,
 			email,
 			elo,
 			status,
 		} = filterDto;
-		const query = this.createQueryBuilder('user');
+		const query = this.createQueryBuilder('user') .select([
+			"user.userId",
+			"user.username",
+			"user.profile_picture",
+			"user.elo",
+			"user.game_won",
+			"user.lost_game",
+			"user.ratio",
+			"user.status"
+		]);
 
 		if (username) {
 			query.andWhere(
@@ -58,7 +104,7 @@ export class UsersRepository extends Repository<User> {
 		return users;
 	}
 
-	async updateUser(updateUser: UpdateUserDto, user: User): Promise<User> {
+	async updateUser(updateUser: UpdateUserDto, user: User): Promise<void> {
 		const {
 			username,
 			email,
@@ -79,10 +125,22 @@ export class UsersRepository extends Repository<User> {
 			console.log(e);
 			throw new InternalServerErrorException();
 		}
-		return user;
+	}
+
+	deleteOldImage(image: string) {
+		let fs = require('fs');
+		let filePath = "../upload/image/" + image;
+		fs.stat(filePath, function (err, stats) {
+			// console.log(stats);
+			if (err) {
+				return console.error(err);
+			}
+			fs.unlinkSync(filePath);
+		})
 	}
 
 	async saveImage(@UploadedFile() file, user: User): Promise<string> {
+		this.deleteOldImage(user.profile_picture);
 		user.profile_picture = file.filename;
 		try {
 			await this.save(user);

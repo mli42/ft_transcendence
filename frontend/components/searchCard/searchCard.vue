@@ -2,14 +2,18 @@
   <div class="searchUserCard flexAlignRow">
 
     <NuxtLink :to="userProfile" class="pp flexHVcenter">
-      <img src="" :alt="`${user.username}'s profile picture`">
+      <Avatar :user="user"></Avatar>
     </NuxtLink>
 
     <div class="mainInfos flexAlignCol">
       <NuxtLink :to="userProfile">
-        <p class="username">{{user.username}}</p>
+        <p class="username">{{shortUsername}}</p>
       </NuxtLink>
-      <p class="elo">elo: {{user.elo}}</p>
+      <div class="flexAlignRow">
+        <p class="elo">elo: {{user.elo}}</p>
+        <Iconify v-if="user.status == 'Playing'" title="Currently playing"
+        iconName="ri:sword-line" param="color=white" class="playing"></Iconify>
+      </div>
     </div>
 
     <div class="bulletStats flexAlignRow">
@@ -31,6 +35,11 @@ export default Vue.extend({
       ratio: (this.user.ratio == -1 ? 'N/A' : this.user.ratio) as any,
       userProfile: `/profile/${this.user.username}` as string,
     };
+  },
+  computed: {
+    shortUsername(): string {
+      return (this.$user.shortName(this.user.username, 12));
+    },
   },
   props: ['user'],
 });

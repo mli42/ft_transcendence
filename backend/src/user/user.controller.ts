@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, 
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
-import { ApiBody, ApiConflictResponse, ApiConsumes, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiBody, ApiConflictResponse, ApiConsumes, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -70,7 +70,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/currentUser')
-	currentUser(@Req() req) : Promise<User> {
+	currentUser(@Req() req) : Promise<Partial<User>> {
 		const user: User = req.user;
 		return this.userService.currentUser(user);
 	}
@@ -89,7 +89,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/partialInfo')
-	getPartialUserInfo(@Body('userId') userId: string): Promise<Partial<User>> {
+	getPartialUserInfo(@Query('userId') userId: string): Promise<Partial<User>> {
 		return this.userService.getPartialUserInfo(userId);
 	}
 
@@ -98,7 +98,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/search')
-	getUserWithFilters(@Query() filterDto: GetUserFilterDto): Promise<User[]> {
+	getUserWithFilters(@Query() filterDto: GetUserFilterDto):  Promise<Partial<User[]>> {
 		return this.userService.getUserWithFilters(filterDto);
 	}
 
@@ -110,7 +110,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/settings')
-	updateUser(@Body() updateUser: UpdateUserDto, @Req() req, @Res({passthrough: true}) res: Response): Promise<User> {
+	updateUser(@Body() updateUser: UpdateUserDto, @Req() req, @Res({passthrough: true}) res: Response): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateUser(updateUser, user, res);
 	}
@@ -133,7 +133,6 @@ export class UserController {
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
-			type: 'object',
 			properties: {
 				file: {
 					type : 'string',
@@ -144,7 +143,7 @@ export class UserController {
 	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
-	@Post('/upload')
+	@Post('/upload/avatar')
 	@UseInterceptors(FileInterceptor('file', storage))
 	uploadImage(@UploadedFile() file, @Req() req): Promise<string> {
 		const user: User = req.user;
@@ -153,28 +152,48 @@ export class UserController {
 
 	@ApiOperation({summary: 'User Get Profile Picture'})
 	@ApiOkResponse({description: 'Picture File'})
+	@ApiParam({name: 'userId', required: true, description: 'userId'})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
-	@Get('/profile-picture')
-	getProfilePicture(@Res() res, @Req() req): Observable<object> {
-		const user: User = req.user;
-		return this.userService.getProfilePicture(res, user.profile_picture);
+	@Get('/avatar/:userId')
+	getProfilePicture(@Res() res, @Param('userId') userId): Promise<Observable<object>> {
+		return this.userService.getProfilePicture(res, userId);
 	}
 
 	@ApiOperation({summary: 'User Add Friend'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				userId: {
+					type: 'string',
+				}
+			}
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/addFriend')
-	addFriend(@Body('friend') friend: string, @Req() req): Promise<void> {
+	addFriend(@Body('userId') friend: string, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.addFriend(friend, user);
 	}
 
 	@ApiOperation({summary: 'User Delete Friend'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				userId: {
+					type: 'string',
+				}
+			}
+		}
+	})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Delete('/deleteFriend')
-	deleteFriend(@Body('friend') friend: string, @Req() req): Promise<void>  {
+	deleteFriend(@Body('userId') friend: string, @Req() req): Promise<void>  {
 		const user: User = req.user;
 		return this.userService.deleteFriend(friend, user);
 	}
@@ -196,5 +215,89 @@ export class UserController {
 	logout(@Res({passthrough: true}) res: Response) {
 		res.clearCookie('jwt');
 		return "User is logout";
+	}
+
+	@ApiOperation({summary: 'Get Boolean TwoFactorAuth'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/twoFactorAuth')
+	getTwoFactorAuth(@Req() req): boolean {
+		const user: User = req.user;
+		return this.userService.getTwoFactorAuth(user);
+	}
+
+	@ApiOperation({summary: 'Update Two Factor Auth'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				toggle: {
+					type: 'boolean',
+				}
+			}
+		}
+	})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Patch('/updateTwoFactorAuth')
+	updateTwoFactorAuth(@Body('toggle') bool: boolean, @Req() req): Promise<void> {
+		const user: User = req.user;
+		return this.userService.updateTwoFactorAuth(bool, user);
+	}
+
+	@ApiOperation({summary: 'Get Boolean isBan'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/isBan')
+	getIsBan(@Query('userId') userId: string, @Req() req): Promise<boolean> {
+		const user: User = req.user;
+		return this.userService.getIsBan(userId, user);
+	}
+
+	@ApiOperation({summary: 'Update isBan'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				toggle: {
+					type: 'boolean',
+				}
+			}
+		}
+	})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Patch('/updateIsBan')
+	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
+		const user: User = req.user;
+		return this.userService.updateIsBan(bool, userId, user);
+	}
+
+	@ApiOperation({summary: 'Get Boolean isAdmin'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/isAdmin')
+	getIsAdmin(@Query('userId') userId: string, @Req() req): Promise<boolean> {
+		const user: User = req.user;
+		return this.userService.getIsAdmin(userId, user);
+	}
+
+	@ApiOperation({summary: 'Update isAdmin'})
+	@ApiConsumes('application/json')
+	@ApiBody({
+		schema: {
+			properties: {
+				toggle: {
+					type: 'boolean',
+				}
+			}
+		}
+	})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Patch('/updateIsAdmin')
+	updateIsAdmin(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
+		const user: User = req.user;
+		return this.userService.updateIsAdmin(bool, userId, user);
 	}
 }

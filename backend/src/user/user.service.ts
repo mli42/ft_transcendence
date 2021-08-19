@@ -77,12 +77,13 @@ export class UserService {
         }
 	}
 
-	async currentUser(user: User): Promise<User> {
+	async currentUser(user: User): Promise<Partial<User>>{
 		let userFound: User = undefined;
 		userFound = await this.usersRepository.findOne(user.userId);
 		if (!user)
 			throw new NotFoundException('No user found');
-		return userFound;
+		let { password, ...res } = user;
+		return res;
 	}
 
 	async userInfo(username: string): Promise<Partial<User>> {
@@ -98,18 +99,20 @@ export class UserService {
 		let user: User = undefined;
 
 		user = await this.usersRepository.findOne({userId: id});
+		if (!user)
+			return user;
 		return {
 			userId: user.userId,
 			username: user.username,
-			profile_picture: user.profile_picture,
+			status: user.status
 		}
 	}
 
-	getUserWithFilters(filterDto: GetUserFilterDto): Promise<User[]> {
+	getUserWithFilters(filterDto: GetUserFilterDto):  Promise<Partial<User[]>> {
 		return this.usersRepository.getUsersWithFilters(filterDto);
 	}
 
-	async updateUser(updateUser: UpdateUserDto, user: User, @Res({passthrough: true}) res: Response): Promise<User> {
+	async updateUser(updateUser: UpdateUserDto, user: User, @Res({passthrough: true}) res: Response): Promise<void> {
 		const { username } = updateUser;
 		if(username)
 		{
@@ -129,8 +132,9 @@ export class UserService {
 		return this.usersRepository.saveImage(file, user);
 	}
 
-	getProfilePicture(@Res() res, picture: string): Observable<object> {
-		return of(res.sendFile(join(process.cwd(), '../upload/image/' + picture)));
+	async getProfilePicture(@Res() res, userId: string): Promise<Observable<object>> {
+		let user: User = await this.usersRepository.findOne({userId: userId});
+		return of(res.sendFile(join(process.cwd(), '../upload/image/' + user.profile_picture)));
 	}
 
 	addFriend(friend: string, user: User): Promise<void> {
@@ -152,5 +156,77 @@ export class UserService {
 			});
 		}
 		return friendList;
+	}
+
+	getTwoFactorAuth(user: User): boolean {
+		return user.twoFactorAuth;
+	}
+
+	async updateTwoFactorAuth(bool: boolean, user: User): Promise<void> {
+		user.twoFactorAuth = bool;
+		try {
+			await this.usersRepository.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
+
+	async getIsBan(userId: string, userIsAdmin: User): Promise<boolean> {
+		let user: User = undefined;
+
+		if (userIsAdmin.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+		return user.isBan;
+	}
+
+	async updateIsBan(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
+		let user: User = undefined;
+
+		if (userIsAdmin.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+
+		user.isBan = bool;
+		try {
+			await this.usersRepository.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
+
+	async getIsAdmin(userId: string, userIsAdmin: User): Promise<boolean> {
+		let user: User = undefined;
+
+		if (userIsAdmin.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+		return user.isAdmin;
+	}
+
+	async updateIsAdmin(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
+		let user: User = undefined;
+
+		if (userIsAdmin.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+
+		user.isAdmin = bool;
+		try {
+			await this.usersRepository.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
 	}
 }
