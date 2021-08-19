@@ -1,5 +1,9 @@
 import { IsAlphanumeric, IsEmail } from 'class-validator';
-import { Entity, Column, PrimaryGeneratedColumn, IsNull } from 'typeorm';
+import { Channel } from '../../chat/entities/channel.entity';
+import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany, OneToMany } from 'typeorm';
+import { JoinedChannel } from '../../chat/entities/joined-channel.entity';
+import { ConnectedUser } from '../../chat/entities/connected-user.entity';
+import { Message } from 'src/chat/entities/message.entity';
 
 @Entity()
 export class User {
@@ -46,6 +50,18 @@ export class User {
 
   @Column("text", {default: ""})
   login42: string;
+
+  @ManyToMany(() => Channel, channel => channel.users)
+  channels: Channel[];
+
+  @OneToMany(() => ConnectedUser, connection => connection.user)
+  connections: ConnectedUser[];
+
+  @OneToMany(() => JoinedChannel, joinedChannel => joinedChannel.channel)
+  joinedChannels: JoinedChannel[];
+
+  @OneToMany(() => Message, message => message.user)
+  messages: Message[];
 
   @Column("boolean", {default: false})
   twoFactorAuth: boolean;
