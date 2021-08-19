@@ -20,7 +20,7 @@
         <img class="chanelImg" src="~/assets/img/avatar.jpeg">
         <p>User name</p>
         <div class="settingBtn flexHVcenter">
-          <Iconify class="imgIcone" iconName="ci:settings"></Iconify>
+          <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
       <div class="received">
@@ -145,6 +145,7 @@ export default Vue.extend({
     },
     hideModal(): void {
       this.modalBool.showCreate = false;
+      this.modalBool.showSettings = false;
     },
   },
   mounted() {
