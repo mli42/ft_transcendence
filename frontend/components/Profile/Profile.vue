@@ -8,8 +8,8 @@
 
       <div v-if="!isMyself" class="modBtnContainer flexAlignRow">
         <ProfileModBtn class="modAddFriend" @toggled="modFriend" :icon="modFriendIcon"></ProfileModBtn>
-        <ProfileModBtn class="modBan" @toggled="modBan" icon="jam:hammer"></ProfileModBtn>
-        <ProfileModBtn class="modPromote" @toggled="modPromote" icon="bx:bx-key"></ProfileModBtn>
+        <ProfileModBtn v-if="myself.isAdmin" class="modBan" @toggled="modBan" :title="banTitle" icon="jam:hammer"></ProfileModBtn>
+        <ProfileModBtn v-if="myself.isAdmin" class="modPromote" @toggled="modPromote" :title="adminTitle" icon="bx:bx-key"></ProfileModBtn>
       </div>
 
       <div class="friendContainer">
@@ -65,6 +65,7 @@ export default Vue.extend({
   name: 'Profile',
   data() {
     return {
+      myself: this.$store.state.user as any,
       isMyself: (this.user.username == this.$store.state.user.username) as boolean,
       isMyFriend: this.$store.state.user.friends.includes(this.user.userId) as boolean,
     };
@@ -90,10 +91,18 @@ export default Vue.extend({
       .catch(handleCatch);
     },
     modBan(): void {
-      console.log("Banning user");
+      this.$axios.patch(`/api/user/updateIsBan?userId=${this.user.userId}`, {
+        toggle: !this.user.isBan,
+      })
+      .then(() => { this.user.isBan = !this.user.isBan; })
+      .catch(() => {});
     },
     modPromote(): void {
-      console.log("Promoting user");
+      this.$axios.patch(`/api/user/updateIsAdmin?userId=${this.user.userId}`, {
+        toggle: !this.user.isAdmin,
+      })
+      .then(() => { this.user.isAdmin = !this.user.isAdmin; })
+      .catch(() => {});
     },
   },
   computed: {
@@ -102,6 +111,12 @@ export default Vue.extend({
     },
     ratio(): number | string {
       return (this.user.ratio == -1) ? 'N/A' : this.user.ratio;
+    },
+    banTitle(): string {
+      return this.user.isBan ? 'Un-ban user' : 'Ostracize user';
+    },
+    adminTitle(): string {
+      return this.user.isAdmin ? 'Downgrade user' : 'Promote user as admin';
     },
   },
   props: ['user'],
