@@ -231,7 +231,7 @@ export class UserController {
 	@ApiBody({
 		schema: {
 			properties: {
-				toogle: {
+				toggle: {
 					type: 'boolean',
 				}
 			}
@@ -240,7 +240,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateTwoFactorAuth')
-	updateTwoFactorAuth(@Body('toogle') bool: boolean, @Req() req): Promise<void> {
+	updateTwoFactorAuth(@Body('toggle') bool: boolean, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateTwoFactorAuth(bool, user);
 	}
@@ -258,7 +258,7 @@ export class UserController {
 	@ApiBody({
 		schema: {
 			properties: {
-				toogle: {
+				toggle: {
 					type: 'boolean',
 				}
 			}
@@ -267,7 +267,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateIsBan')
-	updateIsBan(@Body('toogle') bool: boolean, @Query('userId') userId: string): Promise<void> {
+	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string): Promise<void> {
 		return this.userService.updateIsBan(bool, userId);
 	}
 
@@ -284,7 +284,7 @@ export class UserController {
 	@ApiBody({
 		schema: {
 			properties: {
-				toogle: {
+				toggle: {
 					type: 'boolean',
 				}
 			}
@@ -293,7 +293,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Patch('/updateIsAdmin')
-	updateIsAdmin(@Body('toogle') bool: boolean, @Query('userId') userId: string): Promise<void> {
+	updateIsAdmin(@Body('toggle') bool: boolean, @Query('userId') userId: string): Promise<void> {
 		return this.userService.updateIsAdmin(bool, userId);
 	}
 }
