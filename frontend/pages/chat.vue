@@ -42,18 +42,34 @@
       </div>
       <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
         <h1>Create Channel</h1>
-        <ModalInput name="Name of the channel :" v-model.lazy="newChannel.name"  placeHolder="" :isdisabled="true"></ModalInput>
+        <ModalInput name="Name of the channel :" v-model.lazy="newChannel.name"  placeHolder="" :ispublic="true" ></ModalInput>
         <div class="visibility">
           <input type="radio" name="private" @click="newChannel.private = true">
           <label for="private">Private</label>
           <input type="radio" name="private" @click="newChannel.private = false" checked>
           <label for="public">Public</label>
         </div>
-        <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :isdisabled="newChannel.private"></ModalInput>
+        <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :isdisabled="newChannel.public"></ModalInput>
         <Dropdown toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
         <Dropdown toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
         <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
           <p class="v-btn-content">Create</p>
+        </v-btn>
+      </SettingModal>
+      <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
+        <h1 id="settingModal">Channel Settings</h1>
+        <ModalInput name="Change passeword :" v-model.lazy="channelChanges.newPassword"  placeHolder="" :isPassword="true" :ispublic="channelChanges.public"></ModalInput>
+        <input class="addPassword" type="checkbox" name="addpassword" @click="addpassword = true">
+        <label class="addPassword" for="addpassword">Protected by password</label>
+        <div class="visibility">
+          <input type="radio" name="private" @click="channelChanges.private = true">
+          <label for="private">Private</label>
+          <input type="radio" name="private" @click="channelChanges.private = false" checked>
+          <label for="public">Public</label>
+        </div>
+        <Dropdown toselect="Add members :" :items="friends" :value="channelChanges.members" :fillTab="fillMembers"></Dropdown>
+        <v-btn class="DoneBtn" @click="modalBool.showSettings = false">
+          <p class="v-btn-content">Apply changes</p>
         </v-btn>
       </SettingModal>
     </div>
@@ -63,6 +79,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import io from 'socket.io-client';
+import {UserStatus, User} from '~/types/userTypes';
 export default Vue.extend({
   name: 'chat',
   layout: 'default',
@@ -76,13 +93,20 @@ export default Vue.extend({
       activeConvo: {},
       modalBool : {
         showCreate: false as boolean,
+        showSettings: false as boolean,
       },
       newChannel:{
         name: '' as string,
-        private: false as boolean,
+        public: false as boolean,
         password: '' as string,
-        members: [],
-        admin: [],
+        members: [] as User[],
+        admin: [] as User[],
+      },
+      channelChanges:{
+        newPassword: '' as string,
+        public: true as boolean,
+        members: [] as User[],
+        addpassword: false as boolean,
       },
       friends: [],
     }
@@ -94,6 +118,9 @@ export default Vue.extend({
     },
     fillMembers(data: string[]): void{
       this.newChannel.members = data;
+    },    
+    fillAddMembers(data: string[]): void{
+      this.channelChanges.members = data;
     },
     fillAdmin(data: string[]): void{
       this.newChannel.admin = data;
@@ -123,12 +150,11 @@ export default Vue.extend({
       this.channels = data;
       console.log(this.channels);
     });
-    // console.log('channeles42: ');
-    // console.log(this.channels);
     this.$store.state.user.friends.forEach((element: any) => {
       this.$axios
       .get(`/api/user/partialInfo?userId=${element}`)
-      .then((resp: any) => this.friends.push(resp.data))
+      .then((resp: any) => {this.friends.push(resp.data);
+      console.log('ici', resp.data)})
       .catch(() => console.log('Oh no'));
     });
   },

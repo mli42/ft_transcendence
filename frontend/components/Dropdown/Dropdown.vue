@@ -23,13 +23,14 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import {UserStatus, User} from '~/types/userTypes';
 export default Vue.extend({
   name: 'dropdown',
   layout: 'default',
   data(): any {
     return {
       show: false as boolean,
-      result: [],
+      result: [] as User[],
     }
   },
   methods: {

@@ -9,7 +9,7 @@
     </div>
     <div class="input">    
       <input :type="inputType" :id="id" :name="id" :placeholder="placeHolder"
-      @input="updateValue($event.target.value)" :disabled="isdisabled? false : true">
+      @input="updateValue($event.target.value)" :disabled="ispublic? false : true">
     </div>
   </div>
 </template>
@@ -56,7 +56,7 @@ export default Vue.extend({
       type: String,
       required: true,
     },
-    isdisabled: {
+    ispublic: {
       type: Boolean,
       required: true,
     }
