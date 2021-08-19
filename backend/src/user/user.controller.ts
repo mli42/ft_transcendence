@@ -169,12 +169,12 @@ export class UserController {
 
 	@ApiOperation({summary: 'User Get Profile Picture'})
 	@ApiOkResponse({description: 'Picture File'})
-	@ApiParam({name: 'userId', required: true, description: 'userId'})
+	@ApiParam({name: 'profilePicture', required: true, description: 'Profile Picture'})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
-	@Get('/avatar/:userId')
-	getProfilePicture(@Res() res, @Param('userId') userId): Promise<Observable<object>> {
-		return this.userService.getProfilePicture(res, userId);
+	@Get('/avatar/:profilePicture')
+	getProfilePicture(@Res() res, @Param('profilePicture') profilePicture: string): Promise<Observable<object>> {
+		return this.userService.getProfilePicture(res, profilePicture);
 	}
 
 	@ApiOperation({summary: 'User Add Friend'})
