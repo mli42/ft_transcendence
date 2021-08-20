@@ -123,8 +123,8 @@ export default Vue.extend({
       .then((res: any) => {
         this.$store.dispatch('updateAvatar', res.data);
       })
-      .catch((err: any) => {
-        this.catchErr(err);
+      .catch(this.catchErr)
+      .finally(() => {
         this.imgURL = `${this.$store.state.avatarURL}`;
       });
     },
