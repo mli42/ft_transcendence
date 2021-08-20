@@ -1,8 +1,10 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Logger } from "@nestjs/common";
+import Game from "./dataStructures";
 import { Socket, Server } from "socket.io";
 
-let userRoomsMap: Map<Socket, string> = new Map();
+let userRoomsMap: Map<Socket, string> = new Map(); // Relation between players and rooms(games)
+let gameRoomsMap: Map<Game, string> = new Map();
 
 class Mouse {
   x: number = 0;
@@ -37,7 +39,7 @@ export class gameGateway {
   handleConnection(client: Socket, ...args: any[]) {
     userRoomsMap.set(client, client.handshake.query.channel as string);
     client.join(userRoomsMap.get(client));
-    this.logger.log(`Client connected: ${client.id}` + " in room: " + userRoomsMap.get(client));
+    this.logger.log("Client connected: " + client.handshake.query.username + " in room: " + userRoomsMap.get(client));
   }
 
   handleDisconnect(client: Socket) {

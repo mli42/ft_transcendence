@@ -9,6 +9,10 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "gameIdPage" as string,
+  data() {
+    return {
+    }
+  }
 });
 </script>
 

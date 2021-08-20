@@ -4,7 +4,7 @@
       <div class="align-content">
         <!-- Buttons Home/Play/Chat/Search -->
         <div class="homebtn"><NavBarHomeBtn></NavBarHomeBtn></div>
-        <NavBarRoundBtn route="/pre-game" icone="ion:tennisball-outline"></NavBarRoundBtn>
+        <NavBarRoundBtn route="/game" icone="ion:tennisball-outline"></NavBarRoundBtn>
         <NavBarRoundBtn route="/chat" icone="carbon-send-alt"></NavBarRoundBtn>
         <NavBarRoundBtn route="/search" icone="ant-design:search-outlined"></NavBarRoundBtn>
       </div>

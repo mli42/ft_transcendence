@@ -6,4 +6,21 @@
   position: absolute;
   margin: auto;
   left:0;right:0; /* horizontal center */
+  top: 0;bottom: 0;
+}
+
+.dot {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+}
+
+.playerBar {
+  width: 160px;
+  height: 32px;
+  display: inline-block;
+}
+
+#powCombo {
+  margin-top: 8px;
 }

@@ -6,22 +6,10 @@
  * PT -> playerTwo
 */
 
-export {Ball, Game, PowerUp, Mouse, Player}
-
-class Mouse {
-  x: number;
-  y: number;
-  playerId: string;
-
-  constructor(id: string, x: number, y: number) {
-    this.x = x;
-    this.y = y;
-    this.playerId = id;
-  }
-}
+export default class {}
 
 // This class contain all data to represente a ball
-class Ball {
+export class Ball {
   pos: Array<number>; // x -> [0] y -> [1]
   size: number; // in px
   speed: number;
@@ -37,41 +25,37 @@ class Ball {
   }
 }
 
-class Player {
-  name: string;
-  color: string;
-  barLen: number; // in px
-
-  constructor() {
-    this.name = "marvin";
-    this.color = "#FFFFFF";
-    this.barLen = 160; // in px
-  }
-}
-
 // This class contain all data to represent a game.
-class Game {
+export class Game {
   id: string;
   ball: Ball;
   state: string;
   score: Array<number>;
-  players: Map<string, Player>; // string -> userId
+  POName: string;
+  PTName: string;
+  POColor: string;
+  PTColor: string;
   mapName: string;
-  enabledPowerUps: Array<string>;
+  POBarLen: number; // in px
+  PTBarLen: number; // in px
 
   constructor() {
     this.id = "";
     this.ball = new Ball();
     this.state = "waiting";
     this.score = [0, 0] as Array<number>;
-    this.mapName = "tennis";
-    this.players = new Map();
-    this.enabledPowerUps = new Array<string>();
+    this.POName = "marvin1";
+    this.PTName = "marvin2";
+    this.PTColor = "#FA163F";
+    this.POColor = "#3EDBF0";
+    this.mapName = "";
+    this.POBarLen = 160;
+    this.PTBarLen = 160;
   }
 }
 
 // This class contain all data to represente a powerUp
-class PowerUp {
+export class PowerUp {
   pos: Array<number>;
   name: string;
   modifier: ((game: Game) => void);

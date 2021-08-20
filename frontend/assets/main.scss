@@ -3,6 +3,8 @@
   src: url(~/assets/fonts/JosefinSans.ttf);
 }
 
+@import '~/assets/Palette.scss';
+
 html {
   overflow: auto !important; // Override vuetify scroll-bar
 }
@@ -41,4 +43,28 @@ canvas {
 .flexAlignCol {
   display: flex;
   flex-direction: column;
+}
+
+.playerRed {
+  background-color: $pc-red;
+}
+.playerGreen {
+  background-color: $pc-green;
+
+}
+.playerBlue {
+  background-color: $pc-blue;
+
+}
+.playerYellow {
+  background-color: $pc-yellow;
+
+}
+.playerPurple {
+  background-color: $pc-purple;
+
+}
+.playerPink {
+  background-color: $pc-pink;
+
 }
