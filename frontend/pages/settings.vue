@@ -110,12 +110,14 @@ export default Vue.extend({
     },
     fileSelected(): void{
         this.pictureFile = this.$refs.file.files[0];
-        this.imgURL = URL.createObjectURL(this.$refs.file.files[0]);
-        console.log(this.$refs.file.files[0])
+        this.imgURL = URL.createObjectURL(this.pictureFile);
     },
     uploadFile(): void{
-      let file = new FormData();
-      file.append('file', this.pictureFile);
+      let file: FormData = new FormData();
+      const ext: string = this.pictureFile.name.split('.').pop();
+      const newFilename: string = `${this.currentUser.username}-.${ext}`;
+
+      file.append('file', this.pictureFile, newFilename);
       this.$axios
       .post('/api/user/upload/avatar', file)
       .then((res: any) => {
