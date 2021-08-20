@@ -119,7 +119,7 @@ export default Vue.extend({
       this.$axios
       .post('/api/user/upload/avatar', file)
       .then((res: any) => {
-        this.$store.commit('updateAvatarName', res.data)
+        this.$store.dispatch('updateAvatar', res.data);
       })
       .catch((err: any) => {
         this.catchErr(err);

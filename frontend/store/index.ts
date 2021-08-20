@@ -22,6 +22,13 @@ export const mutations = {
 };
 
 export const actions = {
+  updateAvatar(context: any, avatarName: string): void {
+    const _this: any = this;
+    const newAvatarURL: string = `${_this.$user.avatarBaseURL}/${avatarName}`;
+
+    context.commit('updateAvatarName', avatarName);
+    context.commit('updateAvatarURL', newAvatarURL);
+  },
 };
 
 export const getters = {
