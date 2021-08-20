@@ -9,7 +9,14 @@ function shortName(username: string, max_length: number = 10): string {
 };
 
 export default (context: any, inject: Function) => {
+  const port: number = 3000;
+  const loc: any = window.location;
+
+  context.$axios.defaults.baseURL = loc.protocol + '//' + loc.hostname + ':' + port;
+  const avatarBaseURL: string = `${context.$axios.defaults.baseURL}/api/user/avatar`;
+
   inject('user', {
     shortName,
+    avatarBaseURL,
   });
 };

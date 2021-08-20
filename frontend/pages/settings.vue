@@ -118,7 +118,13 @@ export default Vue.extend({
       file.append('file', this.pictureFile);
       this.$axios
       .post('/api/user/upload/avatar', file)
-      .catch(this.catchErr);
+      .then((res: any) => {
+        this.$store.commit('updateAvatarName', res.data)
+      })
+      .catch((err: any) => {
+        this.catchErr(err);
+        this.imgURL = `${this.$store.state.avatarURL}`;
+      });
     },
     getQRC(): void{
       this.$axios
