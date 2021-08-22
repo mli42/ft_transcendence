@@ -63,28 +63,30 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'Profile',
-  data() {
-    return {
-      myself: this.$store.state.user as any,
-      isMyself: (this.user.username == this.$store.state.user.username) as boolean,
-      isMyFriend: this.$store.state.user.friends.includes(this.user.userId) as boolean,
-    };
-  },
   methods: {
     modFriend(): void {
       let url: string;
       let method: any;
-      const handleThen: any = () => { this.isMyFriend = !this.isMyFriend; };
+      let toastMsg: string;
+      let commitStoreFriend: string;
+      const handleThen: any = () => {
+        this.$store.commit(commitStoreFriend, this.user.userId);
+        this.$mytoast.succ(toastMsg);
+      };
       const handleCatch: any = (err: any) => { console.log(err.response.data.error) };
       const data: any = { userId: this.user.userId };
 
       if (!this.isMyFriend) {
         url = '/api/user/addFriend';
         method = 'patch';
+        toastMsg = 'Yeah you have a new friend!';
+        commitStoreFriend = 'addFriend';
       }
       else {
         url = '/api/user/deleteFriend';
         method = 'delete';
+        toastMsg = `User un-friended &#x1F389 Bye bye`;
+        commitStoreFriend = 'delFriend';
       }
       this.$axios.request({url, data, method})
       .then(handleThen)
@@ -106,6 +108,15 @@ export default Vue.extend({
     },
   },
   computed: {
+    myself(): any {
+      return this.$store.state.user;
+    },
+    isMyself(): boolean {
+      return (this.user.userId == this.$store.state.user.userId);
+    },
+    isMyFriend(): boolean {
+      return this.$store.state.user.friends.includes(this.user.userId);
+    },
     modFriendIcon(): string {
       return (!this.isMyFriend) ? 'bx:bx-user-plus' : 'bx:bx-user-minus';
     },

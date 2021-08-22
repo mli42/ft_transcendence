@@ -19,6 +19,18 @@ export const mutations = {
   updateAvatarName(state: indexState, avatarName: string): void {
     state.user.profile_picture = avatarName;
   },
+  addFriend(state: indexState, userId: string): void {
+    const index: number = state.user.friends.indexOf(userId);
+    if (index == -1) {
+      state.user.friends.push(userId);
+    }
+  },
+  delFriend(state: indexState, userId: string): void {
+    const index: number = state.user.friends.indexOf(userId);
+    if (index > -1) {
+      state.user.friends.splice(index, 1);
+    }
+  },
 };
 
 export const actions = {

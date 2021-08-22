@@ -4,30 +4,12 @@ function getArrayMsg(messages: string | string[]): string[] {
   return (typeof messages == "string") ? [messages] : messages;
 }
 
-function errToast({ $toast }: any): Function {
+function genToast(callback: Function): Function {
   return function (messages: string | string[]): void {
-    const errArr = getArrayMsg(messages);
+    const msgArr: string[] = getArrayMsg(messages);
 
-    for (const errMsg of errArr) {
-      $toast.global.errMsg({ message: errMsg });
-    }
-  };
-}
-
-function succToast({ $toast }: any): Function {
-  return function (messages: string | string[]): void {
-    const succArr = getArrayMsg(messages);
-    for (const succMsg of succArr) {
-      $toast.global.succMsg({ message: succMsg });
-    }
-  };
-}
-
-function infoToast({ $toast }: any): Function {
-  return function (messages: string | string[]): void {
-    const infoArr = getArrayMsg(messages);
-    for (const infoMsg of infoArr) {
-      $toast.global.infoMsg({ message: infoMsg });
+    for (const msg of msgArr) {
+      callback({ message: msg });
     }
   };
 }
@@ -61,14 +43,15 @@ const infoOpt: Object = {
 };
 
 export default (context: any, inject: Function) => {
-  context.$toast.register('errMsg', basicMsg, errOpt);
-  context.$toast.register('succMsg', basicMsg, succOpt);
-  context.$toast.register('infoMsg', basicMsg, infoOpt);
+  const toast: any = context.$toast;
+  toast.register('errMsg', basicMsg, errOpt);
+  toast.register('succMsg', basicMsg, succOpt);
+  toast.register('infoMsg', basicMsg, infoOpt);
 
   inject('mytoast', {
     getArrayMsg,
-    err: errToast(context),
-    succ: succToast(context),
-    info: infoToast(context),
+    err: genToast(toast.global.errMsg),
+    succ: genToast(toast.global.succMsg),
+    info: genToast(toast.global.infoMsg),
   });
 };
