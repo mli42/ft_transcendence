@@ -1,7 +1,5 @@
 // Inject in Vue, context and store.
 
-import Vue from 'vue';
-
 function shortName(username: string, max_length: number = 10): string {
   if (username.length <= max_length)
     return username;

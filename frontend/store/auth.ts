@@ -28,8 +28,8 @@ export const actions = {
     _this.$router.push('/');
   },
   authFailed(context: any, error: any): void {
-    context.commit('updateErrorMsg', error.response.data.message);
-    setTimeout(() => context.commit('updateErrorMsg', []), 6000);
+    const _this: any = this;
+    _this.$mytoast.err(error.response.data.message);
   },
   _auth(context: any, authInfos: authApiInfos): void {
     const _this: any = this;
