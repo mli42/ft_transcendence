@@ -46,16 +46,9 @@ form {
     padding: 7px 32px;
 }
 
-.DeleteBtn, #QRCBtn, #deleteModalBtn{ 
+.DeleteBtn, #QRCBtn, #deleteModalBtn{
     margin: 16px 0;
     background: $pg-red !important;
-}
-
-div.errMessages {
-    position: absolute;
-    top: 100px;
-    display:flex;
-    flex-direction: column;
 }
 
 .profilePicture {

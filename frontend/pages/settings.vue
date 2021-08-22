@@ -20,19 +20,12 @@
         </v-btn>
       </form>
     </div>
-    <div class="errMessages">
-      <v-expand-transition v-for="(msg, index) in msgErr" :key="index">
-        <v-alert dense dismissible elevation="8" type="warning">
-          <p style="text-transform: uppercase;">{{msg}}</p>
-        </v-alert>
-      </v-expand-transition>
-    </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPicture">
       <img class="profilePicture" :src="imgURL" alt="Profile image">
       <input type="file" name="file" id="file" ref="file" class="inputFile" @change="fileSelected"/>
       <label class="labelFile" for="file">Upload a picture</label>
       <v-btn id="doneBtn" @click="modalBool.showPicture = false; uploadFile()">
-        <p class="v-btn-content">Done</p>
+        <p class="v-btn-content">Yes, change my avatar</p>
       </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
@@ -66,8 +59,6 @@ export default Vue.extend({
       QRChtml: '' as string,
       toSend: {} as Object,
       currentUser: this.$store.state.user as any,
-      msgErr: [],
-      validated: false as boolean,
       activate2fa: false as boolean,
       modalBool : {
         showPicture: false as boolean,
@@ -87,19 +78,18 @@ export default Vue.extend({
         this.toSend.password = this.passWord;
     },
     catchErr(err: any): void {
-      const errorTab = err.response.data.message;
-      this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;
-      setTimeout(() => { this.msgErr = [];}, 6000);
+      this.$mytoast.err(err.response.data.message);
     },
     changeSettings(): void {
       this.addPorp();
-      if (this.toSend.length == 0) {
+      if (Object.keys(this.toSend).length == 0) {
+        this.$mytoast.info('Warning: No field filled');
         return ;
       }
       this.$axios
       .patch('/api/user/settings', this.toSend)
       .then((response: any): void => {
-        this.validated = true;
+        this.$mytoast.succ(`${Object.keys(this.toSend)}: updated`);
       })
       .catch(this.catchErr);
     },
@@ -114,6 +104,7 @@ export default Vue.extend({
     },
     uploadFile(): void{
       if (!this.pictureFile) {
+        this.$mytoast.err('No avatar uploaded');
         return ;
       }
 
@@ -125,7 +116,9 @@ export default Vue.extend({
       this.$axios
       .post('/api/user/upload/avatar', file)
       .then((res: any) => {
+        this.pictureFile = null;
         this.$store.dispatch('updateAvatar', res.data);
+        this.$mytoast.succ('Avatar successfully updated');
       })
       .catch(this.catchErr)
       .finally(() => {
@@ -139,18 +132,18 @@ export default Vue.extend({
         this.QRChtml = response.data;
       })
       .catch((error: any): void =>{
-        console.log("QRC FAILURE");
+        this.$mytoast.err("QRC FAILURE");
       });
     },
     deleteAccount(): void{
       this.$axios
       .delete('/api/user/delete')
       .then((response: any): void =>{
-        console.log("DELETE SUCCESS");
         this.$router.push({ name: 'login' })
+        this.$mytoast.succ("Account successfully deleted");
       })
       .catch((error: any): void =>{
-        console.log("DELETE FAILURE");
+        this.$mytoast.err("DELETE FAILURE");
       });
     },
   },
