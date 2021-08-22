@@ -31,7 +31,7 @@
       <img class="profilePicture" :src="imgURL" alt="Profile image">
       <input type="file" name="file" id="file" ref="file" class="inputFile" @change="fileSelected"/>
       <label class="labelFile" for="file">Upload a picture</label>
-      <v-btn id="doneBtn" @click="modalBool.showPicture = false, uploadFile()">
+      <v-btn id="doneBtn" @click="modalBool.showPicture = false; uploadFile()">
         <p class="v-btn-content">Done</p>
       </v-btn>
     </SettingModal>
@@ -113,6 +113,10 @@ export default Vue.extend({
         this.imgURL = URL.createObjectURL(this.pictureFile);
     },
     uploadFile(): void{
+      if (!this.pictureFile) {
+        return ;
+      }
+
       let file: FormData = new FormData();
       const ext: string = this.pictureFile.name.split('.').pop();
       const newFilename: string = `${this.currentUser.username}-.${ext}`;
@@ -130,7 +134,7 @@ export default Vue.extend({
     },
     getQRC(): void{
       this.$axios
-      .get(`/api/auth/2fa/${this.currentUser.userId}`)
+      .get(`/api/auth/2fa/${this.currentUser.username}/${this.currentUser.userId}`)
       .then((response: any): void =>{
         this.QRChtml = response.data;
       })
