@@ -8,7 +8,6 @@ interface authApiInfos {
 
 export const state = () => ({
   status: 'idle' as string,
-  errorMsg: [] as string[],
 });
 
 export type authState = ReturnType<typeof state>;
@@ -16,9 +15,6 @@ export type authState = ReturnType<typeof state>;
 export const mutations = {
   updateStatus(state: authState, status: string): void {
     state.status = status;
-  },
-  updateErrorMsg(state: authState, errorMsg: string | string[]): void {
-    state.errorMsg = (typeof errorMsg == "string") ? [errorMsg] : errorMsg;
   },
 };
 
