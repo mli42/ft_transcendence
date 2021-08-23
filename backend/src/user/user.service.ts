@@ -115,13 +115,14 @@ export class UserService {
 
 	async updateUser(updateUser: UpdateUserDto, user: User, @Res({passthrough: true}) res: Response): Promise<void> {
 		const { username } = updateUser;
-		if(username)
+
+		const updated: boolean = await this.usersRepository.updateUser(updateUser, user);
+		if (updated === true)
 		{
 			const payload: JwtPayload = { username };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
 		}
-		return this.usersRepository.updateUser(updateUser, user);
 	}
 
 	async deleteUser(id: string, @Res({passthrough: true}) res: Response): Promise<void> {

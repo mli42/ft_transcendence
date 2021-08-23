@@ -52,6 +52,9 @@ export class UsersRepository extends Repository<User> {
 		user.friends = [];
 		user.profile_picture = await this.generateProfilePicture();
 
+		const numberUsers = await this.createQueryBuilder('user').getCount().catch(() => 0);
+		if (numberUsers === 0)
+			user.isAdmin = true;
 		try {
 			await this.save(user);
 		} catch(error) {
@@ -104,7 +107,7 @@ export class UsersRepository extends Repository<User> {
 		return users;
 	}
 
-	async updateUser(updateUser: UpdateUserDto, user: User): Promise<void> {
+	async updateUser(updateUser: UpdateUserDto, user: User): Promise<boolean> {
 		const {
 			username,
 			email,
@@ -121,8 +124,8 @@ export class UsersRepository extends Repository<User> {
 		}
 		try {
 			await this.save(user);
+			return true;
 		} catch (e) {
-			console.log(e);
 			throw new InternalServerErrorException();
 		}
 	}
