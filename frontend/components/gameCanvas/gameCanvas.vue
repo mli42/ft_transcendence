@@ -11,39 +11,60 @@
       <p>players = {{ playersList }}</p>
       <p>mapName = {{ this.game.mapName }}</p>
       <p>enabledPowerUps = {{ this.game.enabledPowerUps }}</p>
+      <p>game type = {{ this.tabTypes[this.tabTypesIndex] }}</p>
     </div>
     <hr>
     <div id="gameSettings">
       <h1>User settings</h1>
-      <label for="mapSelect">Choose a map</label>
-      <v-select
-        id="mapSelect"
-        v-model="game.mapName"
-        item-value="text"
-        :items="mapNames"
-        filled
-      ></v-select>
-      <label>Choose your color: </label>
+      <!-- GAME TYPE SELECTION -->
+      <div id="type">
+        <v-card>
+          <v-tabs
+            class="typeSelection"
+            center-active
+            v-model="tabTypesIndex"
+          >
+            <v-tab>Matchmaking</v-tab>
+            <v-tab>Private Game</v-tab>
+          </v-tabs>
+        </v-card>
+      </div>
+      <!-- COLOR SELECTION -->
+      <div id="color" v-if="this.isColorDisplayed">
+        <label>Choose your color: </label>
+        <br>
+        <button class="dot playerRed" @click="changePlayerColor('Red')"></button>
+        <button class="dot playerGreen" @click="changePlayerColor('Green')"></button>
+        <button class="dot playerBlue" @click="changePlayerColor('Blue')"></button>
+        <button class="dot playerYellow" @click="changePlayerColor('Yellow')"></button>
+        <button class="dot playerPurple" @click="changePlayerColor('Purple')"></button>
+        <button class="dot playerPink" @click="changePlayerColor('Pink')"></button>
+        <span class="playerBar" v-bind:class="playerColorClass"></span>
+      </div>
       <br>
-
-      <button class="dot playerRed" @click="changePlayerColor('Red')"></button>
-      <button class="dot playerGreen" @click="changePlayerColor('Green')"></button>
-      <button class="dot playerBlue" @click="changePlayerColor('Blue')"></button>
-      <button class="dot playerYellow" @click="changePlayerColor('Yellow')"></button>
-      <button class="dot playerPurple" @click="changePlayerColor('Purple')"></button>
-      <button class="dot playerPink" @click="changePlayerColor('Pink')"></button>
-      <span class="playerBar" v-bind:class="playerColorClass"></span>
-      <br>
-      <v-combobox
-        multiple
-        outlined
-        small-chips
-        label="Choose power-ups you want to enable"
-        v-model="game.enabledPowerUps"
-        hint="⚠ You can't edit this list"
-        :items="powList"
-        id="powCombo"
-      ></v-combobox>
+      <!-- POW SELECTION -->
+      <div id="pow" v-if="this.isPowDisplayed">
+        <v-combobox
+          multiple
+          outlined
+          small-chips
+          label="Choose power-ups you want to enable"
+          v-model="game.enabledPowerUps"
+          hint="⚠ You can't edit this list"
+          :items="powList"
+          id="powCombo"
+        ></v-combobox>
+      </div>
+      <div id="map" v-if="this.isMapsDisplayed"> <!-- Disabled for 0.1V -->
+        <label for="mapSelect">Choose a map</label>
+        <v-select
+          id="mapSelect"
+          v-model="game.mapName"
+          item-value="text"
+          :items="mapNames"
+          filled
+        ></v-select>
+      </div>
     </div>
     <div v-show="isGameDisplayed" id="gameCanvas">
     </div>
@@ -75,7 +96,7 @@ export default Vue.extend({
   data() {
     return {
       game: new Game(),
-      isGameDisplayed: true as boolean,
+      isGameDisplayed: false as boolean,
       gameId: this.$route.path.match("[^/]+$")?.toString() as string, // Get the id of the path
       user: this.$store.state.user as any,
       mapNames: [
@@ -92,6 +113,11 @@ export default Vue.extend({
       powList: [
         "➕ ball size up", "➖ ball size down", "⚡ bar speed up", "↔️ lenght up", "🔥 FIRE !"
       ],
+      isColorDisplayed: true as boolean,
+      isMapsDisplayed: false as boolean,
+      isPowDisplayed: false as boolean,
+      tabTypesIndex: 0 as number,
+      tabTypes: ["matchmaking", "private"] as Array<string>,
     }
   },
   async mounted() {
@@ -124,8 +150,25 @@ export default Vue.extend({
         console.error("ERR : changePlayerColor : map.get undifined !");
       }
     },
+    displayMatchmaking(): void {
+      
+    },
+    displayPrivateGame(): void {
+      
+    },
   },
   watch: {
+    "tabTypesIndex": function (newIndex: number, oldIndex: number): void {
+      if (newIndex == 0) { // matchmaking
+        this.isPowDisplayed = false;
+        this.isMapsDisplayed = false;
+        this.isColorDisplayed = true;
+      } else if (newIndex == 1) { // private
+        this.isPowDisplayed = true;
+        this.isMapsDisplayed = true;
+        this.isColorDisplayed = true;
+      }
+    },
     "game.mapName": function (newName: string, oldName: string) {
       socket.emit("mapChanged", newName);
       this.game.mapName = newName;
