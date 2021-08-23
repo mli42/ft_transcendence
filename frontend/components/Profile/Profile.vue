@@ -31,12 +31,12 @@
       <div class="primaryContent primaryContentUp flexAlignRow">
         <div class="flexHVcenter flexAlignRow">
           <Iconify iconName="ant-design:trophy-outlined"
-          param="color=white" class="BigIcon" ></Iconify>
+          class="BigIcon" ></Iconify>
           <p>{{user.elo}} elo</p>
         </div>
         <div class="flexHVcenter flexAlignRow" title="SignUp Date">
           <Iconify iconName="ant-design:clock-circle-outlined"
-          param="color=white" class="BigIcon" ></Iconify>
+          class="BigIcon" ></Iconify>
           <p>{{user.sign_up_date}}</p>
         </div>
       </div>
