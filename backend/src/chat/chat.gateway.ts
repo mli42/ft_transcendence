@@ -44,14 +44,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     async handleConnection(client: Socket) {
         try {
-            const user: User = await this.channelService.getUserFromSocket(client);            
+            const user: User = await this.channelService.getUserFromSocket(client);
             if (!user) {
                 return this.disconnectClient(client);
             } 
             else {
                 client.data.user = user;
-                
-                const channels = await this.channelRepository.getChannelsForUser(user.userId);
+                const channels = this.channelRepository.getChannelsForUser(user.userId);
                 
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
@@ -121,7 +120,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
         const messages = await this.messageService.findMessagesForChannel(channel)
-        
+
         // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
 
