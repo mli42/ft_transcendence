@@ -8,7 +8,7 @@ function socketInit(url:string, channel: string, vue: Vue): void {
   socket = io(url, {
       query: {
         channel: channel,
-        user: vue.$nuxt.$store.state.user,
+        username: vue.$nuxt.$store.state.user.username,
       }
   });
   socket.on("connect", () => {
