@@ -15,6 +15,7 @@ function genToast(callback: Function): Function {
 }
 
 const basicMsg: Function = (payload: any) => payload.message;
+const unexpectedMsg: Function = (payload: any) => `Unexpected error: ${payload.message}`;
 
 const dismissAct: Object = {
   text: 'OK',
@@ -47,11 +48,13 @@ export default (context: any, inject: Function) => {
   toast.register('errMsg', basicMsg, errOpt);
   toast.register('succMsg', basicMsg, succOpt);
   toast.register('infoMsg', basicMsg, infoOpt);
+  toast.register('unexpectedMsg', unexpectedMsg, infoOpt);
 
   inject('mytoast', {
     getArrayMsg,
     err: genToast(toast.global.errMsg),
     succ: genToast(toast.global.succMsg),
     info: genToast(toast.global.infoMsg),
+    unexpected: genToast(toast.global.unexpectedMsg),
   });
 };

@@ -96,14 +96,22 @@ export default Vue.extend({
       this.$axios.patch(`/api/user/updateIsBan?userId=${this.user.userId}`, {
         toggle: !this.user.isBan,
       })
-      .then(() => { this.user.isBan = !this.user.isBan; })
+      .then(() => {
+        this.user.isBan = !this.user.isBan;
+        const status: string = this.user.isBan ? 'banned' : 'un-banned';
+        this.$mytoast.succ(`User ${this.user.username} ${status}`);
+      })
       .catch(() => {});
     },
     modPromote(): void {
       this.$axios.patch(`/api/user/updateIsAdmin?userId=${this.user.userId}`, {
         toggle: !this.user.isAdmin,
       })
-      .then(() => { this.user.isAdmin = !this.user.isAdmin; })
+      .then(() => {
+        this.user.isAdmin = !this.user.isAdmin;
+        const status: string = this.user.isAdmin ? 'promoted' : 'downgraded';
+        this.$mytoast.succ(`User ${this.user.username} ${status}`);
+      })
       .catch(() => {});
     },
   },
