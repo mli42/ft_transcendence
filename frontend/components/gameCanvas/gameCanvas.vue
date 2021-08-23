@@ -100,7 +100,10 @@ export default Vue.extend({
     // Init the game object
     this.game.id = this.gameId;
     this.game.players.set(this.user.userId, new Player());
-    this.game.players.get(this.user.userId)?.name = this.user.username;
+    const currPlayer: Player | undefined = this.game.players.get(this.user.userId);
+    if (currPlayer) {
+      currPlayer.name = this.user.username;
+    }
     // Update data for dev log
     this.playersList = Array.from(this.game.players.values());
     // Start the sketch
@@ -112,9 +115,14 @@ export default Vue.extend({
       this.isGameDisplayed = !this.isGameDisplayed;
     },
     changePlayerColor(color: string): void {
-      this.game.players.get(this.user.userId)?.color = playerPalette.get(color);
-      this.playerColor = playerPalette.get(color);
-      this.playerColorClass = "player" + color;
+      let currPlayer: Player | undefined = this.game.players.get(this.user.userId);
+      let colorPlayer: string | undefined = playerPalette.get(color) || "#FA163F";
+      if (currPlayer && colorPlayer) {
+        colorPlayer = color;
+        this.playerColorClass = "player" + color;
+      } else {
+        console.error("ERR : changePlayerColor : map.get undifined !");
+      }
     },
   },
   watch: {
