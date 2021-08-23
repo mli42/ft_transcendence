@@ -16,7 +16,7 @@ form {
     border: 3px solid $pg-dark-blue;
     justify-content: space-around;
     width: 416px;
-    height: 600px;
+    min-height: 600px;
 }
 
 .contentTitle {

@@ -15,6 +15,9 @@
         <v-btn class="ChangeBtn" @click="modalBool.showQRC = true; getQRC()">
           <p class="v-btn-content" >Show your current QR code</p>
         </v-btn>
+        <v-btn class="ChangeBtn" @click="toggle2FA">
+          <p class="v-btn-content" >{{twofaAction}} 2FA</p>
+        </v-btn>
         <v-btn color="error" class="DeleteBtn" @click="modalBool.showDelete = true">
           <p class="v-btn-content" >Delete my account</p>
         </v-btn>
@@ -74,6 +77,9 @@ export default Vue.extend({
   computed: {
     currentUser(): any {
       return this.$store.state.user;
+    },
+    twofaAction(): string {
+      return (this.currentUser.twoFactorAuth ? 'Deactivate' : 'Activate');
     },
   },
   methods: {
@@ -155,6 +161,17 @@ export default Vue.extend({
       .catch((error: any): void =>{
         this.$mytoast.err("DELETE FAILURE");
       });
+    },
+    toggle2FA(): void {
+      this.$axios
+      .patch('/api/user/updateTwoFactorAuth', {
+        toggle: !this.currentUser.twoFactorAuth,
+      })
+      .then(() => {
+        this.$mytoast.succ(`${this.twofaAction}d 2FA!`);
+        this.$store.commit('update2FA', !this.currentUser.twoFactorAuth);
+      })
+      .catch();
     },
   },
 });

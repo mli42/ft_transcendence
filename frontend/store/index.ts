@@ -34,6 +34,9 @@ export const mutations = {
       state.user.friends.splice(index, 1);
     }
   },
+  update2FA(state: indexState, bool: boolean): void {
+    state.user.twoFactorAuth = bool;
+  },
 };
 
 export const actions = {
