@@ -21,7 +21,12 @@
       </form>
     </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPicture">
+      <p class="uploadPreview">Preview</p>
       <img class="profilePicture" :src="imgURL" alt="Profile image">
+      <p class="uploadDetails">
+        Files accepted: png/jpg/jpeg/gif.
+        Up to 1Mb.
+      </p>
       <input type="file" name="file" id="file" ref="file" class="inputFile" @change="fileSelected"/>
       <label class="labelFile" for="file">Upload a picture</label>
       <v-btn id="doneBtn" @click="modalBool.showPicture = false; uploadFile()">

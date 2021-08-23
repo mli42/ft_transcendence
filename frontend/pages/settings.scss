@@ -55,7 +55,8 @@ form {
     width: 256px;
     height: 256px;
     border-radius: 150px;
-    margin: 40px;
+    margin: 0px auto;
+    border: 3px solid $pg-dark-blue;
 }
 
 .modalBtn, #doneBtn, #QRCBtn, #deleteModalBtn{
@@ -97,4 +98,11 @@ form {
 .inputFile:focus + label,
 .inputFile + label:hover {
     background-color:rgba(220, 225, 230, 0.95)
+}
+
+p.uploadPreview,
+p.uploadDetails {
+  color: $pg-white;
+  margin: 16px auto;
+  white-space: pre;
 }
