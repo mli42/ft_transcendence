@@ -10,6 +10,9 @@ export const mutations = {
   updateUser(state: indexState, user: any): void {
     state.user = user;
   },
+  updateUserPartial(state: indexState, userPart: any): void {
+    Object.assign(state.user, userPart);
+  },
   updateLogState(state: indexState, isLogged: boolean): void {
     state.isLogged = isLogged;
   },

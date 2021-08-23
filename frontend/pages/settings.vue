@@ -58,7 +58,6 @@ export default Vue.extend({
       imgURL: `${this.$store.state.avatarURL}` as string,
       QRChtml: '' as string,
       toSend: {} as Object,
-      currentUser: this.$store.state.user as any,
       activate2fa: false as boolean,
       modalBool : {
         showPicture: false as boolean,
@@ -66,6 +65,11 @@ export default Vue.extend({
         showQRC: false as boolean,
       }
     };
+  },
+  computed: {
+    currentUser(): any {
+      return this.$store.state.user;
+    },
   },
   methods: {
     addPorp(): void{
@@ -90,6 +94,7 @@ export default Vue.extend({
       .patch('/api/user/settings', this.toSend)
       .then((response: any): void => {
         this.$mytoast.succ(`${Object.keys(this.toSend)}: updated`);
+        this.$store.commit('updateUserPartial', this.toSend);
       })
       .catch(this.catchErr);
     },
