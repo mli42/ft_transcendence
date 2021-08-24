@@ -5,6 +5,8 @@ import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger'
 import { HttpService } from '@nestjs/axios';
 import { JwtPayload } from '../user/interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/user/entities/user.entity';
 
 @ApiTags('42 authentication')
 @Controller('api/auth/')
@@ -46,11 +48,12 @@ export class AuthController {
 
 	@ApiOperation({summary: 'Code authentication - Secret'})
 	@ApiParam({name: 'secret', required: true, description: 'Code authentication - Google Authenticator'})
-	@ApiParam({name: 'userId', required: true, description: 'userId'})
-	@Post('2fa/:secret/:userId')
-	async validate(@Param('secret') secret, @Param('userId') userId) {
-	  const resp = await this.httpService.get(
-		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}&SecretCode=${userId}`,
+	@UseGuards(AuthGuard('jwt'))
+	@Post('2fa/:secret')
+	async validate(@Param('secret') secret, @Req() req) {
+		const user: User = req.user;
+	  	const resp = await this.httpService.get(
+		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}&SecretCode=${user.userId}`,
 		).toPromise();
 	  return resp.data;
 	}
