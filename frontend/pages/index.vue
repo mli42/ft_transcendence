@@ -5,6 +5,11 @@
       <hr class="topHR" />
       <div class="topContent">
         <h1>Your Home</h1>
+        <div id="homeButtons" class="flexAlignRow">
+          <HomeButton linkTo="/pre-game" text="Play Pong" iconName="ion:tennisball-outline"></HomeButton>
+          <HomeButton linkTo="/chat" text="Chat" iconName="carbon-send-alt"></HomeButton>
+          <HomeButton linkTo="/search" text="Search" iconName="ant-design:search-outlined"></HomeButton>
+        </div>
       </div>
     </div>
 

@@ -41,3 +41,14 @@ div.topContent, div.homeRight {
 div.homeRight {
   margin: 0;
 }
+
+div.topContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+div#homeButtons {
+  display: flex;
+  justify-content: space-evenly;
+}
