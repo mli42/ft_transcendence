@@ -13,6 +13,7 @@ import { Observable, of } from 'rxjs';
 import { join } from 'path';
 import { User42Dto } from './dto/user42.dto';
 import { Response, Request } from 'express';
+import { UserModule } from './user.module';
 
 @Injectable()
 export class UserService {
@@ -166,10 +167,15 @@ export class UserService {
 		return user.twoFactorAuth;
 	}
 
-	async updateTwoFactorAuth(bool: boolean, user: User): Promise<void> {
+	async updateTwoFactorAuth(bool: boolean, user: User, res: Response): Promise<void> {
 		user.twoFactorAuth = bool;
+		const username = user.username;
 		try {
 			await this.usersRepository.save(user);
+			let auth: boolean = true;
+			const payload: JwtPayload = { username, auth };
+			const accessToken: string = await this.jwtService.sign(payload);
+			res.cookie('jwt', accessToken, {httpOnly: true});
 		} catch (e) {
 			console.log(e);
 			throw new InternalServerErrorException();

@@ -38,10 +38,12 @@ export class AuthController {
 	@ApiOperation({summary: 'QR code authentication - User'})
 	@ApiParam({name: 'username', required: true, description: 'username'})
 	@ApiParam({name: 'userId', required: true, description: 'userId'})
-	@Get('2fa/:username/:userId')
-	async getQrcode(@Param('username') username, @Param('userId') userId) {
-	  const resp = await this.httpService.get(
-		  `https://www.authenticatorApi.com/pair.aspx?AppName=${process.env.TWO_FACTOR_AUTH_APP_NAME}&AppInfo=${username}&SecretCode=${userId}`,
+	@UseGuards(AuthGuard('jwt'))
+	@Get('2fa')
+	async getQrcode(@Req() req) {
+		const user: User = req.user;
+	  	const resp = await this.httpService.get(
+		  `https://www.authenticatorApi.com/pair.aspx?AppName=${process.env.TWO_FACTOR_AUTH_APP_NAME}&AppInfo=${user.username}&SecretCode=${user.userId}`,
 		).toPromise();
 	  return resp.data;
 	}
@@ -52,7 +54,7 @@ export class AuthController {
 	@Post('2fa/:secret')
 	async validate(@Param('secret') secret, @Req() req) {
 		const user: User = req.user;
-	  	const resp = await this.httpService.get(
+		const resp = await this.httpService.get(
 		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}&SecretCode=${user.userId}`,
 		).toPromise();
 	  return resp.data;

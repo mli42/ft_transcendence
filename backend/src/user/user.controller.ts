@@ -258,9 +258,9 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'), UserAuth)
 	@Patch('/updateTwoFactorAuth')
-	updateTwoFactorAuth(@Body('toggle') bool: boolean, @Req() req): Promise<void> {
+	updateTwoFactorAuth(@Body('toggle') bool: boolean, @Req() req, @Res() res): Promise<void> {
 		const user: User = req.user;
-		return this.userService.updateTwoFactorAuth(bool, user);
+		return this.userService.updateTwoFactorAuth(bool, user, res);
 	}
 
 	@ApiOperation({summary: 'Get Boolean isBan'})
