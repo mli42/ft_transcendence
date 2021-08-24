@@ -48,6 +48,11 @@ import signUpInfos from '~/types/signUpInfos';
 export default Vue.extend({
   name: 'login',
   layout: 'empty',
+  head(): object {
+    return {
+      title: "Login" as String,
+    };
+  },
   data() {
     return {
       logInfos: new loginInfos() as loginInfos,

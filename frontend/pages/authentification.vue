@@ -19,6 +19,11 @@ import Vue from 'vue';
 export default Vue.extend({
   name: 'auth',
   layout: 'empty',
+  head(): object {
+    return {
+      title: "2FA Code" as String,
+    };
+  },
   data(): any {
     return {
       secretCode: '' as string,

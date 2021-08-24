@@ -57,6 +57,11 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'settings',
+  head(): object {
+    return {
+      title: "Settings" as String,
+    };
+  },
   data(): any {
     return {
       nickName: '' as String,
