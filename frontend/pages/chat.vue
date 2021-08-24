@@ -6,19 +6,19 @@
       </div>
       <ul>
         <li v-for="(item, index) in channels" :key="index">
-          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel"></UserCard>
+          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter">
         <v-btn id="createChatRoomBtn" @click="modalBool.showCreate = true">
-          <p class="v-btn-content" >Create a channel</p>
+          <p class="v-btn-content">Create a channel</p>
         </v-btn>
       </div>
     </div>
     <div class="chatChamp boxHVcenter">
       <div class="chatRoomName">
         <img class="chanelImg" src="~/assets/img/avatar.jpeg">
-        <p>User name</p>
+        <p> {{ currentChannel.channelName }} </p>
         <div class="settingBtn flexHVcenter">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
@@ -28,7 +28,7 @@
           <li class="newMsg" v-for="(msg, index) in messages" :key="index">
             <img src="~/assets/img/avatar.jpeg">
             <div class="msgDiv">
-              <p>Name</p>
+              <p>{{ msg.user.username }}</p>
               <div class="msgContent"> {{ msg.text }} </div>
             </div>
           </li>
@@ -107,12 +107,12 @@ export default Vue.extend({
         members: [] as User[],
         addpassword: false as boolean,
       },
+      selectedChannel: false as boolean,
       friends: [],
     }
   },
   methods: {
     joinChannel(index: number): void{
-      console.log('coucou1');
       this.currentChannel = this.channels[index];
       this.socket.emit('joinChannel', this.channels[index]);
     },
@@ -135,6 +135,7 @@ export default Vue.extend({
       this.newChannel.admin = data;
     },
     recvMsg(msg: string): void {
+      console.log('ICI :', msg);
       this.messages.push(msg);
     },
     createChannel(): void{
@@ -150,7 +151,7 @@ export default Vue.extend({
     this.socket = io('ws://localhost:3000/', {withCredentials: true});
     console.log(this.socket);
     this.socket.on("messageAdded", (data: any) => {
-      this.recvMsg(data.text);
+      this.recvMsg(data);
     });
     this.socket.on("channel", (data: any) => {
       // console.log('channels : ', data);
@@ -158,8 +159,6 @@ export default Vue.extend({
       // console.log(this.channels);
     });
     this.socket.on('messages', (data: any) => {
-        // console.log('coucou2');
-        // console.log('tab msg', data)
         this.messages = data;
     });
     this.$store.state.user.friends.forEach((element: any) => {
