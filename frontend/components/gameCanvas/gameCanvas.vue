@@ -21,12 +21,13 @@
       <div id="type">
         <v-card>
           <v-tabs
+            id="typeSelection"
             class="typeSelection"
             center-active
             v-model="tabTypesIndex"
           >
-            <v-tab @click="displayMatchmaking">Matchmaking</v-tab>
-            <v-tab @click="displayPrivateGame">Private Game</v-tab>
+            <v-tab v-bind:disabled="isTabsEnabled" @click="displayMatchmaking">Matchmaking</v-tab>
+            <v-tab v-bind:disabled="isTabsEnabled" @click="displayPrivateGame">Private Game</v-tab>
           </v-tabs>
         </v-card>
       </div>
@@ -75,24 +76,26 @@
           label
           v-bind:color="getCreatorColor()"
         >
-          <v-icon left>mdi-account-circle-outline</v-icon>
-          Test1
+          <v-icon v-if="this.game.creator" left>mdi-account-circle-outline</v-icon>
+          {{ this.game.creator }}
         </v-chip>
         <v-chip
           label
           v-bind:color="getSecondPlayerColor()"
         >
-          <v-icon left>mdi-account-circle-outline</v-icon>
-          Test2
+          <v-icon v-if="this.game.opponent" left>mdi-account-circle-outline</v-icon>
+          {{ this.game.opponent }}
         </v-chip>
       </div>
       <!-- JOIN THE GAME BUTTON -->
       <div>
         <v-btn
-          id="joinBtn"
-          color="success"
-          v-if="isJoinBtnDisplayed"
-        >JOIN THE GAME</v-btn>
+          id="mainBtn"
+          v-bind:color="mainBtnColor"
+          v-if="isMainBtnDisplayed"
+        >{{ this.mainBtnTxt }}
+        <v-icon>{{ this.mainBtnIco}}</v-icon>
+        </v-btn>
       </div>
     </div>
     <div v-show="isGameDisplayed" id="gameCanvas">
@@ -103,7 +106,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Game, Player, IplayerPalette} from "./dataStructures";
+import { Game, Player, IcolorPalette} from "./dataStructures";
 import lookup from "socket.io-client";
 import { use } from "vue/types/umd";
 import { socket, socketInit } from "./socket"
@@ -113,13 +116,13 @@ export { SOCKET_URL };
 
 const SOCKET_URL:string = "ws://localhost:3000/";
 
-let playerPalette: IplayerPalette = {} as IplayerPalette;
-playerPalette["Red"] = "#FA163F";
-playerPalette["Green"] = "#54E346";
-playerPalette["Blue"] = "#3EDBF0";
-playerPalette["Yellow"] = "#FFF338";
-playerPalette["Purple"] = "#D62AD0";
-playerPalette["Pink"] = "#FB7AFC";
+let uiPalette: IcolorPalette = {} as IcolorPalette;
+uiPalette["green"] = "#219653"; uiPalette["white"] = "#DCE1E5";
+
+let playerPalette: IcolorPalette = {} as IcolorPalette;
+playerPalette["Red"] = "#FA163F"; playerPalette["Green"] = "#54E346";
+playerPalette["Blue"] = "#3EDBF0"; playerPalette["Yellow"] = "#FFF338";
+playerPalette["Purple"] = "#D62AD0"; playerPalette["Pink"] = "#FB7AFC";
 
 export default Vue.extend({
   name: "gameCanvas" as string,
@@ -141,12 +144,22 @@ export default Vue.extend({
       powList: [
         "➕ ball size up", "➖ ball size down", "⚡ bar speed up", "↔️ lenght up", "🔥 FIRE !"
       ],
+      // Condition to display or not element. Modified by display* methods
       isPowDisplayed: false as boolean,
       isGameDisplayed: false as boolean,
       isMapsDisplayed: false as boolean,
       isColorDisplayed: true as boolean,
-      isJoinBtnDisplayed: false as boolean,
+      isMainBtnDisplayed: false as boolean,
+      // Allow or not to modify game type by the current user
+      isTabsEnabled: true as boolean,
+      // model to typeSelection tabs
       tabTypesIndex: 0 as number,
+      // Text of the button when it is displayed
+      mainBtnTxt: "" as string,
+      // Icon of this button
+      mainBtnIco: "" as string,
+      // Color of this button
+      mainBtnColor: uiPalette["white"] as string,
       tabTypes: ["matchmaking", "private"] as Array<string>,
     }
   },
@@ -182,7 +195,7 @@ export default Vue.extend({
       } else {
         this.isColorDisplayed = false;
       }
-      this.isJoinBtnDisplayed = false;
+      this.isMainBtnDisplayed = false;
       this.isPowDisplayed = false;
       this.isMapsDisplayed = false;
     },
@@ -197,9 +210,9 @@ export default Vue.extend({
         this.isMapsDisplayed = true;
       }
       if (this.game.players.size == 1 && this.game.players.has(this.user.userId) == false) { // If the client can join
-        this.isJoinBtnDisplayed = true;
+        this.isMainBtnDisplayed = true;
       } else { 
-        this.isJoinBtnDisplayed = false;
+        this.isMainBtnDisplayed = false;
       }
     },
     updateDisplayedElem(): void {
@@ -226,6 +239,14 @@ export default Vue.extend({
           return (player.color);
       }
       return ('grey');
+    }
+  },
+  computed: {
+    isTabsEnabled: function () : boolean {
+      if (this.game.creator == this.user.userId) {
+        return (true);
+      }
+      return (false);
     }
   },
   watch: {

@@ -1,6 +1,6 @@
-export {Ball, Game, PowerUp, Mouse, Player, IplayerPalette}
+export {Ball, Game, PowerUp, Mouse, Player, IcolorPalette}
 
-interface IplayerPalette {
+interface IcolorPalette {
   [index: string]: string;
 }
 
@@ -39,7 +39,7 @@ class Player {
   barLen: number; // in px
 
   constructor() {
-    this.name = "marvin";
+    this.name = "";
     this.color = "#FFFFFF";
     this.barLen = 160; // in px
   }
