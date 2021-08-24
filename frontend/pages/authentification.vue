@@ -27,13 +27,13 @@ export default Vue.extend({
   methods: {
     verifSecret(): void{
       this.$axios
-      .get(`/api/auth/2fa/${this.secretCode}`)
-      .then((response: any): void =>{
-        this.$router.push({ name: 'login' })
-        console.log("SECRET SUCCESSE");
+      .post(`/api/auth/2fa/${this.secretCode}`)
+      .then((response: any): void => {
+        this.$router.push('/')
+        this.$mytoast.succ('Authenticated');
       })
-      .catch((error: any): void =>{
-        console.log("SECRET FAILURE");
+      .catch((error: any): void => {
+        this.$mytoast.err('Wrong code');
       });
     },
   },
