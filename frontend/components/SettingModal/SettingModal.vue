@@ -1,6 +1,6 @@
 <template>
   <div class="modalContent flexHVcenter" @click.self="hideModal">
-      <div class="innerContent" >
+      <div class="innerContent flexAlignCol" >
           <!-- pour pouvoir inserer du contenue ds la popup -->
           <slot/>
       </div>

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Req, Patch, Param, Query, Delete, Res } from "@nestjs/common"
+import { Controller, Post, Body, UseInterceptors, UploadedFile, UseGuards, Get, Req, Patch, Param, Query, Delete, Res, ForbiddenException } from "@nestjs/common"
 import { UserService } from "./user.service";
 import { User } from './entities/user.entity';
 import { CreateUserDto, SigInUserDto } from "./dto/user.dto";
@@ -13,6 +13,16 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { Response, Request } from 'express';
 import { join } from "path";
+import multer = require("multer");
+
+type validMimeType =  'image/png' | 'image/jpg' | 'image/jpeg' | 'image/gif'
+
+const validMimeTypes: validMimeType [] = [
+	'image/png',
+	'image/jpg',
+	'image/jpeg',
+	'image/gif'
+]
 
 export const storage = {
 	storage: diskStorage({
@@ -23,6 +33,13 @@ export const storage = {
 			cb(null, `${filename}${extension}`)
 		}
 	}),
+	fileFilter: (req, file, cb) => {
+		const allowedMimeTypes: validMimeType[] =  validMimeTypes;
+		allowedMimeTypes.includes(file.mimetype) ? cb(null, true) : cb(null, false);
+	},
+	limits: {
+		fileSize: 1000000
+    }
 }
 
 @ApiTags('users')
@@ -152,12 +169,12 @@ export class UserController {
 
 	@ApiOperation({summary: 'User Get Profile Picture'})
 	@ApiOkResponse({description: 'Picture File'})
-	@ApiParam({name: 'userId', required: true, description: 'userId'})
+	@ApiParam({name: 'profilePicture', required: true, description: 'Profile Picture'})
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
-	@Get('/avatar/:userId')
-	getProfilePicture(@Res() res, @Param('userId') userId): Promise<Observable<object>> {
-		return this.userService.getProfilePicture(res, userId);
+	@Get('/avatar/:profilePicture')
+	getProfilePicture(@Res() res, @Param('profilePicture') profilePicture: string): Promise<Observable<object>> {
+		return this.userService.getProfilePicture(res, profilePicture);
 	}
 
 	@ApiOperation({summary: 'User Add Friend'})

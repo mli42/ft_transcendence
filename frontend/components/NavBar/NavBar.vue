@@ -25,18 +25,22 @@ export default Vue.extend({
   name: 'NavBar',
   data() {
     return {
-      profileRoute: `/profile/${this.$store.state.user.username}` as string,
     };
+  },
+  computed: {
+    profileRoute(): string {
+      return `/profile/${this.$store.state.user.username}`;
+    },
   },
   methods: {
     logOut(): void{
       this.$axios
       .delete('/api/user/logout')
-      .then((response: any): void =>{
-        console.log("LOGOUT SUCCESS");
-        this.$router.push({ name: 'login' })
+      .then((response: any): void => {
+        this.$router.push('/login')
+        this.$mytoast.info('Logged out');
       })
-      .catch((error: any): void =>{
+      .catch((error: any): void => {
         console.log("LOGOUT FAILURE");
       });
     }

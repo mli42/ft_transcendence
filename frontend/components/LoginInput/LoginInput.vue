@@ -3,7 +3,7 @@
     <div class="label">
       <label :for="id">{{ name }}</label>
       <div v-if="isPassword" @click="hidePassword = !hidePassword">
-        <Iconify :iconName="this.eyeType" param="color=white"
+        <Iconify :iconName="this.eyeType"
         alt="eye icon to show/hide password"
         ></Iconify>
       </div>

@@ -28,6 +28,11 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'search',
+  head(): object {
+    return {
+      title: "Search" as String,
+    };
+  },
   data() {
     return {
       who: '' as string,

@@ -12,7 +12,7 @@
       <div class="flexAlignRow">
         <p class="elo">elo: {{user.elo}}</p>
         <Iconify v-if="user.status == 'Playing'" title="Currently playing"
-        iconName="ri:sword-line" param="color=white" class="playing"></Iconify>
+        iconName="ri:sword-line" class="playing"></Iconify>
       </div>
     </div>
 

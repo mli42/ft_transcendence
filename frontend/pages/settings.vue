@@ -15,24 +15,25 @@
         <v-btn class="ChangeBtn" @click="modalBool.showQRC = true; getQRC()">
           <p class="v-btn-content" >Show your current QR code</p>
         </v-btn>
+        <v-btn class="ChangeBtn" @click="toggle2FA">
+          <p class="v-btn-content" >{{twofaAction}} 2FA</p>
+        </v-btn>
         <v-btn color="error" class="DeleteBtn" @click="modalBool.showDelete = true">
           <p class="v-btn-content" >Delete my account</p>
         </v-btn>
       </form>
     </div>
-    <div class="errMessages">
-      <v-expand-transition v-for="(msg, index) in msgErr" :key="index">
-        <v-alert dense dismissible elevation="8" type="warning">
-          <p style="text-transform: uppercase;">{{msg}}</p>
-        </v-alert>
-      </v-expand-transition>
-    </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPicture">
+      <p class="uploadPreview">Preview</p>
       <img class="profilePicture" :src="imgURL" alt="Profile image">
+      <p class="uploadDetails">
+        Files accepted: png/jpg/jpeg/gif.
+        Up to 1Mb.
+      </p>
       <input type="file" name="file" id="file" ref="file" class="inputFile" @change="fileSelected"/>
       <label class="labelFile" for="file">Upload a picture</label>
-      <v-btn id="doneBtn" @click="modalBool.showPicture = false, uploadFile()">
-        <p class="v-btn-content">Done</p>
+      <v-btn id="doneBtn" @click="modalBool.showPicture = false; uploadFile()">
+        <p class="v-btn-content">Yes, change my avatar</p>
       </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
@@ -56,6 +57,11 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'settings',
+  head(): object {
+    return {
+      title: "Settings" as String,
+    };
+  },
   data(): any {
     return {
       nickName: '' as String,
@@ -65,9 +71,6 @@ export default Vue.extend({
       imgURL: `${this.$store.state.avatarURL}` as string,
       QRChtml: '' as string,
       toSend: {} as Object,
-      currentUser: this.$store.state.user as any,
-      msgErr: [],
-      validated: false as boolean,
       activate2fa: false as boolean,
       modalBool : {
         showPicture: false as boolean,
@@ -75,6 +78,14 @@ export default Vue.extend({
         showQRC: false as boolean,
       }
     };
+  },
+  computed: {
+    currentUser(): any {
+      return this.$store.state.user;
+    },
+    twofaAction(): string {
+      return (this.currentUser.twoFactorAuth ? 'Deactivate' : 'Activate');
+    },
   },
   methods: {
     addPorp(): void{
@@ -87,19 +98,19 @@ export default Vue.extend({
         this.toSend.password = this.passWord;
     },
     catchErr(err: any): void {
-      const errorTab = err.response.data.message;
-      this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;
-      setTimeout(() => { this.msgErr = [];}, 6000);
+      this.$mytoast.err(err.response.data.message);
     },
     changeSettings(): void {
       this.addPorp();
-      if (this.toSend.length == 0) {
+      if (Object.keys(this.toSend).length == 0) {
+        this.$mytoast.info('Warning: No field filled');
         return ;
       }
       this.$axios
       .patch('/api/user/settings', this.toSend)
       .then((response: any): void => {
-        this.validated = true;
+        this.$mytoast.succ(`${Object.keys(this.toSend)}: updated`);
+        this.$store.commit('updateUserPartial', this.toSend);
       })
       .catch(this.catchErr);
     },
@@ -110,36 +121,62 @@ export default Vue.extend({
     },
     fileSelected(): void{
         this.pictureFile = this.$refs.file.files[0];
-        this.imgURL = URL.createObjectURL(this.$refs.file.files[0]);
-        console.log(this.$refs.file.files[0])
+        this.imgURL = URL.createObjectURL(this.pictureFile);
     },
     uploadFile(): void{
-      let file = new FormData();
-      file.append('file', this.pictureFile);
+      if (!this.pictureFile) {
+        this.$mytoast.err('No avatar uploaded');
+        return ;
+      }
+
+      let file: FormData = new FormData();
+      const ext: string = this.pictureFile.name.split('.').pop();
+      const newFilename: string = `${this.currentUser.username}-.${ext}`;
+
+      file.append('file', this.pictureFile, newFilename);
       this.$axios
       .post('/api/user/upload/avatar', file)
-      .catch(this.catchErr);
+      .then((res: any) => {
+        this.pictureFile = null;
+        this.$store.dispatch('updateAvatar', res.data);
+        this.$mytoast.succ('Avatar successfully updated');
+      })
+      .catch(this.catchErr)
+      .finally(() => {
+        this.imgURL = `${this.$store.state.avatarURL}`;
+      });
     },
     getQRC(): void{
       this.$axios
-      .get(`/api/auth/2fa/${this.currentUser.userId}`)
+      .get(`/api/auth/2fa/${this.currentUser.username}/${this.currentUser.userId}`)
       .then((response: any): void =>{
         this.QRChtml = response.data;
       })
       .catch((error: any): void =>{
-        console.log("QRC FAILURE");
+        this.$mytoast.err("QRC FAILURE");
       });
     },
     deleteAccount(): void{
       this.$axios
       .delete('/api/user/delete')
       .then((response: any): void =>{
-        console.log("DELETE SUCCESS");
         this.$router.push({ name: 'login' })
+        this.$mytoast.succ("Account successfully deleted");
       })
       .catch((error: any): void =>{
-        console.log("DELETE FAILURE");
+        this.$mytoast.err("DELETE FAILURE");
       });
+    },
+    toggle2FA(): void {
+      this.$axios
+      .patch('/api/user/updateTwoFactorAuth', {
+        toggle: !this.currentUser.twoFactorAuth,
+      })
+      .then(() => {
+        this.$mytoast.succ(`${this.twofaAction}d 2FA!`);
+        this.$store.commit('update2FA', !this.currentUser.twoFactorAuth);
+      })
+      .catch();
     },
   },
 });

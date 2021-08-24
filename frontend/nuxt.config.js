@@ -25,6 +25,7 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     '~/assets/main.scss',
+    '~/assets/toast.scss',
     '~/assets/Palette.scss',
     '~/assets/transitions.scss',
   ],
@@ -32,6 +33,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/user.ts',
+    '~/plugins/mytoast.ts',
   ],
 
   // pageTransition: 'fade',
@@ -51,7 +53,8 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/toast',
   ],
 
   router: {
@@ -61,6 +64,13 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     credentials: true,
+  },
+
+  toast: {
+    position: 'top-center',
+    keepOnHover: true,
+    message: (payload) => payload.message,
+    theme: 'bubble',
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify

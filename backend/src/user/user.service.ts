@@ -104,7 +104,8 @@ export class UserService {
 		return {
 			userId: user.userId,
 			username: user.username,
-			status: user.status
+			status: user.status,
+			profile_picture: user.profile_picture,
 		}
 	}
 
@@ -114,13 +115,14 @@ export class UserService {
 
 	async updateUser(updateUser: UpdateUserDto, user: User, @Res({passthrough: true}) res: Response): Promise<void> {
 		const { username } = updateUser;
-		if(username)
+
+		const updated: boolean = await this.usersRepository.updateUser(updateUser, user);
+		if (updated === true)
 		{
 			const payload: JwtPayload = { username };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
 		}
-		return this.usersRepository.updateUser(updateUser, user);
 	}
 
 	async deleteUser(id: string, @Res({passthrough: true}) res: Response): Promise<void> {
@@ -132,9 +134,8 @@ export class UserService {
 		return this.usersRepository.saveImage(file, user);
 	}
 
-	async getProfilePicture(@Res() res, userId: string): Promise<Observable<object>> {
-		let user: User = await this.usersRepository.findOne({userId: userId});
-		return of(res.sendFile(join(process.cwd(), '../upload/image/' + user.profile_picture)));
+	async getProfilePicture(@Res() res, profilePicture: string): Promise<Observable<object>> {
+		return of(res.sendFile(join(process.cwd(), '../upload/image/' + profilePicture)));
 	}
 
 	addFriend(friend: string, user: User): Promise<void> {
