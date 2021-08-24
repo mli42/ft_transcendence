@@ -12,17 +12,7 @@
         <ProfileModBtn v-if="myself.isAdmin" class="modPromote" @toggled="modPromote" :title="adminTitle" icon="bx:bx-key"></ProfileModBtn>
       </div>
 
-      <div class="friendContainer">
-        <p>Friends</p> <hr />
-        <p class="NoFriend" v-if="user.friends.length == 0">
-          Search some profiles to add new friends!
-        </p>
-        <div v-else class="friendList">
-          <div v-for="(userId, index) in user.friends" :key="index">
-            <ProfileFriendCard :userId="userId"></ProfileFriendCard>
-          </div>
-        </div>
-      </div>
+      <ProfileFriendList :user="user"></ProfileFriendList>
     </div>
 
     <div>
