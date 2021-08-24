@@ -17,6 +17,7 @@ export class MessageService {
     }
 
     async findMessagesForChannel(channel: ChannelI): Promise<MessageI[]> {
+        console.log(channel);
         const query = this.messageRepository
         .createQueryBuilder('message')
         .leftJoin('message.channel', 'channel')

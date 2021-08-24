@@ -44,14 +44,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     async handleConnection(client: Socket) {
         try {
-            const user: User = await this.channelService.getUserFromSocket(client);            
+            const user: User = await this.channelService.getUserFromSocket(client);
             if (!user) {
                 return this.disconnectClient(client);
             } 
             else {
                 client.data.user = user;
-                
-                const channels = await this.channelRepository.getChannelsForUser(user.userId);
+                const channels = this.channelRepository.getChannelsForUser(user.userId);
                 
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
@@ -122,22 +121,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     /********************* Join Channel *********************/
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
-
-        // const { channelId } = channel;
-        // const channelFound = await this.channelService.getChannel(channelId);
-
-        console.log("- JOIN CHANNEL -")
-        console.log(channel)
         const messages = await this.messageService.findMessagesForChannel(channel)
-        console.log("- OK1 -")
+
         // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
-        console.log("- OK2 -")
+
         // send last message from channel to user
         await this.server.to(client.id).emit('messages', messages);
         // client.join(room);
         // client.emit('joinedRoom', room);
-        console.log("- OK3 -")
     }
 
     /********************* Leave Channel ********************/

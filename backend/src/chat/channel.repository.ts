@@ -22,11 +22,11 @@ export class ChannelRepository extends Repository<Channel> {
 		const query = this
 		.createQueryBuilder('channel')
 		.leftJoin('channel.users', 'users')
-		.where('users.userId =  :userId', {userId})
+		.where('users.userId = :userId', {userId})
 		.leftJoinAndSelect('channel.users', 'all_users')
-		// .orderBy('channel.updated_at', 'DESC');
+		.orderBy('channel.update_at', 'DESC');
 		const channels: ChannelI[] = await query.getMany();
-		console.log(channels)
+		// console.log(channels)
 		return channels;
 	}
 
