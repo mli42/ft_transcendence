@@ -128,6 +128,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
 
+        console.log("*MESSAGES*");
+        console.log(messages);
         // send last message from channel to user
         await this.server.to(client.id).emit('messages', messages);
         // client.join(room);
