@@ -52,19 +52,19 @@ export class AuthController {
 	@ApiParam({name: 'secret', required: true, description: 'Code authentication - Google Authenticator'})
 	@UseGuards(AuthGuard('jwt'))
 	@Post('2fa/:secret')
-	async validate(@Param('secret') secret, @Req() req, @Res() res) {
+	async validate(@Param('secret') secret, @Req() req, @Res({passthrough: true}) res: Response) {
 		const user: User = req.user;
 		const resp = await this.httpService.get(
 		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}&SecretCode=${user.userId}`,
 		).toPromise();
-		if (resp.data === true) {
+		if (resp.data === 'True') {
 			const username = user.username;
-			let auth: boolean = true;
+			const auth: boolean = true;
 			const payload: JwtPayload = { username, auth };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
 		}
-	  return resp.data;
+	  	return resp.data;
 	}
 
 }

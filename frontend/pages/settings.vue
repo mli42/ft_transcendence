@@ -143,7 +143,7 @@ export default Vue.extend({
     },
     getQRC(): void{
       this.$axios
-      .get(`/api/auth/2fa/${this.currentUser.username}/${this.currentUser.userId}`)
+      .get(`/api/auth/2fa`)
       .then((response: any): void =>{
         this.QRChtml = response.data;
       })
