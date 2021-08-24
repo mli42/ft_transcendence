@@ -25,7 +25,8 @@ export class AuthController {
 	@UseGuards(IntraAuthGuard)
 	async redirect(@Res({passthrough: true}) res: Response, @Req() req: Request) {
 		const username = req.user['username'];
-		const payload: JwtPayload = { username };
+		let auth: boolean = false;
+		const payload: JwtPayload = { username, auth };
 		const accessToken: string = await this.jwtService.sign(payload);
 		res.cookie('jwt', accessToken, {httpOnly: true});
 		res.redirect("http://localhost:3030");

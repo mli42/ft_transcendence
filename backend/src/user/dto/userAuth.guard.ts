@@ -2,6 +2,7 @@ import { Injectable, CanActivate, ExecutionContext, Res, Inject, forwardRef } fr
 import { Observable } from 'rxjs';
 import { User } from '../entities/user.entity';
 import { UserService } from '../user.service';
+import jwt_decode from "jwt-decode";
 
 @Injectable()
 export class UserAuth implements CanActivate {
@@ -12,15 +13,15 @@ export class UserAuth implements CanActivate {
 
     canActivate(context: ExecutionContext): boolean {
         const request = context.switchToHttp().getRequest();
-        let respons = context.switchToHttp().getResponse();
         const user: User = request.user;
+
         if (user.twoFactorAuth === false)
             return true;
-        // console.log("cookie: ", request.cookies.userAuth);
-        // console.log(typeof(request.cookies.userAuth));
-        if (request.cookies.userAuth === 'false') {
+
+        let decode = jwt_decode(request.cookies.jwt);
+        if (decode['auth'] === false) {
             return false;
         }
         return true
-  }
+    }
 }

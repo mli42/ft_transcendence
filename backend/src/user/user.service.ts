@@ -26,10 +26,10 @@ export class UserService {
 		const {username, password } = userData;
 		const user: Promise<User> = this.usersRepository.createUser(userData);
 		if (await bcrypt.compare(password, (await user).password)) {
-			const payload: JwtPayload = { username };
+			let auth: boolean = false;
+			const payload: JwtPayload = { username, auth };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
-			res.cookie('userAuth', false);
 			return {accessToken};
         } else {
             throw new InternalServerErrorException('access token creation error')
@@ -69,7 +69,8 @@ export class UserService {
 		}
 		if (user && (await bcrypt.compare(password, user.password))) {
 			const username = user.username;
-			const payload: JwtPayload = { username };
+			let auth: boolean = false;
+			const payload: JwtPayload = { username, auth };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
 			return {accessToken};
@@ -120,7 +121,8 @@ export class UserService {
 		const updated: boolean = await this.usersRepository.updateUser(updateUser, user);
 		if (updated === true)
 		{
-			const payload: JwtPayload = { username };
+		   	let auth: boolean = true;
+			const payload: JwtPayload = { username, auth };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
 		}
