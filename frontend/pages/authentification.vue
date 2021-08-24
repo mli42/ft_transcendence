@@ -3,9 +3,10 @@
     <img alt="square logo" src="~/assets/img/logo500.png" />
     <hr class="middleHR"/>
     <div class="content">
-      <h1>Two-factor Authentification</h1>
-      <label for="code">Code :</label>
-      <input type="text" name="code" v-model.lazy="secretCode" />
+      <h1>Two Factor Authentication</h1>
+      <label for="code2FA">Code :</label>
+      <input id="code2FA" type="text" name="code"
+      v-model.lazy="secretCode" @keyup.enter="verifSecret" />
       <v-btn class="verify" @click="verifSecret">
         <p class="v-btn-content">Verify</p>
       </v-btn>
@@ -25,15 +26,24 @@ export default Vue.extend({
     };
   },
   methods: {
-    verifSecret(): void{
+    verifSecret(): void {
+      if (this.secretCode.length == 0) {
+        this.$mytoast.info('Code is empty');
+        return ;
+      }
       this.$axios
       .post(`/api/auth/2fa/${this.secretCode}`)
       .then((response: any): void => {
-        this.$router.push('/')
-        this.$mytoast.succ('Authenticated');
+        const isOK: boolean = (response.data === 'True');
+
+        if (isOK) {
+          this.$router.push('/')
+          this.$mytoast.succ('Authenticated');
+        } else {
+          this.$mytoast.err('Wrong code');
+        }
       })
       .catch((error: any): void => {
-        this.$mytoast.err('Wrong code');
       });
     },
   },
