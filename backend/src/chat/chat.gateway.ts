@@ -50,11 +50,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             } 
             else {
                 client.data.user = user;
-                const channels = this.channelRepository.getChannelsForUser(user.userId);
+                const channels = await this.channelRepository.getChannelsForUser(user.userId);
                 
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
                 // emit channels for the specific user
+                console.log("* CHANNELS *")
+                console.log(channels);
 
                 return this.server.to(client.id).emit('channel', channels);
             }
