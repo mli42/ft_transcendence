@@ -1,15 +1,23 @@
-/*
- * dataStructures.ts
- * File contains all structures used by the game canvas.
- *
- * PO -> playerOne
- * PT -> playerTwo
-*/
+export {Ball, Game, PowerUp, Mouse, Player, IplayerPalette}
 
-export default class {}
+interface IplayerPalette {
+  [index: string]: string;
+}
+
+class Mouse {
+  x: number;
+  y: number;
+  playerId: string;
+
+  constructor(id: string, x: number, y: number) {
+    this.x = x;
+    this.y = y;
+    this.playerId = id;
+  }
+}
 
 // This class contain all data to represente a ball
-export class Ball {
+class Ball {
   pos: Array<number>; // x -> [0] y -> [1]
   size: number; // in px
   speed: number;
@@ -25,37 +33,45 @@ export class Ball {
   }
 }
 
+class Player {
+  name: string;
+  color: string;
+  barLen: number; // in px
+
+  constructor() {
+    this.name = "marvin";
+    this.color = "#FFFFFF";
+    this.barLen = 160; // in px
+  }
+}
+
 // This class contain all data to represent a game.
-export class Game {
+class Game {
   id: string;
   ball: Ball;
+  type: string;                 // Type of the game. Matchmaking | Private
   state: string;
   score: Array<number>;
-  POName: string;
-  PTName: string;
-  POColor: string;
-  PTColor: string;
+  creator: string;              // The userId of the game creato
   mapName: string;
-  POBarLen: number; // in px
-  PTBarLen: number; // in px
+  players: Map<string, Player>; // string -> userId
+  enabledPowerUps: Array<string>;
 
   constructor() {
     this.id = "";
     this.ball = new Ball();
+    this.type = "matchmaking";
     this.state = "waiting";
     this.score = [0, 0] as Array<number>;
-    this.POName = "marvin1";
-    this.PTName = "marvin2";
-    this.PTColor = "#FA163F";
-    this.POColor = "#3EDBF0";
-    this.mapName = "";
-    this.POBarLen = 160;
-    this.PTBarLen = 160;
+    this.creator = "";
+    this.mapName = "tennis";
+    this.players = new Map();
+    this.enabledPowerUps = new Array<string>();
   }
 }
 
 // This class contain all data to represente a powerUp
-export class PowerUp {
+class PowerUp {
   pos: Array<number>;
   name: string;
   modifier: ((game: Game) => void);

@@ -1,4 +1,5 @@
 import io, { Socket } from "socket.io-client";
+import { Game, Player } from "./dataStructures";
 
 export { socket, socketInit };
 
@@ -16,5 +17,14 @@ function socketInit(url:string, channel: string, vue: Vue): void {
   });
   socket.on("disconnect", () => {
     console.log("Disconnected to newsocket channel " + channel);
+  });
+  socket.on("fetchGameTC", (game: Game) => {
+    vue.$data.game = game;
+  });
+  socket.on("updatePlayersTC", (players: Map<string, Player>) => {
+    vue.$data.game.players = players;
+  });
+  socket.on("updatePlayerTC", (payload: {userId: string, player: Player}) => {
+    vue.$data.game.players.set(payload.userId, payload.player);
   });
 }

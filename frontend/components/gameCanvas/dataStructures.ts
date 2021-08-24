@@ -1,12 +1,8 @@
-/*
- * dataStructures.ts
- * File contains all structures used by the game canvas.
- *
- * PO -> playerOne
- * PT -> playerTwo
-*/
+export {Ball, Game, PowerUp, Mouse, Player, IplayerPalette}
 
-export {Ball, Game, PowerUp, Mouse, Player}
+interface IplayerPalette {
+  [index: string]: string;
+}
 
 class Mouse {
   x: number;
@@ -53,19 +49,25 @@ class Player {
 class Game {
   id: string;
   ball: Ball;
+  type: string;                 // Type of the game. Matchmaking | Private
   state: string;
   score: Array<number>;
-  players: Map<string, Player>; // string -> userId
+  creator: string;              // The userId of the game creator
   mapName: string;
+  players: Map<string, Player>; // string -> userId
+  opponent: string;             // The userId of the opponenent;
   enabledPowerUps: Array<string>;
 
   constructor() {
     this.id = "";
     this.ball = new Ball();
+    this.type = "matchmaking";
     this.state = "waiting";
     this.score = [0, 0] as Array<number>;
+    this.creator = "";
     this.mapName = "tennis";
     this.players = new Map();
+    this.opponent = "";
     this.enabledPowerUps = new Array<string>();
   }
 }

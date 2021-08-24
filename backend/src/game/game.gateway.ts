@@ -1,6 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Logger } from "@nestjs/common";
-import Game from "./dataStructures";
+import { Game } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 
 let userRoomsMap: Map<Socket, string> = new Map(); // Relation between players and rooms(games)
