@@ -29,7 +29,7 @@
             <img src="~/assets/img/avatar.jpeg">
             <div class="msgDiv">
               <p>Name</p>
-              <div class="msgContent"> {{ msg }} </div>
+              <div class="msgContent"> {{ msg.text }} </div>
             </div>
           </li>
         </ul>
@@ -112,9 +112,8 @@ export default Vue.extend({
   },
   methods: {
     joinChannel(index: number): void{
-      console.log(index);
+      console.log('coucou1');
       this.currentChannel = this.channels[index];
-      console.log('channel id: ', this.currentChannel)
       this.socket.emit('joinChannel', this.channels[index]);
     },
     sendMsg(): void {
@@ -141,7 +140,6 @@ export default Vue.extend({
     createChannel(): void{
       this.socket.emit('createChannel', {channelName: this.newChannel.name,
       users: this.newChannel.members});
-      console.log(this.newChannel.members);
     },
     hideModal(): void {
       this.modalBool.showCreate = false;
@@ -151,24 +149,27 @@ export default Vue.extend({
   mounted() {
     this.socket = io('ws://localhost:3000/', {withCredentials: true});
     console.log(this.socket);
-    this.socket.on("message", (data: any) => {
-      console.log('msgToClient : ');
-      console.log(data);
-      this.recvMsg(data);
+    this.socket.on("messageAdded", (data: any) => {
+      this.recvMsg(data.text);
     });
     this.socket.on("channel", (data: any) => {
-      console.log('channels : ');
+      // console.log('channels : ', data);
       this.channels = data;
-      console.log(this.channels);
+      // console.log(this.channels);
+    });
+    this.socket.on('messages', (data: any) => {
+        // console.log('coucou2');
+        // console.log('tab msg', data)
+        this.messages = data;
     });
     this.$store.state.user.friends.forEach((element: any) => {
       this.$axios
       .get(`/api/user/partialInfo?userId=${element}`)
-      .then((resp: any) => {this.friends.push(resp.data);
-      console.log('ici', resp.data)})
+      .then((resp: any) => {this.friends.push(resp.data);})
       .catch(() => console.log('Oh no'));
     });
   },
+  
 });
 </script>
 
