@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, Res, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, Res, Inject, forwardRef, ForbiddenException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { User } from '../entities/user.entity';
 import { UserService } from '../user.service';
@@ -20,7 +20,7 @@ export class UserAuth implements CanActivate {
 
         let decode = jwt_decode(request.cookies.jwt);
         if (decode['auth'] === false) {
-            return false;
+            throw new ForbiddenException('need 2FA');
         }
         return true
     }

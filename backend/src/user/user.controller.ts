@@ -74,7 +74,7 @@ export class UserController {
 	})
 	@ApiOkResponse({description: 'True is a user is log in'})
 	@ApiUnauthorizedResponse({description: 'Unauthorized if no cookie found'})
-	@UseGuards(AuthGuard('jwt'))
+	@UseGuards(AuthGuard('jwt'), UserAuth)
 	/*******/
 	@Get('/isLogin')
 	isLogin(@Req() req: Request): boolean{
@@ -86,7 +86,7 @@ export class UserController {
 
 	@ApiOperation({summary: 'Get all info of current user'})
 	/*******/
-	@UseGuards(AuthGuard('jwt'))
+	@UseGuards(AuthGuard('jwt'), UserAuth)
 	@Get('/currentUser')
 	currentUser(@Req() req) : Promise<Partial<User>> {
 		const user: User = req.user;
