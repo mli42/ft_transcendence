@@ -4,7 +4,7 @@
       <div class="search flexHVcenter">
         <input  type="text" name="mysearch" id="mysearch">
       </div>
-      <ul class="listChannel">
+      <ul>
         <li v-for="(item, index) in channels" :key="index">
           <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
         </li>
@@ -87,7 +87,7 @@ export default Vue.extend({
     return {
       txt: '' as string,
       messages: [] as Message[],
-      // socket: {} as any,
+      socket: {} as any,
       channels: [] as Channel[],
       currentChannel: new Channel as Channel,
       modalBool : {
@@ -109,27 +109,23 @@ export default Vue.extend({
       },
       selectedChannel: false as boolean,
       friends: [],
+      // selected: false as boolean,
     }
   },
   methods: {
     joinChannel(index: number): void{
-      this.$store.commit('emitSocket', 'leaveChannel');
-      // this.$store.state.socket.emit('leaveChannel');
+      this.socket.emit('leaveChannel');
       // this.selected = !this.selected;
       this.currentChannel = this.channels[index];
-      this.$store.commit('emitSocket', 'joinChannel', this.channels[index]);
-      // this.$store.state.socket.emit('joinChannel', this.channels[index]);
+      this.socket.emit('joinChannel', this.channels[index]);
     },
     sendMsg(): void {
       // console.log(this.currentChannel.id)
-      this.$store.commit('emitSocket', 'newMessage', {text: this.txt,
+      this.socket.emit('newMessage', 
+      	{text: this.txt,
         channel: this.currentChannel,
-      });
-      // this.$store.state.socket.emit('newMessage', 
-      	// {text: this.txt,
-        // channel: this.currentChannel,
-        // }
-      // );
+        }
+      );
       this.txt = '';
     },
     fillMembers(data: string[]): void{
@@ -145,7 +141,7 @@ export default Vue.extend({
       this.messages.push(msg);
     },
     createChannel(): void{
-      this.$store.commit('emitSocket','createChannel', {channelName: this.newChannel.name,
+      this.socket.emit('createChannel', {channelName: this.newChannel.name,
       users: this.newChannel.members});
     },
     hideModal(): void {
@@ -154,28 +150,19 @@ export default Vue.extend({
     },
   },
   mounted() {
-    // this.socket = io('ws://localhost:3000/', {withCredentials: true});
-    // console.log(this.socket);
-    this.$store.commit('listenSocket', 'messageAdded', (data: any) => {
+    this.socket = io('ws://localhost:3000/', {withCredentials: true});
+    console.log(this.socket);
+    this.socket.on("messageAdded", (data: any) => {
       this.recvMsg(data);
     });
-    // this.$store.state.socket.on("messageAdded", (data: any) => {
-    //   this.recvMsg(data);
-    // });
-    this.$store.commit('listenSocket', 'channel', (data: any) => {
+    this.socket.on("channel", (data: any) => {
+      // console.log('channels : ', data);
       this.channels = data;
+      // console.log(this.channels);
     });
-    this.$store.commit('listenSocket', 'messages', (data: any) => {
-      this.messages = data;
-    })
-    // this.$store.state.socket.on("channel", (data: any) => {
-    //   // console.log('channels : ', data);
-    //   this.channels = data;
-    //   // console.log(this.channels);
-    // });
-    // this.$store.state.socket.on('messages', (data: any) => {
-    //     this.messages = data;
-    // });
+    this.socket.on('messages', (data: any) => {
+        this.messages = data;
+    });
     this.$store.state.user.friends.forEach((element: any) => {
       this.$axios
       .get(`/api/user/partialInfo?userId=${element}`)
@@ -183,6 +170,7 @@ export default Vue.extend({
       .catch(() => console.log('Oh no'));
     });
   },
+  
 });
 </script>
 
