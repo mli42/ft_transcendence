@@ -59,6 +59,11 @@ ul {
     list-style: none;
 }
 
+.listChannel{
+    overflow-y: scroll;
+    height: 1099px;
+}
+
 .chatRoomName {
     position: absolute;
     width: 1058px;

@@ -2,6 +2,7 @@ export const state = () => ({
   user: {} as any,
   isLogged: false as boolean,
   avatarURL: '' as string,
+  socket: undefined as any,
 });
 
 export type indexState = ReturnType<typeof state>;
@@ -36,6 +37,18 @@ export const mutations = {
   },
   update2FA(state: indexState, bool: boolean): void {
     state.user.twoFactorAuth = bool;
+  },
+  updateSocket(state: indexState, socket: any): void {
+    state.socket = socket;
+  },
+  listenSocket(state: indexState, event: string, fct: Function): void{
+    state.socket.on(event, fct);
+  },
+  emitSocket(state: indexState, event: string, objet: any): void{
+    if (objet === undefined)
+      state.socket.emit(event);
+    else
+      state.socket.emit(event, objet);
   },
 };
 

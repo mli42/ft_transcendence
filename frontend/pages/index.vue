@@ -54,6 +54,8 @@ export default Vue.extend({
       return this.$store.state.user;
     },
   },
+  mounted() {
+  }
 });
 </script>
 

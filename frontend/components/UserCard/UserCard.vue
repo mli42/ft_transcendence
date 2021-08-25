@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ red : selected }" @click="joinChannel(index), selected = true">
+  <div :class="{ red : name === channelName }" @click="joinChannel(index)">
       <img src="~/assets/img/chatbubble.svg">
       <p>{{ name }}</p>
   </div>
@@ -12,7 +12,7 @@ export default Vue.extend({
   layout: 'default',
   data(): any {
     return {
-        selected: false as boolean,
+        // selected: false as boolean,
     }
   },
   computed: {
@@ -23,7 +23,7 @@ export default Vue.extend({
         this.selected = false;
     }
   },
-  props: ['name', 'joinChannel', 'index'],
+  props: ['name', 'joinChannel', 'index', 'channelName'],
 });
 </script>
 
