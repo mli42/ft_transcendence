@@ -14,7 +14,7 @@ import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { Response, Request } from 'express';
 import { join } from "path";
 import multer = require("multer");
-import { UserAuth } from "./dto/userAuth.guard";
+import { UserAuth } from "./guards/userAuth.guard";
 
 type validMimeType =  'image/png' | 'image/jpg' | 'image/jpeg' | 'image/gif'
 
@@ -228,7 +228,7 @@ export class UserController {
 
 	@ApiOperation({summary: 'Logout the user'})
 	/*******/
-	@UseGuards(AuthGuard('jwt'), UserAuth)
+	@UseGuards(AuthGuard('jwt'))
 	@Delete('/logout')
 	logout(@Res({passthrough: true}) res: Response) {
 		res.clearCookie('jwt');
@@ -258,7 +258,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'), UserAuth)
 	@Patch('/updateTwoFactorAuth')
-	updateTwoFactorAuth(@Body('toggle') bool: boolean, @Req() req, @Res() res): Promise<void> {
+	updateTwoFactorAuth(@Body('toggle') bool: boolean, @Req() req, @Res({passthrough: true}) res): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateTwoFactorAuth(bool, user, res);
 	}
