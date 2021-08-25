@@ -12,6 +12,13 @@ export class GameService {
     getAllMap(): object {
         let fs = require('fs');
         let files = fs.readdirSync('../upload/map/');
+
+        // Remove extension
+        // let i = 0;
+        // while (files[i] !== undefined) {
+        //     files[i] = files[i].split('.').slice(0, -1).join('.');
+        //     i++;
+        // }
         return files;
     }
 }
