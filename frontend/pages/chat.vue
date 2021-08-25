@@ -6,7 +6,7 @@
       </div>
       <ul>
         <li v-for="(item, index) in channels" :key="index">
-          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
+          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter">
@@ -109,10 +109,13 @@ export default Vue.extend({
       },
       selectedChannel: false as boolean,
       friends: [],
+      // selected: false as boolean,
     }
   },
   methods: {
     joinChannel(index: number): void{
+      this.socket.emit('leaveChannel');
+      // this.selected = !this.selected;
       this.currentChannel = this.channels[index];
       this.socket.emit('joinChannel', this.channels[index]);
     },
@@ -135,7 +138,6 @@ export default Vue.extend({
       this.newChannel.admin = data;
     },
     recvMsg(msg: string): void {
-      console.log('ICI :', msg);
       this.messages.push(msg);
     },
     createChannel(): void{
