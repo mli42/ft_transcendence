@@ -12,8 +12,8 @@
     border: 3px solid #001D3D;
     border-radius: 10px;
     width: 576px;
-    height: 264px;
-    align-content: center;
+    height: auto;
+    padding: 32px;
 }
 
 img {
@@ -31,9 +31,9 @@ hr.middleHR {
 h1 {
     text-align: center;
     color: white;
-    margin: 32px 32px;
     font-size: 40px;
     font-weight: 300;
+    margin-bottom: 32px;
 }
 
 .myInput {
@@ -44,14 +44,10 @@ h1 {
 label {
     display: flex;
     justify-content: space-between;
-    margin-right: 0px;
-    margin-bottom: 8px;
     color: white;
     font-size: 24px;
     line-height: 24px;
-    margin: 0 32px 8px 32px;
-    width: 400px;
-    margin: 0px 140px 8px 140px;
+    margin-bottom: 8px;
 }
 
 input {
@@ -64,18 +60,23 @@ input {
     font-size: 24px;
     line-height: 24px;
     color: $pg-white;
-    margin-left: 32px;
     padding: 7px 7px;
-    margin: 0 140px 16px 140px;
 }
 
+.logoutBtn,
 .verify {
     width: 296px;
     height: 32px;
-    margin: 16px 140px 32px 140px;
+    margin-top: 16px;
     font-size: 18px;
     text-transform: none;
     color: $pg-blue;
+}
+
+.logoutBtn {
+    margin-top: 32px;
+    color: white;
+    background: crimson !important;
 }
 
 div.errMessages {

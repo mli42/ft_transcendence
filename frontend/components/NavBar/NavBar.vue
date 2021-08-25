@@ -12,7 +12,7 @@
         <!-- Buttons Profile/Settings/Quit -->
         <NavBarProfileBtn :route="profileRoute"></NavBarProfileBtn>
         <NavBarRoundBtn route="/settings" icone="ci:settings"></NavBarRoundBtn>
-        <NavBarLogoutBtn icone="lucide:log-out" :logOut="logOut"></NavBarLogoutBtn>
+        <NavBarLogoutBtn icone="lucide:log-out" :logOut="this.$user.logout"></NavBarLogoutBtn>
       </div>
     </nav>
   </div>
@@ -31,19 +31,6 @@ export default Vue.extend({
     profileRoute(): string {
       return `/profile/${this.$store.state.user.username}`;
     },
-  },
-  methods: {
-    logOut(): void{
-      this.$axios
-      .delete('/api/user/logout')
-      .then((response: any): void => {
-        this.$router.push('/login')
-        this.$mytoast.info('Logged out');
-      })
-      .catch((error: any): void => {
-        console.log("LOGOUT FAILURE");
-      });
-    }
   },
 });
 </script>
