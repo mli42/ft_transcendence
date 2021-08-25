@@ -16,7 +16,6 @@ form {
     border: 3px solid $pg-dark-blue;
     justify-content: space-around;
     width: 416px;
-    min-height: 600px;
 }
 
 .contentTitle {
@@ -34,7 +33,8 @@ form {
     background: #219653 !important;
 }
 
-.ChangeBtn, .SaveBtn, .DeleteBtn, .modalBtn, #doneBtn,  #QRCBtn, #deleteModalBtn{
+.act2FA,
+.ChangeBtn, .SaveBtn, .DeleteBtn, .modalBtn, #doneBtn, #QRCBtn, #deleteModalBtn{
     width: 320px;
     height: 32px;
     margin-top: 16px;
@@ -51,6 +51,10 @@ form {
     background: $pg-red !important;
 }
 
+#QRCBtn {
+    background: $pg-green !important;
+}
+
 .profilePicture {
     width: 256px;
     height: 256px;
@@ -59,6 +63,7 @@ form {
     border: 3px solid $pg-dark-blue;
 }
 
+.act2FA,
 .modalBtn, #doneBtn, #QRCBtn, #deleteModalBtn{
     width: 256px;
     max-height: 32px;
@@ -100,9 +105,15 @@ form {
     background-color:rgba(220, 225, 230, 0.95)
 }
 
+p.txt2FA,
 p.uploadPreview,
 p.uploadDetails {
   color: $pg-white;
   margin: 16px auto;
-  white-space: pre;
+  white-space: pre-line;
+}
+
+p.txt2FA {
+  margin: 0;
+  margin-bottom: 16px;
 }
