@@ -4,7 +4,7 @@
       <div class="search flexHVcenter">
         <input  type="text" name="mysearch" id="mysearch">
       </div>
-      <ul>
+      <ul class="listChannel">
         <li v-for="(item, index) in channels" :key="index">
           <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
         </li>
@@ -47,27 +47,29 @@
           <input type="radio" name="private" @click="newChannel.public = false">
           <label for="private">Private</label>
           <input type="radio" name="private" @click="newChannel.public = true" checked>
-          <label for="public">Public</label>
+          <label for="private">Public</label>
         </div>
         <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public"></ModalInput>
-        <Dropdown toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
-        <Dropdown toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
+        <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
+        <Dropdown v-if="!newChannel.public" toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
         <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
           <p class="v-btn-content">Create</p>
         </v-btn>
       </SettingModal>
       <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
         <h1 id="settingModal">Channel Settings</h1>
-        <ModalInput name="Change passeword :" v-model.lazy="channelChanges.newPassword"  placeHolder="" :isPassword="true" :ispublic="channelChanges.public"></ModalInput>
-        <input class="addPassword" type="checkbox" name="addpassword" @click="addpassword = true">
-        <label class="addPassword" for="addpassword">Protected by password</label>
         <div class="visibility">
-          <input type="radio" name="private" @click="channelChanges.private = true">
-          <label for="private">Private</label>
-          <input type="radio" name="private" @click="channelChanges.private = false" checked>
-          <label for="public">Public</label>
+          <input type="radio" name="privateChange" @click="channelChanges.public = false">
+          <label for="privateChange">Private</label>
+          <input type="radio" name="privateChange" @click="channelChanges.public = true" checked>
+          <label for="privateChange">Public</label>
         </div>
-        <Dropdown toselect="Add members :" :items="friends" :value="channelChanges.members" :fillTab="fillMembers"></Dropdown>
+        <ModalInput name="Change passeword :" v-model.lazy="channelChanges.newPassword"  placeHolder="" :isPassword="true" :ispublic="!channelChanges.public"></ModalInput>
+        <div class="checkBoxePassword flexHVcenter" >
+          <input type="checkbox" name="addpassword" @click="addpassword = true" :disabled="channelChanges.public? true : false">
+          <label class="addPassword" for="addpassword">Protected by new password</label>
+        </div>
+        <Dropdown v-if="!channelChanges.public" toselect="Add members :" :items="friends" :value="channelChanges.members" :fillTab="fillMembers"></Dropdown>
         <v-btn class="DoneBtn" @click="modalBool.showSettings = false">
           <p class="v-btn-content">Apply changes</p>
         </v-btn>

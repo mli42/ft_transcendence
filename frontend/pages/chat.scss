@@ -163,7 +163,7 @@ h1{
 .DoneBtn{
     width: 256px;
     height: 32px;
-    margin-top: 16px;
+    margin: 16px auto;
     text-transform: none;
     font-size: 18px;
     background-color: $pg-green !important;
@@ -190,14 +190,17 @@ h1{
     margin: 0 0 7px 16px;
 }
 
-v-select label{
-    color: $pg-white !important; 
-}
+// v-select label{
+//     color: $pg-white !important; 
+// }
 
 .addPassword{
     color: $pg-white;
+    margin: 7px;
+}
+
+.checkBoxePassword{
     margin-bottom: 16px;
-    align-content: left;
 }
 
 #settingModal{
