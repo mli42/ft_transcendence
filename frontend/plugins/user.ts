@@ -6,6 +6,20 @@ function shortName(username: string, max_length: number = 10): string {
   return username.substr(0, max_length - 3) + "...";
 };
 
+function logout(context: any): Function {
+  return function () {
+    context.$axios
+    .delete('/api/user/logout')
+    .then((response: any): void => {
+      context.redirect('/login');
+      context.$mytoast.info('Logged out');
+    })
+    .catch((error: any): void => {
+      console.log("LOGOUT FAILURE");
+    });
+  }
+}
+
 export default (context: any, inject: Function) => {
   const port: number = 3000;
   const loc: any = window.location;
@@ -15,6 +29,7 @@ export default (context: any, inject: Function) => {
 
   inject('user', {
     shortName,
+    logout: logout(context),
     avatarBaseURL,
   });
 };

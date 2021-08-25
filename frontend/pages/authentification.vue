@@ -2,13 +2,18 @@
   <div class="auth flexHVcenter">
     <img alt="square logo" src="~/assets/img/logo500.png" />
     <hr class="middleHR"/>
-    <div class="content">
+    <div class="content flexHVcenter flexAlignCol">
       <h1>Two Factor Authentication</h1>
-      <label for="code2FA">Code :</label>
-      <input id="code2FA" type="text" name="code"
-      v-model.lazy="secretCode" @keyup.enter="verifSecret" />
+      <div>
+        <label for="code2FA">Code :</label>
+        <input id="code2FA" type="text" name="code"
+        v-model.lazy="secretCode" @keyup.enter="verifSecret" />
+      </div>
       <v-btn class="verify" @click="verifSecret">
         <p class="v-btn-content">Verify</p>
+      </v-btn>
+      <v-btn class="logoutBtn" @click="this.$user.logout">
+        <p>Logout</p>
       </v-btn>
     </div>
   </div>
