@@ -36,8 +36,6 @@ export class AuthController {
 
 	// two factor authentication
 	@ApiOperation({summary: 'QR code authentication - User'})
-	@ApiParam({name: 'username', required: true, description: 'username'})
-	@ApiParam({name: 'userId', required: true, description: 'userId'})
 	@UseGuards(AuthGuard('jwt'))
 	@Get('2fa')
 	async getQrcode(@Req() req) {
