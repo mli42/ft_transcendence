@@ -9,7 +9,11 @@ export default Vue.extend({
   name: 'Iconify',
   computed: {
     imgURL(): string {
-      return require(`~/assets/iconify/${this.iconName}.svg`);
+      let finalIconName = this.iconName;
+
+      if (this.param)
+        finalIconName += `-${this.param}`;
+      return require(`~/assets/iconify/${finalIconName}.svg`);
     },
   },
   props: {
