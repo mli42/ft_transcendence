@@ -3,7 +3,7 @@
     <div class="content">
       <h1 class="contentTitle">Settings</h1>
       <form>
-        <SettingInput name="Change your nickname :" v-model.lazy="nickName"  placeHolder="Your nickname"></SettingInput>
+        <SettingInput name="Change your username :" v-model.lazy="nickName" :placeHolder="this.currentUser.username"></SettingInput>
         <SettingInput name="Change your password :" v-model.lazy="passWord" :isPassword="true" placeHolder="Your super secret password"></SettingInput>
         <SettingInput name="Change your mail :" v-model.lazy="email" placeHolder="Enter your new email"></SettingInput>
         <v-btn class="SaveBtn" @click.prevent="changeSettings">
