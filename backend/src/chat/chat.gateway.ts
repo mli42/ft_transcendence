@@ -1,4 +1,4 @@
-import { Logger, UnauthorizedException } from '@nestjs/common';
+import { Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { UserService } from '../user/user.service';
@@ -16,7 +16,7 @@ import { Message } from './entities/message.entity';
 import { JoinedChannelI } from './interfaces/joined-channel.interface';
 
 @WebSocketGateway( { cors: { origin: 'http://localhost:3030', credentials: true }})
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
 
     constructor(
         private readonly userService: UserService,
@@ -32,14 +32,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
  
     private logger: Logger = new Logger('ChatGateway');
 
-    afterInit(server: Server) {
-        this.logger.log('Initialized !')
-    }
+    // afterInit(server: Server) {
+    //     this.logger.log('Initialized !')
+    // }
 
     /********************* CONNECTION ********************** */
 
+    // Called once the host module's dependencies have been resolved
     async onModuleInit() {
         await this.connectedUserService.deleteAll();
+        await this.joinedChannelService.deleteAll();
     }
 
     async handleConnection(client: Socket) {
@@ -55,9 +57,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
                 // emit channels for the specific user
-                console.log("* CHANNELS *")
-                console.log(channels);
-
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -108,12 +107,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     @SubscribeMessage('newMessage')
     async onAddMessage(client: Socket, message: MessageI) {
-        console.log("- NEW MESSAGE -")
-        console.log(message)
         const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
         const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
 
         const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
+        console.log(joinedUsers);
         for (const user of joinedUsers) {
             await this.server.to(user.socketId).emit('messageAdded', createMessage);
         }
@@ -128,20 +126,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
 
-        console.log("*MESSAGES*");
-        console.log(messages);
         // send last message from channel to user
         await this.server.to(client.id).emit('messages', messages);
-        // client.join(room);
-        // client.emit('joinedRoom', room);
     }
 
     /********************* Leave Channel ********************/
     @SubscribeMessage('leaveChannel')
     async handleLeaveChannel(client: Socket) {
         await this.joinedChannelService.deleteBySocketId(client.id);
-        // client.leave(room);
-        // client.emit('leftRoom', room);
     }
 
 
