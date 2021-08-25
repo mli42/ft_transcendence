@@ -5,6 +5,8 @@ import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger'
 import { HttpService } from '@nestjs/axios';
 import { JwtPayload } from '../user/interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/user/entities/user.entity';
 
 @ApiTags('42 authentication')
 @Controller('api/auth/')
@@ -25,7 +27,8 @@ export class AuthController {
 	@UseGuards(IntraAuthGuard)
 	async redirect(@Res({passthrough: true}) res: Response, @Req() req: Request) {
 		const username = req.user['username'];
-		const payload: JwtPayload = { username };
+		let auth: boolean = false;
+		const payload: JwtPayload = { username, auth };
 		const accessToken: string = await this.jwtService.sign(payload);
 		res.cookie('jwt', accessToken, {httpOnly: true});
 		res.redirect("http://localhost:3030");
@@ -35,23 +38,33 @@ export class AuthController {
 	@ApiOperation({summary: 'QR code authentication - User'})
 	@ApiParam({name: 'username', required: true, description: 'username'})
 	@ApiParam({name: 'userId', required: true, description: 'userId'})
-	@Get('2fa/:username/:userId')
-	async getQrcode(@Param('username') username, @Param('userId') userId) {
-	  const resp = await this.httpService.get(
-		  `https://www.authenticatorApi.com/pair.aspx?AppName=${process.env.TWO_FACTOR_AUTH_APP_NAME}&AppInfo=${username}&SecretCode=${userId}`,
+	@UseGuards(AuthGuard('jwt'))
+	@Get('2fa')
+	async getQrcode(@Req() req) {
+		const user: User = req.user;
+	  	const resp = await this.httpService.get(
+		  `https://www.authenticatorApi.com/pair.aspx?AppName=${process.env.TWO_FACTOR_AUTH_APP_NAME}&AppInfo=${user.username}&SecretCode=${user.userId}`,
 		).toPromise();
 	  return resp.data;
 	}
 
 	@ApiOperation({summary: 'Code authentication - Secret'})
 	@ApiParam({name: 'secret', required: true, description: 'Code authentication - Google Authenticator'})
-	@ApiParam({name: 'userId', required: true, description: 'userId'})
-	@Post('2fa/:secret/:userId')
-	async validate(@Param('secret') secret, @Param('userId') userId) {
-	  const resp = await this.httpService.get(
-		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}&SecretCode=${userId}`,
+	@UseGuards(AuthGuard('jwt'))
+	@Post('2fa/:secret')
+	async validate(@Param('secret') secret, @Req() req, @Res({passthrough: true}) res: Response) {
+		const user: User = req.user;
+		const resp = await this.httpService.get(
+		  `https://www.authenticatorApi.com/Validate.aspx?Pin=${secret}&SecretCode=${user.userId}`,
 		).toPromise();
-	  return resp.data;
+		if (resp.data === 'True') {
+			const username = user.username;
+			const auth: boolean = true;
+			const payload: JwtPayload = { username, auth };
+			const accessToken: string = await this.jwtService.sign(payload);
+			res.cookie('jwt', accessToken, {httpOnly: true});
+		}
+	  	return resp.data;
 	}
 
 }
