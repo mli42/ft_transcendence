@@ -5,6 +5,7 @@ import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { gameGateway } from "../game/game.gateway";
+import { GameModule } from 'src/game/game.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { gameGateway } from "../game/game.gateway";
     }),
     UserModule,
     AuthModule,
+    GameModule,
     PassportModule.register({ session: true }),
   ],
   providers: [ gameGateway ],
