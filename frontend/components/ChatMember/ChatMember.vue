@@ -1,9 +1,9 @@
 <template>
-  <div class="MemberContainer">
+  <div class="friendContainer">
     <p>Friends</p> <hr />
-    <div class="MemberList">
-      <div v-for="(member, index) in members" :key="index">
-        <ProfileFriendCard :userId="userId"></ProfileFriendCard>
+    <div class="friendList">
+      <div v-for="(user, index) in channelUsers" :key="index">
+        <ProfileFriendCard :userId="user.userId"></ProfileFriendCard>
       </div>
     </div>
   </div>
@@ -14,10 +14,10 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'FriendList',
-  props: ['members'],
+  props: ['channelUsers'],
 });
 </script>
 
-<style scoped lang="scss" src="./ChatMember.scss">
+<style scoped lang="scss" src="../Profile/Profile.scss">
 
 </style>
