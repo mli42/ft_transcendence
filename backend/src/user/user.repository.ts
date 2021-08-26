@@ -82,8 +82,6 @@ export class UsersRepository extends Repository<User> {
 		const {
 			username,
 			email,
-			elo,
-			status,
 		} = filterDto;
 		const query = this.createQueryBuilder('user') .select([
 			"user.userId",
