@@ -10,6 +10,7 @@
       </div>
       <div class="align-content">
         <!-- Buttons Profile/Settings/Quit -->
+        <NavBarRoundBtn route="/admin" icone="icon-park-outline:people-safe" v-if="isAdmin" ></NavBarRoundBtn>
         <NavBarProfileBtn :route="profileRoute"></NavBarProfileBtn>
         <NavBarRoundBtn route="/settings" icone="ci:settings"></NavBarRoundBtn>
         <NavBarLogoutBtn icone="lucide:log-out" :logOut="this.$user.logout"></NavBarLogoutBtn>
@@ -23,13 +24,12 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'NavBar',
-  data() {
-    return {
-    };
-  },
   computed: {
     profileRoute(): string {
       return `/profile/${this.$store.state.user.username}`;
+    },
+    isAdmin(): boolean {
+      return this.$store.state.user.isAdmin;
     },
   },
 });
