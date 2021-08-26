@@ -1,21 +1,22 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Logger } from "@nestjs/common";
-import { Game } from "./dataStructures";
+import { Game, Player } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 
-let userRoomsMap: Map<Socket, string> = new Map(); // Relation between players and rooms(games)
-let gameRoomsMap: Map<Game, string> = new Map();
+let gamesMap: Map<string, Game> = new Map(); // Relation between games and gameIds
 
-class Mouse {
-  x: number = 0;
-  y: number = 0;
-  playerId: string;
+/**
+ * Here you will found all message emitable by this server.
+ * updatePlayerTC   -> send update of one player (color for instance).
+ * updatePlayersTC  -> send the map of players to update it (player added for instace).
+ * updateGameTypeTC -> send the new game type of the game (matchmaking or private).
+ * updateMapTC      -> send the new map name of the game.
+ * fetchMapTC       -> send the entire Game class of a game.
+ */
 
-  constructor(x: number, y: number, id: string) {
-    this.x = x;
-    this.y = y;
-    this.playerId = id;
-  }
+// get the gameId of rooms list of a player
+function getIdFromRooms(rooms: Set<any>): string {
+  return (Array.from(rooms)[0]);
 }
 
 @WebSocketGateway({ cors: true })
@@ -28,18 +29,42 @@ export class gameGateway {
     this.logger.log("game socket init !");
   }
 
-  @SubscribeMessage("mousePosToServer")
-  handleMessage(client: Socket, payload: Array<number>): void {
-    let data: Array<any> = new Array<any>();
-    this.server
-      .to(userRoomsMap.get(client))
-      .emit('mousePosToClient', new Mouse(payload[0], payload[1], client.id));
+  // A client ask to get the entire game class. Or to create it if does not exists
+  @SubscribeMessage("fetchGameTS")
+  fetchGame(client: Socket, gameId: string): void {
+    const query: any = client.handshake.query;
+
+    if (gamesMap.has(gameId) == false) {
+      gamesMap.set(gameId, new Game(query.userId, query.username, gameId));
+    }
+    client.emit("fetchGameTC", gamesMap.get(gameId), JSON.stringify(Array.from(gamesMap.get(gameId).players.entries())));
+  }
+
+  // A client want to join the game as player
+  @SubscribeMessage("addPlayerTS")
+  addPlayer(client: Socket, player: Player): void {
+  }
+
+  // A client want to change its color
+  @SubscribeMessage("changePlayerColorTS")
+  changePlayerColor(client: Socket, player: Player): void {
+  }
+
+  @SubscribeMessage("changeGameTypeTS")
+  changeGameType(client: Socket, player: Player): void {
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-    userRoomsMap.set(client, client.handshake.query.channel as string);
-    client.join(userRoomsMap.get(client));
-    this.logger.log("Client connected: " + client.handshake.query.username + " in room: " + userRoomsMap.get(client));
+    const gameWanted: string = client.handshake.query.gameId as string;
+    let user: { userId: string, username: string } = {} as any;
+
+    user.userId = client.handshake.query.userId as string;
+    user.username = client.handshake.query.username as string;
+    client.join(gameWanted);
+    if (gamesMap.has(gameWanted) === false) {
+      gamesMap.set(gameWanted, new Game(user.userId, user.username, gameWanted));
+    }
+    this.logger.log("Client connected: " + user.username + " in room: " + gameWanted);
   }
 
   handleDisconnect(client: Socket) {

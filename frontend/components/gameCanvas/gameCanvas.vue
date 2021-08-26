@@ -76,15 +76,15 @@
           label
           v-bind:color="getCreatorColor()"
         >
-          <v-icon v-if="this.game.creator" left>mdi-account-circle-outline</v-icon>
-          {{ this.game.creator }}
+          <v-icon v-if="getCreatorName" left>mdi-account-circle-outline</v-icon>
+          {{ getCreatorName }}
         </v-chip>
         <v-chip
           label
           v-bind:color="getSecondPlayerColor()"
         >
-          <v-icon v-if="this.game.opponent" left>mdi-account-circle-outline</v-icon>
-          {{ this.game.opponent }}
+          <v-icon v-if="getOpponentName" left>mdi-account-circle-outline</v-icon>
+          {{ getOpponentName }}
         </v-chip>
       </div>
       <!-- JOIN THE GAME BUTTON -->
@@ -146,12 +146,10 @@ export default Vue.extend({
       ],
       // Condition to display or not element. Modified by display* methods
       isPowDisplayed: false as boolean,
-      isGameDisplayed: false as boolean,
+      isGameDisplayed: true as boolean,
       isMapsDisplayed: false as boolean,
       isColorDisplayed: true as boolean,
       isMainBtnDisplayed: false as boolean,
-      // Allow or not to modify game type by the current user
-      isTabsEnabled: true as boolean,
       // model to typeSelection tabs
       tabTypesIndex: 0 as number,
       // Text of the button when it is displayed
@@ -166,6 +164,7 @@ export default Vue.extend({
   async mounted() {
     // Connect to the websocket & fetch remote game class
     socketInit(SOCKET_URL, this.gameId, this);
+    socket.emit("fetchGameTS");
     // update ui accord to game fetched
     this.updateDisplayedElem();
     // Start the sketch
@@ -190,8 +189,10 @@ export default Vue.extend({
       }
     },
     displayMatchmaking(): void {
+      console.log(this.game.players);
       if (this.game.players.has(this.user.userId) === true) {
         this.isColorDisplayed = true;
+        this.isMainBtnDisplayed = true;
       } else {
         this.isColorDisplayed = false;
       }
@@ -223,8 +224,8 @@ export default Vue.extend({
       }
     },
     getCreatorColor(): string {
-      if (this.game.creator === this.user.userId && this.game.players.has(this.user.userId) === true) {
-        const player: Player | undefined = this.game.players.get(this.game.creator);
+      if (this.game.creatorId === this.user.userId && this.game.players.has(this.user.userId) === true) {
+        const player: Player | undefined = this.game.players.get(this.game.creatorId);
         if (player)
           return (player.color);
       } else { // Default behavior
@@ -233,8 +234,8 @@ export default Vue.extend({
       return ('grey'); // Default color
     },
     getSecondPlayerColor(): string {
-      if (this.game.opponent != "") {
-        const player: Player | undefined = this.game.players.get(this.game.opponent);
+      if (this.game.opponentId != "") {
+        const player: Player | undefined = this.game.players.get(this.game.opponentId);
         if (player)
           return (player.color);
       }
@@ -243,20 +244,19 @@ export default Vue.extend({
   },
   computed: {
     isTabsEnabled: function () : boolean {
-      if (this.game.creator == this.user.userId) {
+      if (this.game.creatorId == this.user.userId) {
         return (true);
       }
       return (false);
-    }
+    },
+    getCreatorName: function() : string {
+      return (this.game.players.get(this.game.creatorId)?.name || "");
+    },
+    getOpponentName: function() : string {
+      return (this.game.players.get(this.game.opponentId)?.name || "");
+    },
   },
   watch: {
-    "game.mapName": function (newName: string, oldName: string) {
-      socket.emit("mapChanged", newName);
-      this.game.mapName = newName;
-    },
-    "game.players": function (newPlayers: Map<string, Player>, oldPlayer: Map<string, Player>) {
-      socket.emit("playerChanged", newPlayers.get(this.user.userId));
-    },
     "game.enabledPowerUps": function (): void { // Powerup protector
       let index: number;
       for (let pow of this.game.enabledPowerUps) {

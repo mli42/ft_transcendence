@@ -1,6 +1,6 @@
-export {Ball, Game, PowerUp, Mouse, Player, IplayerPalette}
+export {Ball, Game, PowerUp, Mouse, Player, IcolorPalette}
 
-interface IplayerPalette {
+interface IcolorPalette {
   [index: string]: string;
 }
 
@@ -39,8 +39,8 @@ class Player {
   barLen: number; // in px
 
   constructor() {
-    this.name = "marvin";
-    this.color = "#FFFFFF";
+    this.name = "";
+    this.color = "#000000";
     this.barLen = 160; // in px
   }
 }
@@ -52,21 +52,31 @@ class Game {
   type: string;                 // Type of the game. Matchmaking | Private
   state: string;
   score: Array<number>;
-  creator: string;              // The userId of the game creato
+  creatorId: string;              // The userId of the game creator
   mapName: string;
   players: Map<string, Player>; // string -> userId
+  opponentId: string;             // The userId of the opponenent;
   enabledPowerUps: Array<string>;
 
-  constructor() {
-    this.id = "";
+  constructor(creatorId: string, creatorName: string, gameId: string) {
+    this.id = gameId;
     this.ball = new Ball();
     this.type = "matchmaking";
     this.state = "waiting";
     this.score = [0, 0] as Array<number>;
-    this.creator = "";
+    this.creatorId = creatorId;
     this.mapName = "tennis";
     this.players = new Map();
+    this.players.set(creatorId, this.assignPlayer(creatorName));
+    this.opponentId = "";
     this.enabledPowerUps = new Array<string>();
+  }
+
+  assignPlayer(playerName: string): Player {
+    let newPlayer: Player = new Player();
+
+    newPlayer.name = playerName;
+    return (newPlayer);
   }
 }
 

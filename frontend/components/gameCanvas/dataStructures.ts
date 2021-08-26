@@ -52,10 +52,10 @@ class Game {
   type: string;                 // Type of the game. Matchmaking | Private
   state: string;
   score: Array<number>;
-  creator: string;              // The userId of the game creator
+  creatorId: string;              // The userId of the game creator
   mapName: string;
   players: Map<string, Player>; // string -> userId
-  opponent: string;             // The userId of the opponenent;
+  opponentId: string;             // The userId of the opponenent;
   enabledPowerUps: Array<string>;
 
   constructor() {
@@ -64,10 +64,10 @@ class Game {
     this.type = "matchmaking";
     this.state = "waiting";
     this.score = [0, 0] as Array<number>;
-    this.creator = "";
+    this.creatorId = "";
     this.mapName = "tennis";
     this.players = new Map();
-    this.opponent = "";
+    this.opponentId = "";
     this.enabledPowerUps = new Array<string>();
   }
 }
