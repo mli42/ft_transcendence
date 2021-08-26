@@ -49,7 +49,7 @@
           <input type="radio" name="private" @click="newChannel.public = true" checked>
           <label for="private">Public</label>
         </div>
-        <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public"></ModalInput>
+        <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
         <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
         <Dropdown v-if="!newChannel.public" toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
         <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
@@ -64,8 +64,8 @@
           <input type="radio" name="privateChange" @click="channelChanges.public = true" checked>
           <label for="privateChange">Public</label>
         </div>
-        <ModalInput name="Change passeword :" v-model.lazy="channelChanges.newPassword"  placeHolder="" :isPassword="true" :ispublic="!channelChanges.public"></ModalInput>
-        <div class="checkBoxePassword flexHVcenter" >
+        <ModalInput v-if="!channelChanges.public" name="Change passeword :" v-model.lazy="channelChanges.newPassword"  placeHolder="" :isPassword="true" :ispublic="!channelChanges.public"></ModalInput>
+        <div class="checkBoxePassword flexHVcenter" v-if="!channelChanges.public">
           <input type="checkbox" name="addpassword" @click="addpassword = true" :disabled="channelChanges.public? true : false">
           <label class="addPassword" for="addpassword">Protected by new password</label>
         </div>
@@ -89,7 +89,6 @@ export default Vue.extend({
     return {
       txt: '' as string,
       messages: [] as Message[],
-      socket: {} as any,
       channels: [] as Channel[],
       currentChannel: new Channel as Channel,
       modalBool : {
@@ -156,10 +155,8 @@ export default Vue.extend({
     this.$user.socket.on("messageAdded", (data: any) => {
       this.recvMsg(data);
     });
-    this.$user.socket.on("channel", (data: any) => {
-      // console.log('channels : ', data);
+    this.$user.socket.emit("displayChannel", (data: any) => {
       this.channels = data;
-      // console.log(this.channels);
     });
     this.$user.socket.on('messages', (data: any) => {
         this.messages = data;
@@ -171,6 +168,9 @@ export default Vue.extend({
       .catch(() => console.log('Oh no'));
     });
   },
+  destroyed() {
+    this.$user.socket.emit('leaveChannel');
+  }
 });
 </script>
 
