@@ -31,7 +31,6 @@ export class gameGateway {
   }
 
   // A client ask to get the entire game class. Or to create it if does not exists
-  @UseGuards(AuthGuard('jwt'))
   @SubscribeMessage("fetchGameTS")
   fetchGame(client: Socket, gameId: string): void {
     const query: any = client.handshake.query;
@@ -43,23 +42,19 @@ export class gameGateway {
   }
 
   // A client want to join the game as player
-  @UseGuards(AuthGuard('jwt'))
   @SubscribeMessage("addPlayerTS")
   addPlayer(client: Socket, player: Player): void {
   }
 
   // A client want to change its color
-  @UseGuards(AuthGuard('jwt'))
   @SubscribeMessage("changePlayerColorTS")
   changePlayerColor(client: Socket, player: Player): void {
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @SubscribeMessage("changeGameTypeTS")
   changeGameType(client: Socket, player: Player): void {
   }
 
-  @UseGuards(AuthGuard('jwt'))
   handleConnection(client: Socket, ...args: any[]) {
     const gameWanted: string = client.handshake.query.gameId as string;
     let user: { userId: string, username: string } = {} as any;

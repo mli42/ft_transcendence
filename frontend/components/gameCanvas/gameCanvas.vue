@@ -3,13 +3,20 @@
   <v-app>
     <v-btn v-on:click="isGameDisplayedNeg">SHOW/HIDE THE GAME</v-btn>
     <br>
+    <div id="playerInfo">
+      <h1>[DEV] User data log:</h1>
+      <p>username = {{ $nuxt.$store.state.user.username }}</p>
+      <p>userId = {{ $nuxt.$store.state.user.userId }}</p>
+    </div>
     <div id="gameInfo">
       <h1>[DEV] Game data log :</h1>
       <p>gameId = {{ this.game.id }}</p>
       <p>ball = {{ this.game.ball }}</p>
       <p>state = {{ this.game.state }}</p>
       <p>score = {{ this.game.score }}</p>
-      <p>players = {{ playersList }}</p>
+      <p>players = {{ getPlayersString }}</p>
+      <p>creatorId = {{ this.game.creatorId }}</p>
+      <p>opponentId = {{ this.game.opponentId }}</p>
       <p>mapName = {{ this.game.mapName }}</p>
       <p>enabledPowerUps = {{ this.game.enabledPowerUps }}</p>
       <p>game type = {{ this.tabTypes[this.tabTypesIndex] }}</p>
@@ -164,7 +171,7 @@ export default Vue.extend({
   async mounted() {
     // Connect to the websocket & fetch remote game class
     socketInit(SOCKET_URL, this.gameId, this);
-    socket.emit("fetchGameTS");
+    socket.emit("fetchGameTS", this.gameId);
     // update ui accord to game fetched
     this.updateDisplayedElem();
     // Start the sketch
@@ -189,14 +196,17 @@ export default Vue.extend({
       }
     },
     displayMatchmaking(): void {
-      console.log(this.game.players);
       if (this.game.players.has(this.user.userId) === true) {
         this.isColorDisplayed = true;
         this.isMainBtnDisplayed = true;
       } else {
         this.isColorDisplayed = false;
       }
-      this.isMainBtnDisplayed = false;
+      if (this.game.creatorId == this.user.userId) {
+        this.isMainBtnDisplayed = true;
+      } else {
+        this.isMainBtnDisplayed = false;
+      }
       this.isPowDisplayed = false;
       this.isMapsDisplayed = false;
     },
@@ -245,9 +255,9 @@ export default Vue.extend({
   computed: {
     isTabsEnabled: function () : boolean {
       if (this.game.creatorId == this.user.userId) {
-        return (true);
+        return (false);
       }
-      return (false);
+      return (true);
     },
     getCreatorName: function() : string {
       return (this.game.players.get(this.game.creatorId)?.name || "");
@@ -255,8 +265,21 @@ export default Vue.extend({
     getOpponentName: function() : string {
       return (this.game.players.get(this.game.opponentId)?.name || "");
     },
+    getPlayersString: function() : string {
+      let arr: Array<Player> = new Array<Player>();
+      for (let it of this.game.players.values()) {
+        arr.push(it);
+      }
+      return (JSON.stringify(arr));
+    }
   },
   watch: {
+    "game": function(): void {
+      this.updateDisplayedElem();
+    },
+    "game.type": function(): void {
+      this.updateDisplayedElem();
+    },
     "game.enabledPowerUps": function (): void { // Powerup protector
       let index: number;
       for (let pow of this.game.enabledPowerUps) {
@@ -266,7 +289,7 @@ export default Vue.extend({
           console.log(pow);
         }
       }
-    }
+    },
   }
 },
 );

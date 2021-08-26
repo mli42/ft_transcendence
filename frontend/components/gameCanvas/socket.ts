@@ -6,13 +6,12 @@ export { socket, socketInit };
 let socket: Socket;
 
 function socketInit(url:string, gameId: string, vue: Vue): void {
-      console.log(vue.$nuxt.$store.state.user.username);
-      socket = io(url, {
-      query: {
-        gameId: gameId,
-        userId: vue.$nuxt.$store.state.user.userId,
-        username: vue.$nuxt.$store.state.user.username,
-      }
+  socket = io(url, {
+    query: {
+      gameId: gameId,
+      userId: vue.$nuxt.$store.state.user.userId,
+      username: vue.$nuxt.$store.state.user.username,
+    }
   });
   socket.on("connect", () => {
     console.log("Successfully connected to the newsocket game " + gameId);
