@@ -1,0 +1,18 @@
+@import '~/assets/Palette.scss';
+@import '~/components/Profile/Profile.scss';
+
+#adminMain {
+  align-items: center;
+  overflow-y: auto;
+  position: absolute;
+  margin-bottom: 64px; // Size of the NavBar
+}
+
+h1 {
+  color: $pg-white;
+  font-size: 64px;
+  line-height: 64px;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 60px 0;
+}

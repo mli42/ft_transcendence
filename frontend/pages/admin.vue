@@ -1,5 +1,16 @@
 <template>
   <div>
+  <div id="adminMain" class="flexAlignCol useWholePage">
+    <h1>Admin View</h1>
+    <div class="primaryContent GameHistoryContainer">
+      <p>List of administrators</p>
+      <hr />
+      <div class="GameHistory">
+        <!-- Replace with future v-for match card -->
+        <div class="placeholder"></div>
+      </div>
+    </div>
+  </div>
   </div>
 </template>
 
