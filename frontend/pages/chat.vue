@@ -110,18 +110,15 @@ export default Vue.extend({
       },
       selectedChannel: false as boolean,
       friends: [],
-      // selected: false as boolean,
     }
   },
   methods: {
     joinChannel(index: number): void{
       this.$user.socket.emit('leaveChannel');
-      // this.selected = !this.selected;
       this.currentChannel = this.channels[index];
       this.$user.socket.emit('joinChannel', this.channels[index]);
     },
     sendMsg(): void {
-      // console.log(this.currentChannel.id)
       this.$user.socket.emit('newMessage',
       	{text: this.txt,
         channel: this.currentChannel,
@@ -143,7 +140,8 @@ export default Vue.extend({
     },
     createChannel(): void{
       this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
-      users: this.newChannel.members});
+      users: this.newChannel.members,
+      privacy: this.public});
     },
     hideModal(): void {
       this.modalBool.showCreate = false;
@@ -158,6 +156,9 @@ export default Vue.extend({
     this.$user.socket.emit("displayChannel", (data: any) => {
       this.channels = data;
     });
+    this.$user.socket.on("channel", (data: any) => {
+      this.channels = data;
+    });
     this.$user.socket.on('messages', (data: any) => {
         this.messages = data;
     });
@@ -168,8 +169,10 @@ export default Vue.extend({
       .catch(() => console.log('Oh no'));
     });
   },
-  destroyed() {
-    this.$user.socket.emit('leaveChannel');
+  destroyed(){
+    this.$user.socket.off("messageAdded");
+    this.$user.socket.off("channel");
+    this.$user.socket.off("messages");
   }
 });
 </script>
