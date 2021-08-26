@@ -125,6 +125,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
         console.log(joinedUsers);
         for (const user of joinedUsers) {
+            console.log("ICIII");
             await this.server.to(user.socketId).emit('messageAdded', createMessage);
         }
     }

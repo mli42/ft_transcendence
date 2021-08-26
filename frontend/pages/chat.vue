@@ -50,7 +50,7 @@
           <label for="private">Public</label>
         </div>
         <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
-        <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
+        <Dropdown toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
         <Dropdown v-if="!newChannel.public" toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
         <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
           <p class="v-btn-content">Create</p>
@@ -139,6 +139,7 @@ export default Vue.extend({
       this.newChannel.admin = data;
     },
     recvMsg(msg: string): void {
+      // console.log("ICI");
       this.messages.push(msg);
     },
     createChannel(): void{
@@ -153,9 +154,13 @@ export default Vue.extend({
   mounted() {
     console.log(this.$user.socket);
     this.$user.socket.on("messageAdded", (data: any) => {
+      // console.log("ici");
       this.recvMsg(data);
     });
     this.$user.socket.emit("displayChannel", (data: any) => {
+      this.channels = data;
+    });
+    this.$user.socket.on("channel", (data: any) => {
       this.channels = data;
     });
     this.$user.socket.on('messages', (data: any) => {
@@ -168,8 +173,10 @@ export default Vue.extend({
       .catch(() => console.log('Oh no'));
     });
   },
-  destroyed() {
-    this.$user.socket.emit('leaveChannel');
+  destroyed(){
+    this.$user.socket.off("messageAdded");
+    this.$user.socket.off("channel");
+    this.$user.socket.off("messages");
   }
 });
 </script>
