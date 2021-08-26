@@ -41,6 +41,7 @@
           </div>
       </div>
       <div>
+        <ChatMember :channelUsers="currentChannel.users"></ChatMember>
       </div>
     </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
@@ -84,7 +85,9 @@
 import Vue from 'vue';
 import io from 'socket.io-client';
 import {UserStatus, User, Message, Channel} from '~/types/chatTypes';
+import ChatMember from '../components/ChatMember/ChatMember.vue';
 export default Vue.extend({
+  components: { ChatMember },
   name: 'chat',
   layout: 'default',
   data(): any {
@@ -118,6 +121,7 @@ export default Vue.extend({
     joinChannel(index: number): void{
       this.$user.socket.emit('leaveChannel');
       this.currentChannel = this.channels[index];
+      console.log("current channel :", this.currentChannel);
       this.$user.socket.emit('joinChannel', this.channels[index]);
     },
     sendMsg(): void {
