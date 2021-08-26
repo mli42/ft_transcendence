@@ -48,7 +48,14 @@ export class gameGateway {
 
   // A client want to change its color
   @SubscribeMessage("changePlayerColorTS")
-  changePlayerColor(client: Socket, player: Player): void {
+  changePlayerColor(client: Socket, payload: {userId:string, player: Player}): void {
+    const gameId: string = client.handshake.query.gameId as string;
+    const game: Game = gamesMap.get(gameId);
+
+    if (game) {
+      game.players.set(payload.userId, payload.player);
+      client.to(gameId).emit("updatePlayerTC", payload);
+    }
   }
 
   @SubscribeMessage("changeGameTypeTS")

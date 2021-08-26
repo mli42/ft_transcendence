@@ -32,5 +32,6 @@ function socketInit(url:string, gameId: string, vue: Vue): void {
   socket.on("updatePlayerTC", (payload: {userId: string, player: Player}) => {
     console.log("LOG: updatePlayerTC");
     vue.$data.game.players.set(payload.userId, payload.player);
+    vue.updatePlayersColors();
   });
 }

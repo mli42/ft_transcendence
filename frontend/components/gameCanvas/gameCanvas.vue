@@ -2,25 +2,6 @@
   <div data-app>
   <v-app>
     <v-btn v-on:click="isGameDisplayedNeg">SHOW/HIDE THE GAME</v-btn>
-    <br>
-    <div id="playerInfo">
-      <h1>[DEV] User data log:</h1>
-      <p>username = {{ $nuxt.$store.state.user.username }}</p>
-      <p>userId = {{ $nuxt.$store.state.user.userId }}</p>
-    </div>
-    <div id="gameInfo">
-      <h1>[DEV] Game data log :</h1>
-      <p>gameId = {{ this.game.id }}</p>
-      <p>ball = {{ this.game.ball }}</p>
-      <p>state = {{ this.game.state }}</p>
-      <p>score = {{ this.game.score }}</p>
-      <p>players = {{ getPlayersString }}</p>
-      <p>creatorId = {{ this.game.creatorId }}</p>
-      <p>opponentId = {{ this.game.opponentId }}</p>
-      <p>mapName = {{ this.game.mapName }}</p>
-      <p>enabledPowerUps = {{ this.game.enabledPowerUps }}</p>
-      <p>game type = {{ this.tabTypes[this.tabTypesIndex] }}</p>
-    </div>
     <hr>
     <div id="gameSettings">
       <h1>User settings</h1>
@@ -81,14 +62,14 @@
 
         <v-chip
           label
-          v-bind:color="getCreatorColor()"
+          v-bind:color="this.creatorColor"
         >
           <v-icon v-if="getCreatorName" left>mdi-account-circle-outline</v-icon>
           {{ getCreatorName }}
         </v-chip>
         <v-chip
           label
-          v-bind:color="getSecondPlayerColor()"
+          v-bind:color="this.opponentColor"
         >
           <v-icon v-if="getOpponentName" left>mdi-account-circle-outline</v-icon>
           {{ getOpponentName }}
@@ -166,6 +147,8 @@ export default Vue.extend({
       // Color of this button
       mainBtnColor: uiPalette["white"] as string,
       tabTypes: ["matchmaking", "private"] as Array<string>,
+      creatorColor: "" as string,
+      opponentColor: "" as string,
     }
   },
   async mounted() {
@@ -179,6 +162,9 @@ export default Vue.extend({
     const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
   },
   methods: {
+    test(): void {
+      console.log("AAAAAAAAAAA");
+    },
     isGameDisplayedNeg(): void { // Negative the boolean to display the canvas
       this.isGameDisplayed = !this.isGameDisplayed;
     },
@@ -186,7 +172,12 @@ export default Vue.extend({
       let currPlayer: Player | undefined = this.game.players.get(this.user.userId);
       if (currPlayer) {
         currPlayer.color = playerPalette[color];             // Update in player class
-        this.playerColorClass = "player" + color;   // Update UI feedback
+        this.playerColorClass = "player" + color;   // Update bar color
+        if (this.user.userId == this.game.creatorId) {
+          this.creatorColor = playerPalette[color];
+        } else {
+          this.opponentColor = playerPalette[color];
+        }
         socket.emit("changePlayerColorTS", {             // Update remote version
           userId: this.user.userId as string,
           player: currPlayer as Player
@@ -233,24 +224,10 @@ export default Vue.extend({
         this.displayPrivateGame();
       }
     },
-    getCreatorColor(): string {
-      if (this.game.creatorId === this.user.userId && this.game.players.has(this.user.userId) === true) {
-        const player: Player | undefined = this.game.players.get(this.game.creatorId);
-        if (player)
-          return (player.color);
-      } else { // Default behavior
-        console.warn("WARN: creator not detected in the game class");
-      }
-      return ('grey'); // Default color
+    updatePlayersColors(): void {
+      this.creatorColor = this.game.players.get(this.game.creatorId)?.color || "black";
+      this.opponentColor = this.game.players.get(this.game.opponentId)?.color || "black";
     },
-    getSecondPlayerColor(): string {
-      if (this.game.opponentId != "") {
-        const player: Player | undefined = this.game.players.get(this.game.opponentId);
-        if (player)
-          return (player.color);
-      }
-      return ('grey');
-    }
   },
   computed: {
     isTabsEnabled: function () : boolean {
@@ -265,13 +242,6 @@ export default Vue.extend({
     getOpponentName: function() : string {
       return (this.game.players.get(this.game.opponentId)?.name || "");
     },
-    getPlayersString: function() : string {
-      let arr: Array<Player> = new Array<Player>();
-      for (let it of this.game.players.values()) {
-        arr.push(it);
-      }
-      return (JSON.stringify(arr));
-    }
   },
   watch: {
     "game": function(): void {
