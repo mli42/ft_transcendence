@@ -23,7 +23,7 @@ function logout(context: any): Function {
 export default (context: any, inject: Function) => {
   const port: number = 3000;
   const loc: any = window.location;
-
+  const socket: any = null;
 
   context.$axios.defaults.baseURL = loc.protocol + '//' + loc.hostname + ':' + port;
   const avatarBaseURL: string = `${context.$axios.defaults.baseURL}/api/user/avatar`;
@@ -32,5 +32,6 @@ export default (context: any, inject: Function) => {
     shortName,
     logout: logout(context),
     avatarBaseURL,
+    socket,
   });
 };

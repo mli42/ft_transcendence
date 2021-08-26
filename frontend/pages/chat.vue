@@ -116,14 +116,14 @@ export default Vue.extend({
   },
   methods: {
     joinChannel(index: number): void{
-      this.socket.emit('leaveChannel');
+      this.$user.socket.emit('leaveChannel');
       // this.selected = !this.selected;
       this.currentChannel = this.channels[index];
-      this.socket.emit('joinChannel', this.channels[index]);
+      this.$user.socket.emit('joinChannel', this.channels[index]);
     },
     sendMsg(): void {
       // console.log(this.currentChannel.id)
-      this.socket.emit('newMessage', 
+      this.$user.socket.emit('newMessage',
       	{text: this.txt,
         channel: this.currentChannel,
         }
@@ -132,7 +132,7 @@ export default Vue.extend({
     },
     fillMembers(data: string[]): void{
       this.newChannel.members = data;
-    },    
+    },
     fillAddMembers(data: string[]): void{
       this.channelChanges.members = data;
     },
@@ -143,7 +143,7 @@ export default Vue.extend({
       this.messages.push(msg);
     },
     createChannel(): void{
-      this.socket.emit('createChannel', {channelName: this.newChannel.name,
+      this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
       users: this.newChannel.members});
     },
     hideModal(): void {
@@ -152,17 +152,16 @@ export default Vue.extend({
     },
   },
   mounted() {
-    this.socket = io('ws://localhost:3000/', {withCredentials: true});
-    console.log(this.socket);
-    this.socket.on("messageAdded", (data: any) => {
+    console.log(this.$user.socket);
+    this.$user.socket.on("messageAdded", (data: any) => {
       this.recvMsg(data);
     });
-    this.socket.on("channel", (data: any) => {
+    this.$user.socket.on("channel", (data: any) => {
       // console.log('channels : ', data);
       this.channels = data;
       // console.log(this.channels);
     });
-    this.socket.on('messages', (data: any) => {
+    this.$user.socket.on('messages', (data: any) => {
         this.messages = data;
     });
     this.$store.state.user.friends.forEach((element: any) => {
@@ -172,7 +171,6 @@ export default Vue.extend({
       .catch(() => console.log('Oh no'));
     });
   },
-  
 });
 </script>
 
