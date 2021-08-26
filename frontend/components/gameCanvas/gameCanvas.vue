@@ -29,6 +29,7 @@
         <button class="dot playerYellow" @click="changePlayerColor('Yellow')"></button>
         <button class="dot playerPurple" @click="changePlayerColor('Purple')"></button>
         <button class="dot playerPink" @click="changePlayerColor('Pink')"></button>
+        <v-sheet v-bind:color="barColor"></v-sheet>
         <span class="playerBar" v-bind:class="playerColorClass"></span>
       </div>
       <br>
@@ -149,6 +150,7 @@ export default Vue.extend({
       tabTypes: ["matchmaking", "private"] as Array<string>,
       creatorColor: "" as string,
       opponentColor: "" as string,
+      barColor: "" as string,
     }
   },
   async mounted() {
@@ -227,6 +229,7 @@ export default Vue.extend({
     updatePlayersColors(): void {
       this.creatorColor = this.game.players.get(this.game.creatorId)?.color || "black";
       this.opponentColor = this.game.players.get(this.game.opponentId)?.color || "black";
+      this.barColor = this.game.players.get(this.user.userId)?.color || "black";
     },
   },
   computed: {

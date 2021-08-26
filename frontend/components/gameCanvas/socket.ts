@@ -24,6 +24,7 @@ function socketInit(url:string, gameId: string, vue: Vue): void {
     const deserialPlayers: Map<string, Player> = new Map(JSON.parse(serialPlayers));
     game.players = deserialPlayers;
     vue.$data.game = game;
+    vue.updatePlayersColors();
   });
   socket.on("updatePlayersTC", (players: Map<string, Player>) => {
     console.log("LOG: updatePlayersTC");
