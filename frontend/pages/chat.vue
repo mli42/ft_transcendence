@@ -50,7 +50,7 @@
           <label for="private">Public</label>
         </div>
         <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
-        <Dropdown toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
+        <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
         <Dropdown v-if="!newChannel.public" toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
         <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
           <p class="v-btn-content">Create</p>
@@ -110,18 +110,15 @@ export default Vue.extend({
       },
       selectedChannel: false as boolean,
       friends: [],
-      // selected: false as boolean,
     }
   },
   methods: {
     joinChannel(index: number): void{
       this.$user.socket.emit('leaveChannel');
-      // this.selected = !this.selected;
       this.currentChannel = this.channels[index];
       this.$user.socket.emit('joinChannel', this.channels[index]);
     },
     sendMsg(): void {
-      // console.log(this.currentChannel.id)
       this.$user.socket.emit('newMessage',
       	{text: this.txt,
         channel: this.currentChannel,
@@ -139,12 +136,12 @@ export default Vue.extend({
       this.newChannel.admin = data;
     },
     recvMsg(msg: string): void {
-      // console.log("ICI");
       this.messages.push(msg);
     },
     createChannel(): void{
       this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
-      users: this.newChannel.members});
+      users: this.newChannel.members,
+      privacy: this.public});
     },
     hideModal(): void {
       this.modalBool.showCreate = false;
@@ -154,7 +151,6 @@ export default Vue.extend({
   mounted() {
     console.log(this.$user.socket);
     this.$user.socket.on("messageAdded", (data: any) => {
-      // console.log("ici");
       this.recvMsg(data);
     });
     this.$user.socket.emit("displayChannel", (data: any) => {
