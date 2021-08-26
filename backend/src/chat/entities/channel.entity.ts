@@ -23,7 +23,7 @@ export class Channel {
 	// adminChannel: string;
 
 	@Column('boolean', {default: false})
-	privateChannel: boolean;
+	privacy: boolean;
 
 	// @Column()
 	// password: string;

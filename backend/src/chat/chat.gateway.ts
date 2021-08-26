@@ -85,7 +85,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
-        const { privateChannel } = channel;
+        const { privacy } = channel;
 
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
         // console.log(createChannel.users);
@@ -102,10 +102,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('displayChannel')
     async onChatPage(client: Socket) {
         const user: User = await this.channelService.getUserFromSocket(client);
-    
         const channels = await this.channelRepository.getChannelsForUser(user.userId);
         return channels;
-        // await this.server.to(client.id).emit('channel', channels);
     }
 
     /********************* HANDLE MESSAGE *****************/
@@ -123,7 +121,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
 
         const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
-        console.log(joinedUsers);
         for (const user of joinedUsers) {
             await this.server.to(user.socketId).emit('messageAdded', createMessage);
         }
@@ -134,10 +131,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
         const messages = await this.messageService.findMessagesForChannel(channel)
-
         // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
-
         // send last message from channel to user
         await this.server.to(client.id).emit('messages', messages);
     }
