@@ -17,7 +17,7 @@
     </div>
     <div class="chatChamp boxHVcenter">
       <div class="chatRoomName">
-        <img class="chanelImg" src="~/assets/img/avatar.jpeg">
+        <img class="chanelImg" src="~/assets/img/chatbubble.svg">
         <p> {{ currentChannel.channelName }} </p>
         <div class="settingBtn flexHVcenter">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
@@ -40,41 +40,43 @@
             <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
           </div>
       </div>
-      <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
-        <h1>Create Channel</h1>
-        <ModalInput name="Name of the channel :" v-model.lazy="newChannel.name"  placeHolder="" :ispublic="true" ></ModalInput>
-        <div class="visibility">
-          <input type="radio" name="private" @click="newChannel.public = false">
-          <label for="private">Private</label>
-          <input type="radio" name="private" @click="newChannel.public = true" checked>
-          <label for="private">Public</label>
-        </div>
-        <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
-        <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
-        <Dropdown v-if="!newChannel.public" toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
-        <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
-          <p class="v-btn-content">Create</p>
-        </v-btn>
-      </SettingModal>
-      <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
-        <h1 id="settingModal">Channel Settings</h1>
-        <div class="visibility">
-          <input type="radio" name="privateChange" @click="channelChanges.public = false">
-          <label for="privateChange">Private</label>
-          <input type="radio" name="privateChange" @click="channelChanges.public = true" checked>
-          <label for="privateChange">Public</label>
-        </div>
-        <ModalInput v-if="!channelChanges.public" name="Change passeword :" v-model.lazy="channelChanges.newPassword"  placeHolder="" :isPassword="true" :ispublic="!channelChanges.public"></ModalInput>
-        <div class="checkBoxePassword flexHVcenter" v-if="!channelChanges.public">
-          <input type="checkbox" name="addpassword" @click="addpassword = true" :disabled="channelChanges.public? true : false">
-          <label class="addPassword" for="addpassword">Protected by new password</label>
-        </div>
-        <Dropdown v-if="!channelChanges.public" toselect="Add members :" :items="friends" :value="channelChanges.members" :fillTab="fillMembers"></Dropdown>
-        <v-btn class="DoneBtn" @click="modalBool.showSettings = false">
-          <p class="v-btn-content">Apply changes</p>
-        </v-btn>
-      </SettingModal>
+      <div>
+      </div>
     </div>
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
+      <h1>Create Channel</h1>
+      <ModalInput name="Name of the channel :" v-model.lazy="newChannel.name"  placeHolder="" :ispublic="true" ></ModalInput>
+      <div class="visibility">
+        <input type="radio" name="private" @click="newChannel.public = false">
+        <label for="private">Private</label>
+        <input type="radio" name="private" @click="newChannel.public = true" checked>
+        <label for="private">Public</label>
+      </div>
+      <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
+      <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
+      <Dropdown v-if="!newChannel.public" toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
+      <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
+        <p class="v-btn-content">Create</p>
+      </v-btn>
+    </SettingModal>
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
+      <h1 id="settingModal">Channel Settings</h1>
+      <div class="visibility">
+        <input type="radio" name="privateChange" @click="channelChanges.public = false">
+        <label for="privateChange">Private</label>
+        <input type="radio" name="privateChange" @click="channelChanges.public = true" checked>
+        <label for="privateChange">Public</label>
+      </div>
+      <ModalInput v-if="!channelChanges.public" name="Change passeword :" v-model.lazy="channelChanges.newPassword"  placeHolder="" :isPassword="true" :ispublic="!channelChanges.public"></ModalInput>
+      <div class="checkBoxePassword flexHVcenter" v-if="!channelChanges.public">
+        <input type="checkbox" name="addpassword" @click="addpassword = true" :disabled="channelChanges.public? true : false">
+        <label class="addPassword" for="addpassword">Protected by new password</label>
+      </div>
+      <Dropdown v-if="!channelChanges.public" toselect="Add members :" :items="friends" :value="channelChanges.members" :fillTab="fillMembers"></Dropdown>
+      <v-btn class="DoneBtn" @click="modalBool.showSettings = false">
+        <p class="v-btn-content">Apply changes</p>
+      </v-btn>
+    </SettingModal>
   </div>
 </template>
 
@@ -141,7 +143,7 @@ export default Vue.extend({
     createChannel(): void{
       this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
       users: this.newChannel.members,
-      privacy: this.public});
+      publicChannel: this.public});
     },
     hideModal(): void {
       this.modalBool.showCreate = false;
