@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { AdminModule } from 'src/admin/admin.module';
 import { ChatModule } from '../chat/chat.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { ChatModule } from '../chat/chat.module';
     }),
     UserModule,
     AuthModule,
+    AdminModule,
     PassportModule.register({ session: true }),
     ChatModule
   ]
