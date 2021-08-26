@@ -150,7 +150,7 @@ export default Vue.extend({
       {
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
         users: this.newChannel.members,
-        publicChannel: this.public});
+        publicChannel: this.newChannel.public});
       }
     },
     hideModal(): void {
