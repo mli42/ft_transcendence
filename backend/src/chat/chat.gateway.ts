@@ -59,7 +59,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
                 this.logger.log(`Client connected: ${client.id}`);
                 // emit channels for the specific user
-                return await this.server.to(client.id).emit('channel', channels);
+                return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
             console.log("ok disc.");
@@ -104,7 +104,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const user: User = await this.channelService.getUserFromSocket(client);
     
         const channels = await this.channelRepository.getChannelsForUser(user.userId);
-        await this.server.to(client.id).emit('channel', channels);
+        return channels;
+        // await this.server.to(client.id).emit('channel', channels);
     }
 
     /********************* HANDLE MESSAGE *****************/
