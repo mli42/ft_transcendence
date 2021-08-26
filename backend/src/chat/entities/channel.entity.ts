@@ -22,8 +22,11 @@ export class Channel {
 	// @Column()
 	// adminChannel: string;
 
-	// @Column('boolean', {default: false})
-	// private: boolean;
+	@Column('boolean', {default: false})
+	privateChannel: boolean;
+
+	// @Column()
+	// password: string;
 
 	@ManyToMany(() => User)
 	@JoinTable()

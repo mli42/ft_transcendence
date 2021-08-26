@@ -56,8 +56,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
+
+                this.logger.log(`Client connected: ${client.id}`);
                 // emit channels for the specific user
-                return this.server.to(client.id).emit('channel', channels);
+                return await this.server.to(client.id).emit('channel', channels);
             }
         } catch {
             console.log("ok disc.");
@@ -76,15 +78,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     private disconnectClient(client: Socket) {
         client.emit('Error', new UnauthorizedException());
         client.disconnect();
+        this.logger.log(`Client diconnect: ${client.id}`);
     }
 
 
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
+        const { privateChannel } = channel;
 
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
-
+        // console.log(createChannel.users);
         for (const user of createChannel.users) {
             const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
             const channels = await this.channelRepository.getChannelsForUser(user.userId);
@@ -95,14 +99,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
     }
 
+    @SubscribeMessage('displayChannel')
+    async onChatPage(client: Socket) {
+        const user: User = await this.channelService.getUserFromSocket(client);
+    
+        const channels = await this.channelRepository.getChannelsForUser(user.userId);
+        await this.server.to(client.id).emit('channel', channels);
+    }
 
     /********************* HANDLE MESSAGE *****************/
-    @SubscribeMessage('msgToServer')
-    handleMessage(client: Socket, text: string) {
-        this.logger.log('New message from a socket !');
-        // this.server.to(message.room).emit('msgToClient', message);                            
-        this.server.emit('msgToClient',text);
-    }
+    // @SubscribeMessage('msgToServer')
+    // handleMessage(client: Socket, text: string) {
+    //     this.logger.log('New message from a socket !');
+    //     // this.server.to(message.room).emit('msgToClient', message);                      
+    //     this.server.emit('msgToClient',text);
+    // }
 
 
     @SubscribeMessage('newMessage')
