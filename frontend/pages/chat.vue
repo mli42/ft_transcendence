@@ -143,8 +143,9 @@ export default Vue.extend({
     createChannel(): void{
       if (this.newChannel.public === true)
       {
+        console.log("PUBLIC ? ", this.newChannel.public);
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
-        publicChannel: this.public});
+        publicChannel: this.newChannel.public});
       }
       else if (this.newChannel.public === false)
       {

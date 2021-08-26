@@ -86,12 +86,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
         const { publicChannel } = channel;
-
+        console.log(publicChannel);
         if (publicChannel === true) {
             channel.users = await this.userRepository.find();
+            console.log(channel.users);
         }
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
-        // console.log(createChannel.users);
+        console.log(createChannel.users);
         for (const user of createChannel.users) {
             const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
             const channels = await this.channelRepository.getChannelsForUser(user.userId);
