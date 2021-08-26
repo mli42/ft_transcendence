@@ -44,18 +44,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     async handleConnection(client: Socket) {
         try {
-            const user: User = await this.channelService.getUserFromSocket(client);            
+            const user: User = await this.channelService.getUserFromSocket(client);
             if (!user) {
                 return this.disconnectClient(client);
             } 
             else {
                 client.data.user = user;
-                
                 const channels = await this.channelRepository.getChannelsForUser(user.userId);
                 
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
                 // emit channels for the specific user
+                console.log("* CHANNELS *")
+                console.log(channels);
+
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -81,8 +83,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
-        console.log(channel);
-        console.log('-----');
+
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
 
         for (const user of createChannel.users) {
@@ -107,6 +108,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     @SubscribeMessage('newMessage')
     async onAddMessage(client: Socket, message: MessageI) {
+        console.log("- NEW MESSAGE -")
+        console.log(message)
         const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
         const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
 
@@ -121,7 +124,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
         const messages = await this.messageService.findMessagesForChannel(channel)
-        
+
         // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
 
@@ -133,7 +136,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     /********************* Leave Channel ********************/
     @SubscribeMessage('leaveChannel')
-    async handleLeaveChannel(client: Socket, room: string) {
+    async handleLeaveChannel(client: Socket) {
         await this.joinedChannelService.deleteBySocketId(client.id);
         // client.leave(room);
         // client.emit('leftRoom', room);

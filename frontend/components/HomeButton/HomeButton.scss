@@ -1,0 +1,23 @@
+@import '~/assets/Palette.scss';
+
+.homeButtonMain {
+  max-width: 200px;
+  height: 72px;
+  background: $pg-white;
+  border-radius: 50px;
+  padding: 26px;
+}
+
+.imgIcon {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+p {
+  margin-left: 16px;
+  font-size: 20px;
+  line-height: 20px;
+  color: $pg-blue;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}

@@ -8,7 +8,7 @@
         <p>{{shortUsername}}</p>
       </NuxtLink>
       <Iconify v-if="user.status == 'Playing'" title="Currently playing"
-      iconName="ri:sword-line" param="color=white" class="playing"></Iconify>
+      iconName="ri:sword-line" class="playing"></Iconify>
     </div>
     <p v-else-if="$fetchState.error">Oh no, an error occured...</p>
   </div>

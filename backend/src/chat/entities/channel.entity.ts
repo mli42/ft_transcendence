@@ -1,5 +1,5 @@
 
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { JoinedChannel } from './joined-channel.entity';
 import { Message } from './message.entity';
@@ -13,6 +13,12 @@ export class Channel {
 	@Column()
 	channelName: string;
 
+	@CreateDateColumn()
+	date: Date;
+
+	@UpdateDateColumn()
+	update_at: Date;
+	
 	// @Column()
 	// adminChannel: string;
 

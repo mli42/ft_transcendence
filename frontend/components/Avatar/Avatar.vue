@@ -13,13 +13,13 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'Avatar',
-  data() {
-    return {
-      avatarURL: `${this.$store.state.avatarBaseURL}/${this.user.userId}` as string,
-      title: `is ${this.user.status}` as string,
-    };
-  },
   computed: {
+    avatarURL(): string {
+      return `${this.$user.avatarBaseURL}/${this.user.profile_picture}`;
+    },
+    title(): string {
+      return `is ${this.user.status}`;
+    },
     statusClass(): Object {
       return {
         status: true,

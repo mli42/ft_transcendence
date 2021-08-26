@@ -13,6 +13,10 @@ div.label {
   width: 320px;
 }
 
+label {
+  margin-bottom: 6px;
+}
+
 input {
   background: $pg-dark-blue;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);

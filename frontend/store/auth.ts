@@ -8,7 +8,6 @@ interface authApiInfos {
 
 export const state = () => ({
   status: 'idle' as string,
-  errorMsg: [] as string[],
 });
 
 export type authState = ReturnType<typeof state>;
@@ -16,9 +15,6 @@ export type authState = ReturnType<typeof state>;
 export const mutations = {
   updateStatus(state: authState, status: string): void {
     state.status = status;
-  },
-  updateErrorMsg(state: authState, errorMsg: string | string[]): void {
-    state.errorMsg = (typeof errorMsg == "string") ? [errorMsg] : errorMsg;
   },
 };
 
@@ -28,8 +24,8 @@ export const actions = {
     _this.$router.push('/');
   },
   authFailed(context: any, error: any): void {
-    context.commit('updateErrorMsg', error.response.data.message);
-    setTimeout(() => context.commit('updateErrorMsg', []), 6000);
+    const _this: any = this;
+    _this.$mytoast.err(error.response.data.message);
   },
   _auth(context: any, authInfos: authApiInfos): void {
     const _this: any = this;

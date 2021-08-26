@@ -7,6 +7,10 @@ html {
   overflow: auto !important; // Override vuetify scroll-bar
 }
 
+a {
+  text-decoration: none;
+}
+
 * {
   font-family: "Josefin Sans";
 }
