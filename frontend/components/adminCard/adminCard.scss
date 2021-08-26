@@ -1,0 +1,32 @@
+@import '~/assets/Palette.scss';
+
+.adminCardMain {
+  width: 96%;
+  height: 68px;
+  border: 1px solid $pg-dark-blue;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  padding: 10px;
+  justify-content: space-between;
+}
+
+div.pp {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid $pg-dark-blue;
+  margin-right: 16px;
+}
+
+.username {
+  font-size: 24px;
+  line-height: 24px;
+}
+
+.downgradeBtn {
+  border-radius: 50px;
+  color: $pg-white;
+  background: $pg-red !important;
+  text-transform: none;
+}

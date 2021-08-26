@@ -20,7 +20,8 @@ export class AdminService {
         .andWhere('user.isAdmin = :isAdmin', {isAdmin: true}).select([
             "user.userId",
             "user.username",
-            "user.status"
+            "user.status",
+            "user.profile_picture",
         ]).getMany();
         return query;
     }

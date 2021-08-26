@@ -1,3 +1,5 @@
+@import '~/assets/Palette.scss';
+
 @font-face {
   font-family: "Josefin Sans";
   src: url(~/assets/fonts/JosefinSans.ttf);
@@ -9,6 +11,10 @@ html {
 
 a {
   text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6, p, span {
+  color: $pg-white;
 }
 
 * {

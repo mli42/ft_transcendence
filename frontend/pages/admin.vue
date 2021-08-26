@@ -5,9 +5,9 @@
     <div class="primaryContent GameHistoryContainer">
       <p>List of administrators</p>
       <hr />
-      <div class="GameHistory">
-        <!-- Replace with future v-for match card -->
-        <div class="placeholder"></div>
+      <div v-if="$fetchState.pending == false" class="GameHistory flexAlignCol">
+        <adminCard v-for="(user, index) in adminList" :key="index"
+        :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
       </div>
     </div>
   </div>
@@ -23,6 +23,29 @@ export default Vue.extend({
     return {
       title: "Admin View" as String,
     };
+  },
+  data() {
+    return {
+      adminList: [] as any,
+    };
+  },
+  methods: {
+    downgradeUser(user: any, index: number): void {
+      this.$axios.patch(`/api/user/updateIsAdmin?userId=${user.userId}`, {
+        toggle: false,
+      })
+      .then(() => {
+        this.$mytoast.succ(`User ${user.username} downgraded`);
+        this.adminList.splice(index, 1);
+      })
+      .catch((err: any) => { console.error(err); });
+    },
+  },
+  async fetch() {
+    this.adminList = await this.$axios
+    .get('/api/admin/allAdmin')
+    .then((resp: any) => resp.data)
+    .catch((err: any) => console.error('getAllAdmin', err));
   },
 });
 </script>
