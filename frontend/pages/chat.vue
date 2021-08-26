@@ -141,9 +141,17 @@ export default Vue.extend({
       this.messages.push(msg);
     },
     createChannel(): void{
-      this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
-      users: this.newChannel.members,
-      publicChannel: this.public});
+      if (this.newChannel.public === true)
+      {
+        this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
+        publicChannel: this.public});
+      }
+      else if (this.newChannel.public === false)
+      {
+        this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
+        users: this.newChannel.members,
+        publicChannel: this.public});
+      }
     },
     hideModal(): void {
       this.modalBool.showCreate = false;
