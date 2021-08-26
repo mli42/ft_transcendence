@@ -1,7 +1,7 @@
 import { Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { UserService } from '../user/user.service';
+import { UsersRepository } from '../user/user.repository';
 import { User } from '../user/entities/user.entity';
 import { ChannelService } from './channel.service'
 import { ChannelRepository } from './channel.repository';
@@ -19,7 +19,7 @@ import { JoinedChannelI } from './interfaces/joined-channel.interface';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
 
     constructor(
-        private readonly userService: UserService,
+        private readonly userRepository: UsersRepository,
         private readonly channelService: ChannelService,
         private readonly channelRepository: ChannelRepository,
         private readonly connectedUserService: ConnectedUserService,
@@ -85,8 +85,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
-        const { privacy } = channel;
+        const { publicChannel } = channel;
 
+        if (publicChannel === true) {
+            channel.users = await this.userRepository.find();
+        }
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
         // console.log(createChannel.users);
         for (const user of createChannel.users) {
@@ -97,6 +100,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 await this.server.to(connection.socketId).emit('channel', channels);
             }
         }
+
     }
 
     @SubscribeMessage('displayChannel')
