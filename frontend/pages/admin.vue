@@ -38,14 +38,14 @@ export default Vue.extend({
         this.$mytoast.succ(`User ${user.username} downgraded`);
         this.adminList.splice(index, 1);
       })
-      .catch((err: any) => { console.error(err); });
+      .catch(this.$mytoast.defaultCatch);
     },
   },
   async fetch() {
     this.adminList = await this.$axios
     .get('/api/admin/allAdmin')
     .then((resp: any) => resp.data)
-    .catch((err: any) => console.error('getAllAdmin', err));
+    .catch(this.$mytoast.defaultCatch);
   },
 });
 </script>

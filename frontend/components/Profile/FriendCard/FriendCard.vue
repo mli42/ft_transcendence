@@ -29,7 +29,7 @@ export default Vue.extend({
     this.user = await this.$axios
     .get(`/api/user/partialInfo?userId=${this.userId}`)
     .then((resp: any) => resp.data)
-    .catch(() => console.log('Oh no'));
+    .catch(this.$mytoast.defaultCatch);
 
     this.userProfile = `/profile/${this.user.username}`;
   },

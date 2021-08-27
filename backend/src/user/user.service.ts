@@ -228,7 +228,7 @@ export class UserService {
 		if (userIsAdmin.isAdmin === false)
 			throw new UnauthorizedException('You aren\'t an administrator');
 		if (userIsAdmin.userId === userId)
-			throw new UnauthorizedException('You can\'t take away your rights yourself');
+			throw new UnauthorizedException("Cannot change your own admin state");
 		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');

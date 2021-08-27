@@ -14,7 +14,7 @@
         </div>
         <!-- User cards -->
         <p class="tip" v-if="users === undefined">Here you can search for player profiles</p>
-        <p class="tip" v-else-if="users.length == 0">No match for '{{who}}', sorry!</p>
+        <p class="tip" v-else-if="users.length == 0">No match for '{{whoNotFound}}', sorry!</p>
         <div v-else v-for="(user, index) in users" :key="index">
           <search-card :user="user"></search-card>
         </div>
@@ -36,6 +36,7 @@ export default Vue.extend({
   data() {
     return {
       who: '' as string,
+      whoNotFound: '' as string,
       users: undefined as any,
     };
   },
@@ -51,9 +52,9 @@ export default Vue.extend({
       this.users = await this.$axios
         .get(`/api/user/search?username=${this.who}`)
         .then((res: any) => res.data)
-        .catch(() => []);
+        .catch(() => [])
+        .finally(() => { this.whoNotFound = this.who; });
       this.$router.push(`/search?who=${this.who}`);
-      // console.log('Itsa me Mario:', this.users, this.who);
     },
   },
 });

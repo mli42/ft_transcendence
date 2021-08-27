@@ -53,8 +53,7 @@ export default Vue.extend({
           this.$mytoast.err('Wrong code');
         }
       })
-      .catch((error: any): void => {
-      });
+      .catch(this.$mytoast.defaultCatch);
     },
   },
 });
