@@ -11,7 +11,7 @@
       </ul>
       <div class="creatChatRoom flexHVcenter">
         <v-btn id="createChatRoomBtn" @click="modalBool.showCreate = true">
-          <p class="v-btn-content">Create a channel</p>
+          <p class="BtnTxt">Create a channel</p>
         </v-btn>
       </div>
     </div>
@@ -78,6 +78,14 @@
         <p class="v-btn-content">Apply changes</p>
       </v-btn>
     </SettingModal>
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
+      <h1 id="settingModal">Join Channel</h1>
+      <ModalInput  name="Channel password :" v-model.lazy="passeword"  placeHolder="" :isPassword="true" :ispublic="true"></ModalInput>
+      <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false">
+        <p class="v-btn-content">Join</p>
+      </v-btn>
+    </SettingModal>
+    
   </div>
 </template>
 
@@ -99,6 +107,7 @@ export default Vue.extend({
       modalBool : {
         showCreate: false as boolean,
         showSettings: false as boolean,
+        showPrivacy: false as boolean,
       },
       newChannel:{
         name: '' as string,
@@ -115,10 +124,12 @@ export default Vue.extend({
       },
       selectedChannel: false as boolean,
       friends: [],
+      password: '' as string,
     }
   },
   methods: {
     joinChannel(index: number): void{
+      this.modalBool.showPrivacy = true;
       this.$user.socket.emit('leaveChannel');
       this.currentChannel = this.channels[index];
       console.log("current channel :", this.currentChannel);
@@ -147,7 +158,6 @@ export default Vue.extend({
     createChannel(): void{
       if (this.newChannel.public === true)
       {
-        console.log("PUBLIC ? ", this.newChannel.public);
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
         publicChannel: this.newChannel.public});
       }
@@ -161,6 +171,7 @@ export default Vue.extend({
     hideModal(): void {
       this.modalBool.showCreate = false;
       this.modalBool.showSettings = false;
+      this.modalBool.showPrivacy = false;
     },
   },
   mounted() {

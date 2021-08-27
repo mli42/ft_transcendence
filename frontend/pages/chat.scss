@@ -104,6 +104,10 @@ ul {
     padding: 7px 32px;
 }
 
+.BtnTxt{
+    color:$pg-dark-blue !important;
+}
+
 .chatRoomName{
     display: flex;
 }
@@ -209,7 +213,6 @@ h1{
 }
 
 .control {
-    // background-color: $pg-blue;
     width: 200px;
     position: absolute;
     top: 10%;
