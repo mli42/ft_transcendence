@@ -65,15 +65,15 @@
           label
           v-bind:color="this.creatorColor"
         >
-          <v-icon v-if="getCreatorName" left>mdi-account-circle-outline</v-icon>
-          {{ getCreatorName }}
+          <v-icon v-if="creatorName" left>mdi-account-circle-outline</v-icon>
+          {{ creatorName }}
         </v-chip>
         <v-chip
           label
           v-bind:color="this.opponentColor"
         >
-          <v-icon v-if="getOpponentName" left>mdi-account-circle-outline</v-icon>
-          {{ getOpponentName }}
+          <v-icon v-if="opponentName" left>mdi-account-circle-outline</v-icon>
+          {{ opponentName }}
         </v-chip>
       </div>
       <!-- MAIN BUTTON -->
@@ -82,6 +82,7 @@
           id="mainBtn"
           v-bind:color="mainBtnColor"
           v-if="isMainBtnDisplayed"
+          @click="mainBtnAction"
         >{{ this.mainBtnTxt }}
         <v-icon>{{ this.mainBtnIco}}</v-icon>
         </v-btn>
@@ -135,7 +136,7 @@ export default Vue.extend({
       ],
       // Condition to display or not element. Modified by display* methods
       isPowDisplayed: false as boolean,
-      isGameDisplayed: true as boolean,
+      isGameDisplayed: false as boolean,
       isMapsDisplayed: false as boolean,
       isColorDisplayed: true as boolean,
       isMainBtnDisplayed: false as boolean,
@@ -146,10 +147,14 @@ export default Vue.extend({
       // Icon of this button
       mainBtnIco: "" as string,
       // Color of this button
-      mainBtnColor: uiPalette["white"] as string,
+      mainBtnColor: "grey" as string,
+      // Action when the main button is pressed
+      mainBtnAction: function () {},
       tabTypes: ["matchmaking", "private"] as Array<string>,
       creatorColor: "" as string,
+      creatorName: "" as string,
       opponentColor: "" as string,
+      opponentName: "" as string,
       barColor: "" as string,
     }
   },
@@ -158,8 +163,6 @@ export default Vue.extend({
     socketInit(SOCKET_URL, this.gameId, this);
     console.log(this);
     socket.emit("fetchGameTS", this.gameId);
-    // update ui accord to game fetched
-    this.updateDisplayedElem();
     // Start the sketch
     const { default: P5 } = await import('p5');
     const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
@@ -171,6 +174,17 @@ export default Vue.extend({
     changeGameType(type: string): void {
       if (this.user.userId === this.game.creatorId) {
         socket.emit("changeGameTypeTS", type);
+        this.game.type = type;
+        if (type === "matchmaking") {
+          this.tabTypesIndex = 0;
+        } else if (type === "private") {
+          this.tabTypesIndex = 1;
+        }
+        if (this.game.opponentId != "") {
+          this.game.players.delete(this.game.opponentId);
+          this.game.opponentId = "";
+        }
+        this.updateDisplayedElem();
       }
     },
     changePlayerColor(color: string): void {
@@ -207,22 +221,25 @@ export default Vue.extend({
       this.isMapsDisplayed = false;
     },
     displayPrivateGame(): void {
+      this.isMainBtnDisplayed = true;
       if (this.game.players.has(this.user.userId) === true) { // If the current client is a player
         this.isColorDisplayed = true;
         this.isPowDisplayed = true;
         this.isMapsDisplayed = true;
       } else {
-        this.isColorDisplayed = true;
-        this.isPowDisplayed = true;
-        this.isMapsDisplayed = true;
+        this.isColorDisplayed = false;
+        this.isPowDisplayed = false;
+        this.isMapsDisplayed = false;
       }
-      if (this.game.players.size == 1) { // If the client can join
-        if (this.game.players.has(this.user.userId) == false) {
-
+      if (this.game.players.size == 1) { // If the game is not full
+        if (this.game.players.has(this.user.userId) == false) { // If the current user is not the creator
+          this.mainBtnTxt = "JOIN THE GAME";
+          this.mainBtnColor = uiPalette["green"];
+          this.mainBtnAction = this.btnActionJoin;
         }
-        this.isMainBtnDisplayed = true;
-      } else { 
-        this.isMainBtnDisplayed = false;
+      } else if (this.game.players.size == 2 && this.game.players.has(this.user.userId) == false) {
+        this.mainBtnTxt = "WAITING FOR PLAYERS";
+        this.mainBtnColor = uiPalette["white"];
       }
     },
     updateDisplayedElem(): void {
@@ -231,11 +248,53 @@ export default Vue.extend({
       } else if (this.game.type === "private") {
         this.displayPrivateGame();
       }
+      if (this.game.type == "matchmaking") {
+        this.tabTypesIndex = 0;
+      } else if (this.game.type == "private") {
+        this.tabTypesIndex = 1;
+      }
+      this.creatorName = this.game.players.get(this.game.creatorId)?.name || "";
+      this.opponentName = this.game.players.get(this.game.opponentId)?.name || "";
+      this.updatePlayersColors();
     },
     updatePlayersColors(): void {
       this.creatorColor = this.game.players.get(this.game.creatorId)?.color || "black";
       this.opponentColor = this.game.players.get(this.game.opponentId)?.color || "black";
       this.barColor = this.game.players.get(this.user.userId)?.color || "black";
+    },
+    btnActionJoin(): void { // Action to join the game as an opponent player
+      console.log("LOG: button action join");
+      let player: Player | undefined;
+
+      this.game.opponentId = this.user.userId;
+      this.game.players.set(this.user.userId, new Player());
+      player = this.game.players.get(this.user.userId);
+      if (player) {
+        player.name = this.user.username;
+        player.color = playerPalette["Blue"];
+        socket.emit("playerJoinTS", player);
+      }
+      this.updateDisplayedElem();
+    },
+    btnActionLeave(): void {  // Action to leave the game as a player
+      this.game.opponentId = "";
+      this.game.players.delete(this.user.userId);
+      socket.emit("playerLeaveTS", this.user.userId);
+    },
+    btnActionInvite(): void { // Action to copy the link in the user clipboard
+
+    },
+    btnActionSearch(): void { // Action to start matchmaking to find someone to play
+
+    },
+    btnActionReady(): void {  // Action to send to the server the information about the current player is ready
+      // const gameId: string = this.gameId;
+      // let player: Player | undefined = this.game.players.get(this.user.userId);
+
+      // if (player) {
+      //   player.isReady = !player.isReady;
+      //   socket.emit("updateReadyTS", {gameId: gameId, isReady: player.isReady});
+      // }
     },
   },
   computed: {
@@ -244,12 +303,6 @@ export default Vue.extend({
         return (false);
       }
       return (true);
-    },
-    getCreatorName: function() : string {
-      return (this.game.players.get(this.game.creatorId)?.name || "");
-    },
-    getOpponentName: function() : string {
-      return (this.game.players.get(this.game.opponentId)?.name || "");
     },
   },
   watch: {

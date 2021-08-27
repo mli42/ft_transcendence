@@ -24,29 +24,32 @@ function socketInit(url:string, gameId: string, vue: any): void {
     const deserialPlayers: Map<string, Player> = new Map(JSON.parse(serialPlayers));
     game.players = deserialPlayers;
     vue.$data.game = game;
-    vue.updatePlayersColors();
+    vue.updateDisplayedElem();
   });
-  socket.on("updatePlayersTC", (players: Map<string, Player>) => {
-    console.log("LOG: updatePlayersTC");
-    vue.$data.game.players = players;
-  });
-  socket.on("updatePlayerTC", (payload: {userId: string, player: Player}) => {
-    console.log("LOG: updatePlayerTC");
+  socket.on("changePlayerColorTC", (payload: {userId: string, player: Player}) => {
+    console.log("LOG: changePlayerTC");
     vue.$data.game.players.set(payload.userId, payload.player);
     vue.updatePlayersColors();
   });
   socket.on("changeGameTypeTC", (type: string) => {
     console.log("LOG: changeGameTypeTC");
-    vue.$data.game.type = type;
-    if (type == "matchmaking" && vue.$data.game.players.size == 2) {
-      vue.$data.game.players.delete(vue.$data.game.opponentId);
-      vue.$data.game.opponentId = "";
-    }
-    if (type == "matchmaking") {
-      vue.$data.tabTypesIndex = 0;
-    } else if (type == "private") {
-      vue.$data.tabTypesIndex = 1;
+    let game: Game = vue.$data.game;
+
+    game.type = type;
+    if (type == "matchmaking" && game.players.size == 2) {
+      game.players.delete(game.opponentId);
+      game.opponentId = "";
     }
     vue.updateDisplayedElem();
+  });
+  socket.on("playerJoinTC", (payload: {playerId: string, player: Player}) => { // New opponent!
+    console.log("LOG: playerJoinTC");
+    let game: Game = vue.$data.game;
+    game.players.set(payload.playerId, payload.player);
+    game.opponentId = payload.playerId;
+    vue.updateDisplayedElem();
+  });
+  socket.on("playerLeaveTC", (playerId: string) => { // A player leaved
+    console.log("LOG: playerLeaveTC");
   });
 }

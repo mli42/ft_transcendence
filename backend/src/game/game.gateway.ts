@@ -42,10 +42,41 @@ export class gameGateway {
     client.emit("fetchGameTC", gamesMap.get(gameId), JSON.stringify(Array.from(gamesMap.get(gameId).players.entries())));
   }
 
-  // A client want to join the game as player
-  @SubscribeMessage("addPlayerTS")
-  addPlayer(client: Socket, player: Player): void {
-    this.logger.log("LOG: changePlayerColorTS on " + client.handshake.query.gameId + " from " + client.handshake.query.username);
+  // A client join the game as player
+  @SubscribeMessage("playerJoinTS")
+  playerJoin(client: Socket, player: Player): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: playerJoinTS on " + query.gameId + " from " + query.username);
+    const game: Game = gamesMap.get(query.gameId as string);
+
+    if (game) {
+      game.players.set(query.userId as string, player);
+      game.opponentId = query.userId as string;
+      client.to(game.id).emit("playerJoinTC", {playerId: query.userId, player: player});
+    }
+  }
+
+  // A client leave the game as player
+  @SubscribeMessage("playerLeaveTS")
+  playerLeave(client: Socket): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: playerLeaveTS on " + query.gameId + " from " + query.username);
+    const game: Game = gamesMap.get(query.gameId);
+
+    if (game) {
+      if (game.creatorId === query.userId) {
+        game.players.delete(game.creatorId);
+        game.creatorId = "";
+        if (game.opponentId != "") { // Do we have an opponent to set as creator?
+          game.creatorId = game.opponentId;
+          game.opponentId = "";
+        }
+      } else if (game.opponentId === query.userId) {
+        game.players.delete(query.userId as string);
+        game.opponentId = "";
+      }
+      client.to(game.id).emit("playerLeaveTC", query.userId);
+    }
   }
 
   // A client want to change its color
@@ -57,16 +88,32 @@ export class gameGateway {
 
     if (game) {
       game.players.set(payload.userId, payload.player);
-      client.to(gameId).emit("updatePlayerTC", payload);
+      client.to(gameId).emit("changePlayerColorTC", payload);
     }
   }
 
   @SubscribeMessage("changeGameTypeTS")
   changeGameType(client: Socket, type: string): void {
     const gameId: string = client.handshake.query.gameId as string;
+    const game: Game = gamesMap.get(gameId);
     this.logger.log("LOG: changeGameTypeTS on " + gameId + " from " + client.handshake.query.username);
 
-    client.to(gameId).emit("changeGameTypeTC", type);
+    if (game) {
+      game.type = type;
+      client.to(gameId).emit("changeGameTypeTC", type);
+    }
+  }
+
+  @SubscribeMessage("updateReadyTS")
+  updateReady(client: Socket, payload: {userId: string, isReady: boolean}): void {
+    const gameId: string = client.handshake.query.gameId as string;
+    const game: Game = gamesMap.get(gameId);
+    this.logger.log("LOG: updateReadyTS on " + gameId + " from " + client.handshake.query.username);
+
+    if (game) {
+      game.players.get(payload.userId).isReady = payload.isReady;
+      client.to(gameId).emit("updateReadyTC", payload);
+    }
   }
 
   handleConnection(client: Socket, ...args: any[]) {

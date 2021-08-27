@@ -37,11 +37,13 @@ class Player {
   name: string;
   color: string;
   barLen: number; // in px
+  isReady: boolean; // is player ready to start a game ?
 
   constructor() {
     this.name = "";
-    this.color = "#000000";
+    this.color = "#FA163F";
     this.barLen = 160; // in px
+    this.isReady = false;
   }
 }
 
