@@ -36,6 +36,7 @@ function socketInit(url:string, gameId: string, vue: any): void {
     vue.updatePlayersColors();
   });
   socket.on("changeGameTypeTC", (type: string) => {
+    console.log("LOG: changeGameTypeTC");
     vue.$data.game.type = type;
     if (type == "matchmaking" && vue.$data.game.players.size == 2) {
       vue.$data.game.players.delete(vue.$data.game.opponentId);

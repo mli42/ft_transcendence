@@ -14,8 +14,8 @@
             center-active
             v-model="tabTypesIndex"
           >
-            <v-tab v-bind:disabled="isTabsEnabled" @click="displayMatchmaking">Matchmaking</v-tab>
-            <v-tab v-bind:disabled="isTabsEnabled" @click="displayPrivateGame">Private Game</v-tab>
+            <v-tab v-bind:disabled="isTabsEnabled" @click="changeGameType('matchmaking')">Matchmaking</v-tab>
+            <v-tab v-bind:disabled="isTabsEnabled" @click="changeGameType('private')">Private Game</v-tab>
           </v-tabs>
         </v-card>
       </div>
@@ -168,6 +168,11 @@ export default Vue.extend({
     isGameDisplayedNeg(): void { // Negative the boolean to display the canvas
       this.isGameDisplayed = !this.isGameDisplayed;
     },
+    changeGameType(type: string): void {
+      if (this.user.userId === this.game.creatorId) {
+        socket.emit("changeGameTypeTS", type);
+      }
+    },
     changePlayerColor(color: string): void {
       let currPlayer: Player | undefined = this.game.players.get(this.user.userId);
       if (currPlayer) {
@@ -211,7 +216,10 @@ export default Vue.extend({
         this.isPowDisplayed = true;
         this.isMapsDisplayed = true;
       }
-      if (this.game.players.size == 1 && this.game.players.has(this.user.userId) == false) { // If the client can join
+      if (this.game.players.size == 1) { // If the client can join
+        if (this.game.players.has(this.user.userId) == false) {
+
+        }
         this.isMainBtnDisplayed = true;
       } else { 
         this.isMainBtnDisplayed = false;
@@ -260,9 +268,6 @@ export default Vue.extend({
           console.log(pow);
         }
       }
-    },
-    "tabTypesIndex": function (): void {
-      socket.emit("changeGameTypeTS", this.tabTypes[this.tabTypesIndex]);
     },
   }
 },

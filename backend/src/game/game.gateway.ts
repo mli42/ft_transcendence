@@ -34,6 +34,7 @@ export class gameGateway {
   @SubscribeMessage("fetchGameTS")
   fetchGame(client: Socket, gameId: string): void {
     const query: any = client.handshake.query;
+    this.logger.log("LOG: fetchGameTS on " + gameId + " from " + client.handshake.query.username);
 
     if (gamesMap.has(gameId) == false) {
       gamesMap.set(gameId, new Game(query.userId, query.username, gameId));
@@ -44,6 +45,7 @@ export class gameGateway {
   // A client want to join the game as player
   @SubscribeMessage("addPlayerTS")
   addPlayer(client: Socket, player: Player): void {
+    this.logger.log("LOG: changePlayerColorTS on " + client.handshake.query.gameId + " from " + client.handshake.query.username);
   }
 
   // A client want to change its color
@@ -51,6 +53,7 @@ export class gameGateway {
   changePlayerColor(client: Socket, payload: {userId:string, player: Player}): void {
     const gameId: string = client.handshake.query.gameId as string;
     const game: Game = gamesMap.get(gameId);
+    this.logger.log("LOG: changePlayerColorTS on " + gameId + " from " + client.handshake.query.username);
 
     if (game) {
       game.players.set(payload.userId, payload.player);
@@ -61,6 +64,7 @@ export class gameGateway {
   @SubscribeMessage("changeGameTypeTS")
   changeGameType(client: Socket, type: string): void {
     const gameId: string = client.handshake.query.gameId as string;
+    this.logger.log("LOG: changeGameTypeTS on " + gameId + " from " + client.handshake.query.username);
 
     client.to(gameId).emit("changeGameTypeTC", type);
   }
