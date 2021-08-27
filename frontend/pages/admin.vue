@@ -2,6 +2,14 @@
   <div>
   <div id="adminMain" class="flexAlignCol useWholePage">
     <h1>Admin View</h1>
+
+    <!-- Stats -->
+    <h2>Some stats</h2>
+    <div class="stats flexAlignRow flexHVcenter">
+      <div class="oneStat flexHVcenter"> <p># Users: {{usersNB}}</p> </div>
+    </div>
+
+    <!-- List of admins -->
     <div class="primaryContent GameHistoryContainer">
       <p>List of administrators</p>
       <hr />
@@ -10,6 +18,7 @@
         :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
       </div>
     </div>
+
   </div>
   </div>
 </template>
@@ -27,6 +36,7 @@ export default Vue.extend({
   data() {
     return {
       adminList: [] as any,
+      usersNB: 0 as number,
     };
   },
   methods: {
@@ -44,6 +54,11 @@ export default Vue.extend({
   async fetch() {
     this.adminList = await this.$axios
     .get('/api/admin/allAdmin')
+    .then((resp: any) => resp.data)
+    .catch(this.$mytoast.defaultCatch);
+
+    this.usersNB = await this.$axios
+    .get('/api/admin/allUsers')
     .then((resp: any) => resp.data)
     .catch(this.$mytoast.defaultCatch);
   },
