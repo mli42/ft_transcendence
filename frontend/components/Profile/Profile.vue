@@ -63,7 +63,6 @@ export default Vue.extend({
         this.$store.commit(commitStoreFriend, this.user.userId);
         this.$mytoast.succ(toastMsg);
       };
-      const handleCatch: any = (err: any) => { console.log(err.response.data.error) };
       const data: any = { userId: this.user.userId };
 
       if (!this.isMyFriend) {
@@ -80,7 +79,7 @@ export default Vue.extend({
       }
       this.$axios.request({url, data, method})
       .then(handleThen)
-      .catch(handleCatch);
+      .catch(this.$mytoast.defaultCatch);
     },
     modBan(): void {
       this.$axios.patch(`/api/user/updateIsBan?userId=${this.user.userId}`, {
@@ -91,7 +90,7 @@ export default Vue.extend({
         const status: string = this.user.isBan ? 'banned' : 'un-banned';
         this.$mytoast.succ(`User ${this.user.username} ${status}`);
       })
-      .catch(() => {});
+      .catch(this.$mytoast.defaultCatch);
     },
     modPromote(): void {
       this.$axios.patch(`/api/user/updateIsAdmin?userId=${this.user.userId}`, {
@@ -102,7 +101,7 @@ export default Vue.extend({
         const status: string = this.user.isAdmin ? 'promoted' : 'downgraded';
         this.$mytoast.succ(`User ${this.user.username} ${status}`);
       })
-      .catch(() => {});
+      .catch(this.$mytoast.defaultCatch);
     },
   },
   computed: {

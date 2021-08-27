@@ -103,7 +103,7 @@ export default Vue.extend({
         this.toSend.password = this.passWord;
     },
     catchErr(err: any): void {
-      this.$mytoast.err(err.response.data.message);
+      this.$mytoast.defaultCatch(err);
     },
     changeSettings(): void {
       this.addPorp();
@@ -181,7 +181,7 @@ export default Vue.extend({
         this.$mytoast.succ(`${this.twofaAction}d 2FA!`);
         this.$store.commit('update2FA', !this.currentUser.twoFactorAuth);
       })
-      .catch();
+      .catch(this.$mytoast.defaultCatch);
     },
   },
 });

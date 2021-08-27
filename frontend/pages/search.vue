@@ -53,7 +53,6 @@ export default Vue.extend({
         .then((res: any) => res.data)
         .catch(() => []);
       this.$router.push(`/search?who=${this.who}`);
-      // console.log('Itsa me Mario:', this.users, this.who);
     },
   },
 });

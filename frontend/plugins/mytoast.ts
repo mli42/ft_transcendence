@@ -4,6 +4,12 @@ function getArrayMsg(messages: string | string[]): string[] {
   return (typeof messages == "string") ? [messages] : messages;
 }
 
+function defaultCatch(context: any): Function {
+  return function (err: any): void {
+    context.$mytoast.err(`${err?.response?.data?.message}`);
+  }
+}
+
 function genToast(callback: Function): Function {
   return function (messages: string | string[]): void {
     const msgArr: string[] = getArrayMsg(messages);
@@ -52,6 +58,7 @@ export default (context: any, inject: Function) => {
 
   inject('mytoast', {
     getArrayMsg,
+    defaultCatch: defaultCatch(context),
     err: genToast(toast.global.errMsg),
     succ: genToast(toast.global.succMsg),
     info: genToast(toast.global.infoMsg),
