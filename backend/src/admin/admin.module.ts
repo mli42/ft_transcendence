@@ -4,6 +4,8 @@ import { User } from 'src/user/entities/user.entity';
 import { UsersRepository } from 'src/user/user.repository';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
+import { UserService } from 'src/user/user.service';
+import { JwtStrategy } from 'src/user/strategy/jwt.strategy';
 
 @Module({
   imports: [
@@ -11,6 +13,6 @@ import { AdminService } from './admin.service';
     TypeOrmModule.forFeature([UsersRepository]),
   ],
   controllers: [AdminController],
-  providers: [AdminService]
+  providers: [AdminService, UserService, JwtStrategy]
 })
 export class AdminModule {}
