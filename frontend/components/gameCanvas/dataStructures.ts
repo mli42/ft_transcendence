@@ -28,7 +28,7 @@ class Ball {
     this.pos = [1920 / 2, 1016 / 2];
     this.size = 32;
     this.speed = 3;
-    this.color = "#DCE1E5FF";
+    this.color = "#DCE1E5";
     this.delta = [0, 0];
   }
 }

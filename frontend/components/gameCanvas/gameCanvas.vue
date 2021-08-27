@@ -76,8 +76,8 @@
           {{ getOpponentName }}
         </v-chip>
       </div>
-      <!-- JOIN THE GAME BUTTON -->
-      <div>
+      <!-- MAIN BUTTON -->
+      <div id="mainBtn">
         <v-btn
           id="mainBtn"
           v-bind:color="mainBtnColor"
@@ -156,6 +156,7 @@ export default Vue.extend({
   async mounted() {
     // Connect to the websocket & fetch remote game class
     socketInit(SOCKET_URL, this.gameId, this);
+    console.log(this);
     socket.emit("fetchGameTS", this.gameId);
     // update ui accord to game fetched
     this.updateDisplayedElem();
@@ -164,9 +165,6 @@ export default Vue.extend({
     const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
   },
   methods: {
-    test(): void {
-      console.log("AAAAAAAAAAA");
-    },
     isGameDisplayedNeg(): void { // Negative the boolean to display the canvas
       this.isGameDisplayed = !this.isGameDisplayed;
     },
@@ -262,6 +260,9 @@ export default Vue.extend({
           console.log(pow);
         }
       }
+    },
+    "tabTypesIndex": function (): void {
+      socket.emit("changeGameTypeTS", this.tabTypes[this.tabTypesIndex]);
     },
   }
 },

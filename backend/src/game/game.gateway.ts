@@ -59,7 +59,10 @@ export class gameGateway {
   }
 
   @SubscribeMessage("changeGameTypeTS")
-  changeGameType(client: Socket, player: Player): void {
+  changeGameType(client: Socket, type: string): void {
+    const gameId: string = client.handshake.query.gameId as string;
+
+    client.to(gameId).emit("changeGameTypeTC", type);
   }
 
   handleConnection(client: Socket, ...args: any[]) {

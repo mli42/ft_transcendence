@@ -5,7 +5,7 @@ export { socket, socketInit };
 
 let socket: Socket;
 
-function socketInit(url:string, gameId: string, vue: Vue): void {
+function socketInit(url:string, gameId: string, vue: any): void {
   socket = io(url, {
     query: {
       gameId: gameId,
@@ -34,5 +34,18 @@ function socketInit(url:string, gameId: string, vue: Vue): void {
     console.log("LOG: updatePlayerTC");
     vue.$data.game.players.set(payload.userId, payload.player);
     vue.updatePlayersColors();
+  });
+  socket.on("changeGameTypeTC", (type: string) => {
+    vue.$data.game.type = type;
+    if (type == "matchmaking" && vue.$data.game.players.size == 2) {
+      vue.$data.game.players.delete(vue.$data.game.opponentId);
+      vue.$data.game.opponentId = "";
+    }
+    if (type == "matchmaking") {
+      vue.$data.tabTypesIndex = 0;
+    } else if (type == "private") {
+      vue.$data.tabTypesIndex = 1;
+    }
+    vue.updateDisplayedElem();
   });
 }
