@@ -10,10 +10,10 @@
           <p class="v-btn-content">Save changes</p>
         </v-btn>
         <v-btn class="ChangeBtn" @click="modalBool.showPicture = true">
-          <p class="v-btn-content vbtn-dark-color">Change your profile picture</p>
+          <p class="v-btn-content dbtxt">Change your profile picture</p>
         </v-btn>
         <v-btn class="ChangeBtn" @click="modalBool.showQRC = true; getQRC()">
-          <p class="v-btn-content vbtn-dark-color" >2FA Settings</p>
+          <p class="v-btn-content dbtxt" >2FA Settings</p>
         </v-btn>
         <v-btn color="error" class="DeleteBtn" @click="modalBool.showDelete = true">
           <p class="v-btn-content" >Delete my account</p>
@@ -41,7 +41,7 @@
           </p>
         </template>
         <v-btn class="act2FA" @click="toggle2FA">
-          <p class="v-btn-content vbtn-dark-color" >{{twofaAction}} 2FA</p>
+          <p class="v-btn-content dbtxt" >{{twofaAction}} 2FA</p>
         </v-btn>
         <v-btn id="QRCBtn" @click="modalBool.showQRC = false; activate2fa = true">
           <p class="v-btn-content">Done</p>
