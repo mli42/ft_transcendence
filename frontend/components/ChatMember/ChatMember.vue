@@ -1,6 +1,6 @@
 <template>
   <div class="friendContainer">
-    <p>Friends</p> <hr />
+    <p>Members</p> <hr />
     <div class="friendList">
       <div v-for="(user, index) in channelUsers" :key="index">
         <ProfileFriendCard :userId="user.userId"></ProfileFriendCard>
@@ -18,6 +18,6 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss" src="../Profile/Profile.scss">
+<style scoped lang="scss" src="./ChatMember.scss">
 
 </style>

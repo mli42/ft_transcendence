@@ -10,13 +10,10 @@
           <p class="v-btn-content">Save changes</p>
         </v-btn>
         <v-btn class="ChangeBtn" @click="modalBool.showPicture = true">
-          <p class="v-btn-content">Change your profile picture</p>
+          <p class="v-btn-content vbtn-dark-color">Change your profile picture</p>
         </v-btn>
         <v-btn class="ChangeBtn" @click="modalBool.showQRC = true; getQRC()">
-          <p class="v-btn-content" >Show your current QR code</p>
-        </v-btn>
-        <v-btn class="ChangeBtn" @click="toggle2FA">
-          <p class="v-btn-content" >{{twofaAction}} 2FA</p>
+          <p class="v-btn-content vbtn-dark-color" >2FA Settings</p>
         </v-btn>
         <v-btn color="error" class="DeleteBtn" @click="modalBool.showDelete = true">
           <p class="v-btn-content" >Delete my account</p>
@@ -37,7 +34,15 @@
       </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showQRC">
-        <div class="QRCode" v-html="QRChtml"></div>
+        <template v-if="currentUser.twoFactorAuth">
+          <div class="QRCode" v-html="QRChtml"></div>
+          <p class="txt2FA">Don't forget to scan your QR Code
+            with Google Authenticator !
+          </p>
+        </template>
+        <v-btn class="act2FA" @click="toggle2FA">
+          <p class="v-btn-content vbtn-dark-color" >{{twofaAction}} 2FA</p>
+        </v-btn>
         <v-btn id="QRCBtn" @click="modalBool.showQRC = false; activate2fa = true">
           <p class="v-btn-content">Done</p>
         </v-btn>

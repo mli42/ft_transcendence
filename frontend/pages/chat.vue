@@ -40,7 +40,7 @@
             <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
           </div>
       </div>
-      <div>
+      <div class="control">
         <ChatMember :channelUsers="currentChannel.users"></ChatMember>
       </div>
     </div>

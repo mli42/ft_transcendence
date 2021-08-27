@@ -2,6 +2,7 @@
 
 .content{
     background-color: $pg-grey;
+    // overflow-y: scroll;
 }
 
 .chatChamp{
@@ -49,7 +50,7 @@
 
 .received{
     width: 612px;
-    height: 1080px;
+    min-height: 100%;
     margin : 100px auto 100px auto;
     background-color: white;
     overflow-y: scroll;
@@ -205,4 +206,12 @@ h1{
 
 #settingModal{
     margin: 40px 0;
+}
+
+.control {
+    // background-color: $pg-blue;
+    width: 200px;
+    position: absolute;
+    top: 10%;
+    right: 2%;
 }

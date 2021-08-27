@@ -1,6 +1,6 @@
 <template>
   <NuxtLink class="homeButtonMain flexHVcenter" :to="linkTo">
-    <Iconify :class="imgClass" :iconName="iconName"></Iconify>
+    <Iconify :class="imgClass" :iconName="iconName" param="blue" ></Iconify>
     <p>{{text}}</p>
   </NuxtLink>
 </template>
