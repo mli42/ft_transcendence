@@ -129,9 +129,10 @@ export default Vue.extend({
   },
   methods: {
     joinChannel(index: number): void{
-      this.modalBool.showPrivacy = true;
       this.$user.socket.emit('leaveChannel');
       this.currentChannel = this.channels[index];
+      if (!this.currentChannel.publicChannel)
+        this.modalBool.showPrivacy = true;
       console.log("current channel :", this.currentChannel);
       this.$user.socket.emit('joinChannel', this.channels[index]);
     },
@@ -199,6 +200,7 @@ export default Vue.extend({
     this.$user.socket.off("messageAdded");
     this.$user.socket.off("channel");
     this.$user.socket.off("messages");
+    this.$user.socket.emit('leaveChannel');
   }
 });
 </script>
