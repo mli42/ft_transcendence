@@ -8,6 +8,8 @@ function shortName(username: string, max_length: number = 10): string {
 
 function logout(context: any): Function {
   return function () {
+    context.$user.socket.emit('disconnectUser');
+    context.$user.socket = null;
     context.$axios
     .delete('/api/user/logout')
     .then((response: any): void => {
@@ -17,7 +19,6 @@ function logout(context: any): Function {
     .catch((error: any): void => {
       console.log("LOGOUT FAILURE");
     });
-   context.$user.socket.emit('disconnectUser');
   }
 }
 
