@@ -10,7 +10,14 @@ function adminGuard(context: any, user: any): void {
 
 export default async function (context: any) {
   if (context.store.state.isLogged == false)
-    return ;
+  {
+    if (context.$user.socket !== null)
+    {
+      context.$user.socket.emit('disconnectUser');
+      context.$user.socket = null;
+    }
+    return;
+  }
   const userResp: any = await context.app.$axios.get('/api/user/currentUser');
   const user = userResp.data;
   const avatarBaseURL: string = context.$user.avatarBaseURL;
