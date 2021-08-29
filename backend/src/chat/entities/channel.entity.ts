@@ -3,6 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMan
 import { User } from '../../user/entities/user.entity';
 import { JoinedChannel } from './joined-channel.entity';
 import { Message } from './message.entity';
+import { RoleChannel } from './role-channel.entity';
 
 @Entity()
 export class Channel {
@@ -18,15 +19,12 @@ export class Channel {
 
 	@UpdateDateColumn()
 	update_at: Date;
-	
-	// @Column()
-	// adminChannel: string;
 
 	@Column('boolean', {default: false})
 	publicChannel: boolean;
 
-	// @Column()
-	// password: string;
+	@Column("text", {default: ""})
+	password: string;
 
 	@ManyToMany(() => User)
 	@JoinTable()
@@ -37,5 +35,8 @@ export class Channel {
 
 	@OneToMany(() => Message, message => message.channel)
 	messages: Message[];
+
+	@OneToMany(() => RoleChannel, roleChannel => roleChannel.channel)
+	roleUserChannel: RoleChannel[];
 
 }

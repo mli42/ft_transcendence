@@ -1,19 +1,19 @@
 import { Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
-import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { UsersRepository } from '../user/user.repository';
 import { User } from '../user/entities/user.entity';
 import { ChannelService } from './channel.service'
 import { ChannelRepository } from './channel.repository';
 import { ChannelI } from "./interfaces/channel.interface";
-import { Channel } from './entities/channel.entity';
 import { ConnectedUserService } from './connected-user.service';
 import { ConnectedUserI } from './interfaces/user-connected.interface';
 import { MessageService } from './massage.service';
 import { JoinedChannelService } from './joined-channel.service';
 import { MessageI } from './interfaces/message.interface';
-import { Message } from './entities/message.entity';
 import { JoinedChannelI } from './interfaces/joined-channel.interface';
+import { RoleChannelService } from './role-channel.service';
+import { RoleChannelI } from './interfaces/role-channel.interface';
 
 @WebSocketGateway( { cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
@@ -25,6 +25,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         private readonly connectedUserService: ConnectedUserService,
         private readonly messageService: MessageService,
         private readonly joinedChannelService: JoinedChannelService,
+        private readonly roleChannelService: RoleChannelService
     ) {}
 
     @WebSocketServer()
@@ -99,6 +100,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         // console.log("USERS")
         // console.log(createChannel.users);
         for (const user of createChannel.users) {
+            const newroleChannel : RoleChannelI = await this.roleChannelService.create({user: user, channel: channel});
             const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
             const channels = await this.channelRepository.getChannelsForUser(user.userId);
             // console.log(channels);
@@ -135,6 +137,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             await this.server.to(user.socketId).emit('messageAdded', createMessage);
         }
     }
+
+    /********************* Join Channel *********************/
 
 
     /********************* Join Channel *********************/

@@ -5,4 +5,5 @@ export interface ChannelI {
 	channelName?: string;
 	users?: User[];
 	publicChannel?: boolean;
+	password?: string;
 }

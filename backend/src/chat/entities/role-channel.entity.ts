@@ -1,15 +1,21 @@
-import { User } from '../../user/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
 import { Channel } from './channel.entity';
 
 @Entity()
-export class JoinedChannel {
-	
-	@PrimaryGeneratedColumn("uuid")
-	joinId: string;
+export class RoleChannel {
 
-	@Column()
-	socketId: string;
+	@PrimaryGeneratedColumn("uuid")
+	roleId: string;
+
+	@Column('boolean', {default: false})
+	authPrivateChannel: boolean;
+
+	@Column("boolean", {default: false})
+	isBan: boolean;
+  
+	@Column("boolean", {default: false})
+	isAdmin: boolean;
 
 	@ManyToOne(() => User, user => user.joinedChannels)
 	@JoinColumn()
