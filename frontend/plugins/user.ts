@@ -17,6 +17,7 @@ function logout(context: any): Function {
     .catch((error: any): void => {
       console.log("LOGOUT FAILURE");
     });
+   context.$user.socket.emit('disconnectUser');
   }
 }
 
