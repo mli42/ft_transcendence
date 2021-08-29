@@ -52,8 +52,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             } 
             else {
                 client.data.user = user;
+                // console.log("USER CONNECTED")
+                // console.log(client.data.user);
                 const channels = await this.channelRepository.getChannelsForUser(user.userId);
-                
+                // console.log("CHANNELS")
+                // console.log(channels);
                 // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
 
@@ -68,6 +71,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* DISCONNECTION ****************** */
+    @SubscribeMessage('disconnectUser')
     async handleDisconnect(client: Socket) {
         // remove connection from db
         await this.connectedUserService.deleteBySoketId(client.id);
@@ -92,6 +96,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             // console.log(channel.users);
         }
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
+        // console.log("USERS")
         // console.log(createChannel.users);
         for (const user of createChannel.users) {
             const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
@@ -127,7 +132,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
         const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
         for (const user of joinedUsers) {
-            console.log("ICIII");
             await this.server.to(user.socketId).emit('messageAdded', createMessage);
         }
     }
