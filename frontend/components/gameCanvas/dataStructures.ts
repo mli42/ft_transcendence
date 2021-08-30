@@ -1,8 +1,60 @@
-export {Ball, Game, PowerUp, Mouse, Player, IcolorPalette}
+export { Ball, Game, PowerUp, Mouse, Player, IcolorPalette, Button }
+
+/**
+ * 🔽 UI STRUCTURES 🔽
+ */
 
 interface IcolorPalette {
   [index: string]: string;
 }
+
+class Button {
+  txt: string;
+  ico: string;        // Name of an icon in the button
+  class: any;         // List of HTML classes of this object
+  action: () => void; // function called when the btn is clicked
+  uiPalette: IcolorPalette;
+
+  private _color: string;
+
+  constructor() {
+    this.uiPalette = {} as IcolorPalette;
+    this.uiPalette["green"] = "#219653"; this.uiPalette["white"] = "#DCE1E5";
+    this.uiPalette["red"] = "#B30438";
+    this.txt = "";
+    this.ico = "";
+    this.class = {'v-btn-content': false};
+    this._color = this.uiPalette["white"];
+    this.action = function () {};
+  }
+
+  public get color(): string {
+    return (this._color);
+  }
+
+  public set color(color: string) {
+    this._color = this.uiPalette[color];
+    if (color === "white") {
+      this.class['v-btn-content'] = true;
+    } else {
+      this.class['v-btn-content'] = false;
+    }
+  }
+
+  public setFull(txt: string, color: string, action?: () => void): void {
+    this.txt = txt;
+    this.color = color;
+    if (action) {
+      this.action = action;
+    } else {
+      this.action = function () {};
+    }
+  }
+}
+
+/**
+ * 🔽 GAME DATA STRUCTURES 🔽
+ */
 
 class Mouse {
   x: number;

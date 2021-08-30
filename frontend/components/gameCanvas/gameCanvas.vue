@@ -80,12 +80,11 @@
       <div id="mainBtn">
         <v-btn
           id="mainBtn"
-          v-bind:color="mainBtnColor"
-          v-bind:class="mainBtnClass"
-          v-if="isMainBtnDisplayed"
-          @click="mainBtnAction"
-        >{{ this.mainBtnTxt }}
-        <v-icon>{{ this.mainBtnIco}}</v-icon>
+          v-bind:color="mainBtn.color"
+          v-bind:class="mainBtn.class"
+          @click="mainBtn.action"
+        >{{ this.mainBtn.txt }}
+        <v-icon>{{ this.mainBtn.ico}}</v-icon>
         </v-btn>
       </div>
     </div>
@@ -97,7 +96,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Game, Player, IcolorPalette} from "./dataStructures";
+import { Game, Player, IcolorPalette, Button} from "./dataStructures";
 import lookup from "socket.io-client";
 import { use } from "vue/types/umd";
 import { socket, socketInit } from "./socket"
@@ -141,18 +140,9 @@ export default Vue.extend({
       isGameDisplayed: false as boolean,
       isMapsDisplayed: false as boolean,
       isColorDisplayed: true as boolean,
-      isMainBtnDisplayed: false as boolean,
       // model to typeSelection tabs
       tabTypesIndex: 0 as number,
-      // Text of the button when it is displayed
-      mainBtnTxt: "" as string,
-      // Icon of this button
-      mainBtnIco: "" as string,
-      // Color of this button
-      mainBtnColor: "grey" as string,
-      // Action when the main button is pressed
-      mainBtnAction: function () {},
-      mainBtnClass: {'v-btn-content': false},
+      mainBtn: new Button(),
       tabTypes: ["matchmaking", "private"] as Array<string>,
       creatorColor: "" as string,
       creatorName: "" as string,
@@ -209,22 +199,24 @@ export default Vue.extend({
       }
     },
     displayMatchmaking(): void {
-      if (this.game.players.has(this.user.userId) === true) {
+      if (this.game.players.has(this.user.userId) === true) { // If the current client is a player
         this.isColorDisplayed = true;
-        this.isMainBtnDisplayed = true;
       } else {
         this.isColorDisplayed = false;
       }
-      if (this.game.creatorId == this.user.userId) {
-        this.isMainBtnDisplayed = true;
+      if (this.game.creatorId == this.user.userId) {          // If the current client is the creator
+        this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       } else {
-        this.isMainBtnDisplayed = false;
+        if (this.game.players.size == 2) {
+          this.mainBtn.setFull("WAITING TO FIND A PLAYER", "white");
+        } else {
+          this.mainBtn.setFull("THE GAME IS ABOUT TO START", "white");
+        }
       }
       this.isPowDisplayed = false;
       this.isMapsDisplayed = false;
     },
     displayPrivateGame(): void {
-      this.isMainBtnDisplayed = true;
       if (this.game.players.has(this.user.userId) === true) { // If the current client is a player
         this.isColorDisplayed = true;
         this.isPowDisplayed = true;
@@ -236,26 +228,15 @@ export default Vue.extend({
       }
       if (this.game.players.size == 1) { // If the game is not full
         if (this.game.players.has(this.user.userId) == false) { // If the current user is not the creator
-          this.mainBtnTxt = "JOIN THE GAME";
-          this.mainBtnColor = uiPalette["green"];
-          this.mainBtnClass["v-btn-content"] = false;
-          this.mainBtnAction = this.btnActionJoin;
+          this.mainBtn.setFull("JOIN THE GAME", "green", this.btnActionJoin);
         } else {
-          this.mainBtnTxt = "Invite a player";
-          this.mainBtnColor = uiPalette["white"];
-          this.mainBtnClass["v-btn-content"] = true;
+          this.mainBtn.setFull("INVITE A PLAYER", "white", this.btnActionInvite);
         }
       } else {                           // If the game is full
         if (this.game.players.has(this.user.userId) == false) { // Waiting for players to be ready
-          this.mainBtnTxt = "WAITING FOR PLAYERS";
-          this.mainBtnColor = uiPalette["white"];
-          this.mainBtnAction = function () {};
-          this.mainBtnClass["v-btn-content"] = true;
+          this.mainBtn.setFull("WAITING FOR PLAYERS", "white");
         } else {                                                  // Display a button for player to set as ready
-          this.mainBtnTxt = "READY ?";
-          this.mainBtnColor = uiPalette["green"];
-          this.mainBtnClass["v-btn-content"] = false;
-          this.mainBtnAction = this.btnActionReady;
+          this.mainBtn.setFull("READY ?", "green", this.btnActionReady);
         }
       }
     },
