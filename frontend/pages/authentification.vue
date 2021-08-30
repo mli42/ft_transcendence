@@ -10,7 +10,7 @@
         v-model.lazy="secretCode" @keyup.enter="verifSecret" />
       </div>
       <v-btn class="verify" @click="verifSecret">
-        <p class="v-btn-content">Verify</p>
+        <p class="v-btn-content dbtxt">Verify</p>
       </v-btn>
       <v-btn class="logoutBtn" @click="this.$user.logout">
         <p>Logout</p>
