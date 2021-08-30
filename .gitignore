@@ -1,6 +1,7 @@
 # Folder database
 database-data
 upload/image
+.env
 
 # OS
 .DS_Store

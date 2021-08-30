@@ -2,13 +2,47 @@ import { EntityRepository, Repository } from "typeorm";
 import { User } from './entities/user.entity'
 import { CreateUserDto } from "./dto/user.dto";
 import * as bcrypt from 'bcrypt';
-import { ConflictException, HttpStatus, InternalServerErrorException, UnauthorizedException, UploadedFile } from "@nestjs/common";
+import { ConflictException, ForbiddenException, HttpStatus, InternalServerErrorException, UnauthorizedException, UploadedFile } from "@nestjs/common";
 import { GetUserFilterDto } from "./dto/get-user-filter.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User42Dto } from "./dto/user42.dto";
+import { v4 as uuidv4 } from "uuid";
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
+
+	randomHexColorCode(): string {
+		let n = (Math.random() * 0xfffff * 1000000).toString(16);
+		return '#' + n.slice(0, 6);
+	}
+
+	async replaceColor(): Promise<string> {
+		const replaceColor = require('replace-color')
+		let nameProfilePicture= "";
+
+		await replaceColor({
+		  image: process.env.DEFAULT_PROFILE_PICTURE,
+		  colors: {
+		    type: 'hex',
+		    targetColor: '#00FF2A',
+		    replaceColor: this.randomHexColorCode()
+		  }
+		}).then((jimpObject) => {
+			nameProfilePicture = 'deluxe_pong_default_picture_' + uuidv4() + '.png';
+			let pathProfilePicture = "../upload/image/" + nameProfilePicture;
+		    jimpObject.write(pathProfilePicture, (err) => {
+		      if (err) return console.log(err)
+		    })
+		  })
+		  .catch((err) => {
+		    console.log(err)
+		  })
+		return nameProfilePicture;
+	}
+
+	generateProfilePicture(): Promise<string> {
+		return this.replaceColor();
+	}
 
 	async createUser(userData: CreateUserDto): Promise<User> {
 		const user = this.create(userData);
@@ -16,8 +50,11 @@ export class UsersRepository extends Repository<User> {
 		const salt = await bcrypt.genSalt();
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
-		user.profile_picture = "deluxe_pong_default_picture.png";
+		user.profile_picture = await this.generateProfilePicture();
 
+		const numberUsers = await this.createQueryBuilder('user').getCount().catch(() => 0);
+		if (numberUsers === 0)
+			user.isAdmin = true;
 		try {
 			await this.save(user);
 		} catch(error) {
@@ -37,6 +74,7 @@ export class UsersRepository extends Repository<User> {
 		user.password = await bcrypt.hash(user.password, salt);
 		user.friends = [];
 		user.login42 = userData.login42;
+		user.profile_picture = await this.generateProfilePicture();
 		return this.save(user);
 	}
 
@@ -44,8 +82,6 @@ export class UsersRepository extends Repository<User> {
 		const {
 			username,
 			email,
-			elo,
-			status,
 		} = filterDto;
 		const query = this.createQueryBuilder('user') .select([
 			"user.userId",
@@ -54,7 +90,8 @@ export class UsersRepository extends Repository<User> {
 			"user.elo",
 			"user.game_won",
 			"user.lost_game",
-			"user.ratio"
+			"user.ratio",
+			"user.status"
 		]);
 
 		if (username) {
@@ -68,7 +105,7 @@ export class UsersRepository extends Repository<User> {
 		return users;
 	}
 
-	async updateUser(updateUser: UpdateUserDto, user: User): Promise<void> {
+	async updateUser(updateUser: UpdateUserDto, user: User): Promise<boolean> {
 		const {
 			username,
 			email,
@@ -85,13 +122,29 @@ export class UsersRepository extends Repository<User> {
 		}
 		try {
 			await this.save(user);
+			return true;
 		} catch (e) {
-			console.log(e);
 			throw new InternalServerErrorException();
 		}
 	}
 
+	deleteOldImage(image: string) {
+		let fs = require('fs');
+		let filePath = "../upload/image/" + image;
+		fs.stat(filePath, function (err, stats) {
+			// console.log(stats);
+			if (err) {
+				return console.error(err);
+			}
+			fs.unlinkSync(filePath);
+		})
+	}
+
 	async saveImage(@UploadedFile() file, user: User): Promise<string> {
+		if (!file?.filename)
+			throw new ForbiddenException('Only image files are allowed !');
+
+		this.deleteOldImage(user.profile_picture);
 		user.profile_picture = file.filename;
 		try {
 			await this.save(user);

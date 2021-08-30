@@ -13,6 +13,7 @@ import { Observable, of } from 'rxjs';
 import { join } from 'path';
 import { User42Dto } from './dto/user42.dto';
 import { Response, Request } from 'express';
+import { UserModule } from './user.module';
 
 @Injectable()
 export class UserService {
@@ -26,7 +27,8 @@ export class UserService {
 		const {username, password } = userData;
 		const user: Promise<User> = this.usersRepository.createUser(userData);
 		if (await bcrypt.compare(password, (await user).password)) {
-			const payload: JwtPayload = { username };
+			let auth: boolean = false;
+			const payload: JwtPayload = { username, auth };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
 			return {accessToken};
@@ -68,7 +70,8 @@ export class UserService {
 		}
 		if (user && (await bcrypt.compare(password, user.password))) {
 			const username = user.username;
-			const payload: JwtPayload = { username };
+			let auth: boolean = false;
+			const payload: JwtPayload = { username, auth };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
 			return {accessToken};
@@ -104,6 +107,7 @@ export class UserService {
 		return {
 			userId: user.userId,
 			username: user.username,
+			status: user.status,
 			profile_picture: user.profile_picture,
 		}
 	}
@@ -114,13 +118,15 @@ export class UserService {
 
 	async updateUser(updateUser: UpdateUserDto, user: User, @Res({passthrough: true}) res: Response): Promise<void> {
 		const { username } = updateUser;
-		if(username)
+
+		const updated: boolean = await this.usersRepository.updateUser(updateUser, user);
+		if (updated === true)
 		{
-			const payload: JwtPayload = { username };
+		   	let auth: boolean = true;
+			const payload: JwtPayload = { username, auth };
 			const accessToken: string = await this.jwtService.sign(payload);
 			res.cookie('jwt', accessToken, {httpOnly: true});
 		}
-		return this.usersRepository.updateUser(updateUser, user);
 	}
 
 	async deleteUser(id: string, @Res({passthrough: true}) res: Response): Promise<void> {
@@ -132,9 +138,8 @@ export class UserService {
 		return this.usersRepository.saveImage(file, user);
 	}
 
-	async getProfilePicture(@Res() res, userId: string): Promise<Observable<object>> {
-		let user: User = await this.usersRepository.findOne({userId: userId});
-		return of(res.sendFile(join(process.cwd(), '../upload/image/' + user.profile_picture)));
+	async getProfilePicture(@Res() res, profilePicture: string): Promise<Observable<object>> {
+		return of(res.sendFile(join(process.cwd(), '../upload/image/' + profilePicture)));
 	}
 
 	addFriend(friend: string, user: User): Promise<void> {
@@ -162,8 +167,73 @@ export class UserService {
 		return user.twoFactorAuth;
 	}
 
-	async updateTwoFactorAuth(bool: boolean, user: User): Promise<void> {
+	async updateTwoFactorAuth(bool: boolean, user: User, res: Response): Promise<void> {
 		user.twoFactorAuth = bool;
+		const username = user.username;
+		try {
+			await this.usersRepository.save(user);
+			let auth: boolean = true;
+			const payload: JwtPayload = { username, auth };
+			const accessToken: string = await this.jwtService.sign(payload);
+			res.cookie('jwt', accessToken, {httpOnly: true});
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
+
+	async getIsBan(userId: string, userIsAdmin: User): Promise<boolean> {
+		let user: User = undefined;
+
+		if (userIsAdmin.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+		return user.isBan;
+	}
+
+	async updateIsBan(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
+		let user: User = undefined;
+
+		if (userIsAdmin.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+
+		user.isBan = bool;
+		try {
+			await this.usersRepository.save(user);
+		} catch (e) {
+			console.log(e);
+			throw new InternalServerErrorException();
+		}
+	}
+
+	async getIsAdmin(userId: string, userIsAdmin: User): Promise<boolean> {
+		let user: User = undefined;
+
+		if (userIsAdmin.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+		return user.isAdmin;
+	}
+
+	async updateIsAdmin(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
+		let user: User = undefined;
+
+		if (userIsAdmin.isAdmin === false)
+			throw new UnauthorizedException('You aren\'t an administrator');
+		if (userIsAdmin.userId === userId)
+			throw new UnauthorizedException("Cannot change your own admin state");
+		user = await this.usersRepository.findOne({userId: userId});
+		if (!user)
+			throw new NotFoundException('No user found');
+
+		user.isAdmin = bool;
 		try {
 			await this.usersRepository.save(user);
 		} catch (e) {

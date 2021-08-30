@@ -1,0 +1,54 @@
+@import '~/assets/Palette.scss';
+@import '~/components/Profile/Profile.scss';
+
+div#HomePage {
+  display: flex;
+  align-items: center;
+}
+
+div.homeTop {
+  margin: 40px 0;
+}
+
+div.homeTop img, div.homeLeft {
+  width: 256px;
+}
+
+hr.topHR,
+div.homeTop img,
+div.topContent {
+  height: 256px;
+}
+
+hr.topHR {
+  margin: 0 32px;
+  border: 2px solid $pg-dark-blue;
+  border-radius: 5px;
+}
+
+div.topContent h1 {
+  color: $pg-white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 64px;
+  line-height: 64px;
+  text-align: center;
+}
+
+div.topContent, div.homeRight {
+  width: 726px;
+}
+
+div.homeRight {
+  margin: 0;
+}
+
+div.topContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+div#homeButtons {
+  display: flex;
+  justify-content: space-evenly;
+}

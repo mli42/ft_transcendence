@@ -6,6 +6,8 @@ import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { gameGateway } from "../game/game.gateway";
 import { GameModule } from 'src/game/game.module';
+import { AdminModule } from 'src/admin/admin.module';
+import { ChatModule } from '../chat/chat.module';
 
 @Module({
   imports: [
@@ -25,8 +27,11 @@ import { GameModule } from 'src/game/game.module';
     UserModule,
     AuthModule,
     GameModule,
+    AdminModule,
     PassportModule.register({ session: true }),
+    ChatModule
   ],
   providers: [ gameGateway ],
+  ]
 })
 export class AppModule {}

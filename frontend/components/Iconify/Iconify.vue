@@ -9,16 +9,11 @@ export default Vue.extend({
   name: 'Iconify',
   computed: {
     imgURL(): string {
-      let color: string;
-      if (this.iconName == "lucide:log-out")
-        color = "B30438";
-      else
-        color = "1B2636";
-      let res: string = `https://api.iconify.design/${this.iconName}.svg?color=%23${color}`;
+      let finalIconName = this.iconName;
 
       if (this.param)
-        res = `${res}?${this.param}`;
-      return (res);
+        finalIconName += `-${this.param}`;
+      return require(`~/assets/iconify/${finalIconName}.svg`);
     },
   },
   props: {
@@ -36,7 +31,4 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-img {
-  fill: red;
-}
 </style>

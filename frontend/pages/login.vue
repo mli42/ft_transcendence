@@ -34,13 +34,9 @@
       </div>
     </div>
 
-    <div class="errMessages">
-      <v-expand-transition v-for="(msgErr, index) in this.$store.state.auth.errorMsg" :key="index">
-        <v-alert dense dismissible elevation="8" type="warning">
-          <p style="text-transform: uppercase;">{{msgErr}}</p>
-        </v-alert>
-      </v-expand-transition>
-    </div>
+    <LoadingModale v-if="this.$store.getters['auth/getStatus'] !== 'idle'"
+    label="Logging in"></LoadingModale>
+
   </div>
 </template>
 
@@ -52,6 +48,11 @@ import signUpInfos from '~/types/signUpInfos';
 export default Vue.extend({
   name: 'login',
   layout: 'empty',
+  head(): object {
+    return {
+      title: "Login" as String,
+    };
+  },
   data() {
     return {
       logInfos: new loginInfos() as loginInfos,

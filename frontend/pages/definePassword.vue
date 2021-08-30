@@ -10,13 +10,6 @@
         <p class="v-btn-content">Verify</p>
       </v-btn>
     </div>
-    <div class="errMessages">
-      <v-expand-transition v-for="(msg, index) in msgErr" :key="index">
-        <v-alert dense dismissible elevation="8" type="warning">
-          <p style="text-transform: uppercase;">{{msg}}</p>
-        </v-alert>
-      </v-expand-transition>
-    </div>
   </div>
 </template>
 
@@ -31,7 +24,6 @@ export default Vue.extend({
       toSend: {
         password: "" as string,
       },
-      msgErr: [],
     };
   },
   methods: {
@@ -39,17 +31,12 @@ export default Vue.extend({
       if (this.toSend.password)
       {
         this.$axios
-        .patch('/api/user/settings', this.toSend ,  { withCredentials: true })
+        .patch('/api/user/settings', this.toSend)
         .then((response: any): void => {
           this.$router.push({ name: 'login' })
-          console.log("PASSWORD CHANGED");
+          this.$mytoast.succ('Password changed');
         })
-        .catch((error: any): void => {
-          let errorTab = error.response.data.message;
-          console.log(errorTab);
-          setTimeout(() => {
-            this.msgErr = (typeof errorTab == "string") ? [errorTab] : errorTab;}, 600) 
-        })
+        .catch(this.$mytoast.defaultCatch);
       }
     },
   },

@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsAlphanumeric, IsEmail, IsNumber, IsOptional, IsString } from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetUserFilterDto {
@@ -10,10 +10,4 @@ export class GetUserFilterDto {
     @IsOptional()
     @IsString()
     email?: string;
-
-    @IsOptional()
-    elo?: string;
-
-    @IsOptional()
-    status?: UserStatus;
 }

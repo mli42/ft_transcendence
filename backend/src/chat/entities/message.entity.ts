@@ -1,0 +1,26 @@
+import { User } from "../../user/entities/user.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Channel } from "./channel.entity";
+
+@Entity()
+export class Message {
+	@PrimaryGeneratedColumn("uuid")
+	msgId: string;
+
+	@Column()
+	text: string;
+
+	@ManyToOne(() => User, user => user.messages)
+	@JoinColumn()
+	user: User;
+
+	@ManyToOne(() => Channel, channel => channel.messages)
+	@JoinTable()
+	channel: Channel;
+
+	@CreateDateColumn()
+	date: Date;
+
+	@UpdateDateColumn()
+	update_at: Date;
+}
