@@ -81,6 +81,7 @@
         <v-btn
           id="mainBtn"
           v-bind:color="mainBtnColor"
+          v-bind:class="mainBtnClass"
           v-if="isMainBtnDisplayed"
           @click="mainBtnAction"
         >{{ this.mainBtnTxt }}
@@ -108,6 +109,7 @@ const SOCKET_URL:string = "ws://localhost:3000/";
 
 let uiPalette: IcolorPalette = {} as IcolorPalette;
 uiPalette["green"] = "#219653"; uiPalette["white"] = "#DCE1E5";
+uiPalette["red"] = "#B30438";
 
 let playerPalette: IcolorPalette = {} as IcolorPalette;
 playerPalette["Red"] = "#FA163F"; playerPalette["Green"] = "#54E346";
@@ -150,6 +152,7 @@ export default Vue.extend({
       mainBtnColor: "grey" as string,
       // Action when the main button is pressed
       mainBtnAction: function () {},
+      mainBtnClass: {'v-btn-content': false},
       tabTypes: ["matchmaking", "private"] as Array<string>,
       creatorColor: "" as string,
       creatorName: "" as string,
@@ -235,11 +238,23 @@ export default Vue.extend({
         if (this.game.players.has(this.user.userId) == false) { // If the current user is not the creator
           this.mainBtnTxt = "JOIN THE GAME";
           this.mainBtnColor = uiPalette["green"];
+          this.mainBtnClass["v-btn-content"] = false;
           this.mainBtnAction = this.btnActionJoin;
+        } else {
+          this.mainBtnTxt = "Invite a player";
         }
-      } else if (this.game.players.size == 2 && this.game.players.has(this.user.userId) == false) {
-        this.mainBtnTxt = "WAITING FOR PLAYERS";
-        this.mainBtnColor = uiPalette["white"];
+      } else {                           // If the game is full
+        if (this.game.players.has(this.user.userId) == false) { // Waiting for players to be ready
+          this.mainBtnTxt = "WAITING FOR PLAYERS";
+          this.mainBtnColor = uiPalette["white"];
+          this.mainBtnAction = function () {};
+          this.mainBtnClass["v-btn-content"] = true;
+        } else {                                                  // Display a button for player to set as ready
+          this.mainBtnTxt = "READY ?";
+          this.mainBtnColor = uiPalette["green"];
+          this.mainBtnClass["v-btn-content"] = false;
+          this.mainBtnAction = this.btnActionReady;
+        }
       }
     },
     updateDisplayedElem(): void {
