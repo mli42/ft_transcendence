@@ -51,5 +51,17 @@ function socketInit(url:string, gameId: string, vue: any): void {
   });
   socket.on("playerLeaveTC", (playerId: string) => { // A player leaved
     console.log("LOG: playerLeaveTC");
+    let game: Game = vue.$data.game;
+    if (game.creatorId === playerId) {
+      game.creatorId = "";
+      if (game.opponentId) {
+        game.creatorId = game.opponentId;
+        game.opponentId = "";
+      }
+    } else {
+      game.opponentId = "";
+    }
+    game.players.delete(playerId);
+    vue.updateDisplayedElem();
   });
 }

@@ -242,6 +242,8 @@ export default Vue.extend({
           this.mainBtnAction = this.btnActionJoin;
         } else {
           this.mainBtnTxt = "Invite a player";
+          this.mainBtnColor = uiPalette["white"];
+          this.mainBtnClass["v-btn-content"] = true;
         }
       } else {                           // If the game is full
         if (this.game.players.has(this.user.userId) == false) { // Waiting for players to be ready

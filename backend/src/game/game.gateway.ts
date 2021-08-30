@@ -131,5 +131,6 @@ export class gameGateway {
 
   handleDisconnect(client: Socket) {
    this.logger.log(`Client disconnected: ${client.id}`);
+   this.playerLeave(client);
   }
 }
