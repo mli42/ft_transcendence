@@ -207,10 +207,12 @@ export default Vue.extend({
       if (this.game.creatorId == this.user.userId) {          // If the current client is the creator
         this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       } else {
-        if (this.game.players.size == 2) {
+        if (this.game.players.size === 1) {
           this.mainBtn.setFull("WAITING TO FIND A PLAYER", "white");
-        } else {
+        } else if (this.game.players.size === 2) {
           this.mainBtn.setFull("THE GAME IS ABOUT TO START", "white");
+        } else {
+          this.mainBtn.setFull("JOIN THE GAME", "green", this.btnActionJoin);
         }
       }
       this.isPowDisplayed = false;
@@ -232,7 +234,7 @@ export default Vue.extend({
         } else {
           this.mainBtn.setFull("INVITE A PLAYER", "white", this.btnActionInvite);
         }
-      } else {                           // If the game is full
+      } else if (this.game.players.size == 2) {                           // If the game is full
         if (this.game.players.has(this.user.userId) == false) { // Waiting for players to be ready
           this.mainBtn.setFull("WAITING FOR PLAYERS", "white");
         } else {                                                  // Display a button for player to set as ready
@@ -264,7 +266,11 @@ export default Vue.extend({
       console.log("LOG: button action join");
       let player: Player | undefined;
 
-      this.game.opponentId = this.user.userId;
+      if (this.game.creatorId === "") {
+        this.game.creatorId = this.user.userId;
+      } else {
+        this.game.opponentId = this.user.userId;
+      }
       this.game.players.set(this.user.userId, new Player());
       player = this.game.players.get(this.user.userId);
       if (player) {

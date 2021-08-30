@@ -46,7 +46,11 @@ function socketInit(url:string, gameId: string, vue: any): void {
     console.log("LOG: playerJoinTC");
     let game: Game = vue.$data.game;
     game.players.set(payload.playerId, payload.player);
-    game.opponentId = payload.playerId;
+    if (game.creatorId === "") {
+      game.creatorId = payload.playerId;
+    } else {
+      game.opponentId = payload.playerId;
+    }
     vue.updateDisplayedElem();
   });
   socket.on("playerLeaveTC", (playerId: string) => { // A player leaved

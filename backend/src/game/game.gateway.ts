@@ -51,7 +51,11 @@ export class gameGateway {
 
     if (game) {
       game.players.set(query.userId as string, player);
-      game.opponentId = query.userId as string;
+      if (game.creatorId === "") {
+        game.creatorId = query.userId as string;
+      } else {
+        game.opponentId = query.userId as string;
+      }
       client.to(game.id).emit("playerJoinTC", {playerId: query.userId, player: player});
     }
   }
