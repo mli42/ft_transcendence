@@ -104,7 +104,7 @@ import { sketch } from "./sketch";
 
 export { SOCKET_URL };
 
-const SOCKET_URL:string = "ws://localhost:3000/";
+const SOCKET_URL: string = "ws://localhost:3000/game";
 
 let uiPalette: IcolorPalette = {} as IcolorPalette;
 uiPalette["green"] = "#219653"; uiPalette["white"] = "#DCE1E5";
@@ -154,11 +154,13 @@ export default Vue.extend({
   async mounted() {
     // Connect to the websocket & fetch remote game class
     socketInit(SOCKET_URL, this.gameId, this);
-    console.log(this);
     socket.emit("fetchGameTS", this.gameId);
     // Start the sketch
     const { default: P5 } = await import('p5');
     const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
+  },
+  async destroyed() {
+    socket.disconnect();
   },
   methods: {
     isGameDisplayedNeg(): void { // Negative the boolean to display the canvas
@@ -322,7 +324,6 @@ export default Vue.extend({
         index = this.powList.indexOf(pow);
         if (index == -1) {
           this.game.enabledPowerUps.splice(index, 1);
-          console.log(pow);
         }
       }
     },

@@ -29,9 +29,9 @@ import { ChatModule } from '../chat/chat.module';
     GameModule,
     AdminModule,
     PassportModule.register({ session: true }),
-    ChatModule
+    ChatModule,
+    // gameGateway
   ],
-  providers: [ gameGateway ],
-  ]
+  providers: [ gameGateway],
 })
 export class AppModule {}

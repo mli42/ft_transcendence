@@ -74,13 +74,9 @@ export default Vue.extend ({
   },
   destroyed() {
     let elements: any = document.getElementsByClassName('p5Canvas');
-      console.log(elements);
-      console.log(elements.length);
     for (let i = 0; i < elements.length; i++) {
-      console.log(elements[i]);
       elements[i].remove();
     }
-    console.log(elements);
   },
 });
 </script>

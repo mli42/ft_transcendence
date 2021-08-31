@@ -16,15 +16,17 @@ let gamesMap: Map<string, Game> = new Map(); // Relation between games and gameI
  */
 
 // get the gameId of rooms list of a player
-function getIdFromRooms(rooms: Set<any>): string {
-  return (Array.from(rooms)[0]);
+function getIdsFromRooms(rooms: Set<any>): Array<string> {
+  let result: Array<string> = Array.from(rooms);
+  result.shift();
+  return (result);
 }
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway( { namespace: "/game", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class gameGateway {
 
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger("AppGateway");
+  private logger: Logger = new Logger("gameGateway");
 
   afterInit(server: Server) {
     this.logger.log("game socket init !");
@@ -33,11 +35,21 @@ export class gameGateway {
   // A client ask to get the entire game class. Or to create it if does not exists
   @SubscribeMessage("fetchGameTS")
   fetchGame(client: Socket, gameId: string): void {
-    const query: any = client.handshake.query;
+    const rooms: Array<string> = getIdsFromRooms(client.rooms);
     this.logger.log("LOG: fetchGameTS on " + gameId + " from " + client.handshake.query.username);
 
-    if (gamesMap.has(gameId) == false) {
-      gamesMap.set(gameId, new Game(query.userId, query.username, gameId));
+    if (rooms.find(element => element === gameId) == undefined) {
+      rooms.forEach(function(value: string) {
+        client.leave(value);
+      });
+      if (gamesMap.has(gameId) === false) {
+        gamesMap.set(gameId, new Game(
+          client.handshake.query.userId as string,
+          client.handshake.query.username as string,
+          gameId
+        ));
+      }
+      client.join(gameId);
     }
     client.emit("fetchGameTC", gamesMap.get(gameId), JSON.stringify(Array.from(gamesMap.get(gameId).players.entries())));
   }
@@ -80,6 +92,7 @@ export class gameGateway {
         game.opponentId = "";
       }
       client.to(game.id).emit("playerLeaveTC", query.userId);
+      gamesMap.delete(query.userId);
     }
   }
 
@@ -121,20 +134,10 @@ export class gameGateway {
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-    const gameWanted: string = client.handshake.query.gameId as string;
-    let user: { userId: string, username: string } = {} as any;
-
-    user.userId = client.handshake.query.userId as string;
-    user.username = client.handshake.query.username as string;
-    client.join(gameWanted);
-    if (gamesMap.has(gameWanted) === false) {
-      gamesMap.set(gameWanted, new Game(user.userId, user.username, gameWanted));
-    }
-    this.logger.log("Client connected: " + user.username + " in room: " + gameWanted);
+    this.logger.log("Client connected: " + client.handshake.query.username);
   }
 
   handleDisconnect(client: Socket) {
    this.logger.log(`Client disconnected: ${client.id}`);
-   this.playerLeave(client);
   }
 }
