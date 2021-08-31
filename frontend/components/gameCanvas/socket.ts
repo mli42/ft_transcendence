@@ -69,4 +69,9 @@ function socketInit(url:string, gameId: string, vue: any): void {
     game.players.delete(playerId);
     vue.updateDisplayedElem();
   });
+  socket.on("updatePowTS", (enabledPowerUps: Array<string>) => {
+    console.log("LOG: updatePowTS");
+    const game: Game = vue.$data.game;
+    game.enabledPowerUps = enabledPowerUps;
+  });
 }

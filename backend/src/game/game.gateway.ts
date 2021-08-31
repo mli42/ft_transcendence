@@ -133,6 +133,18 @@ export class gameGateway {
     }
   }
 
+  @SubscribeMessage("updatePowTS")
+  updatePow(client: Socket, enabledPowerUps: Array<string>): void {
+    const query: any = client.handshake.query;
+    const game: Game = gamesMap.get(query.gameId);
+    this.logger.log("LOG: updatePowTS on " + query.gameId + " from " + query.username);
+
+    if (game) {
+      game.enabledPowerUps = enabledPowerUps;
+      client.to(game.id).emit("updatePowTS", enabledPowerUps);
+    }
+  }
+
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log("Client connected: " + client.handshake.query.username);
   }

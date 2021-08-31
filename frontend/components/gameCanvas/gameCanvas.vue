@@ -43,6 +43,7 @@
           v-model="game.enabledPowerUps"
           hint="⚠ You can't edit this list"
           :items="powList"
+          @change="updatePow"
           id="powCombo"
         ></v-combobox>
       </div>
@@ -263,6 +264,9 @@ export default Vue.extend({
       this.creatorColor = this.game.players.get(this.game.creatorId)?.color || "black";
       this.opponentColor = this.game.players.get(this.game.opponentId)?.color || "black";
       this.barColor = this.game.players.get(this.user.userId)?.color || "black";
+    },
+    updatePow(): void {
+      socket.emit("updatePowTS", this.game.enabledPowerUps);
     },
     btnActionJoin(): void { // Action to join the game as an opponent player
       console.log("LOG: button action join");
