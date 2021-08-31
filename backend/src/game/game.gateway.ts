@@ -141,7 +141,19 @@ export class gameGateway {
 
     if (game) {
       game.enabledPowerUps = enabledPowerUps;
-      client.to(game.id).emit("updatePowTS", enabledPowerUps);
+      client.to(game.id).emit("updatePowTC", enabledPowerUps);
+    }
+  }
+
+  @SubscribeMessage("updateMapTS")
+  updateMap(client: Socket, mapName: string): void {
+    const query: any = client.handshake.query;
+    const game: Game = gamesMap.get(query.gameId);
+    this.logger.log("LOG: updateMapTS on " + query.gameId + " from " + query.username);
+
+    if (game) {
+      game.mapName = mapName;
+      client.to(game.id).emit("updateMapTC", mapName);
     }
   }
 

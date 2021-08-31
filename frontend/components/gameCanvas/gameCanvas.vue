@@ -55,6 +55,7 @@
           v-model="game.mapName"
           item-value="text"
           :items="mapNames"
+          @change="updateMap"
           filled
         ></v-select>
       </div>
@@ -267,6 +268,9 @@ export default Vue.extend({
     },
     updatePow(): void {
       socket.emit("updatePowTS", this.game.enabledPowerUps);
+    },
+    updateMap(): void {
+      socket.emit("updateMapTS", this.game.mapName);
     },
     btnActionJoin(): void { // Action to join the game as an opponent player
       console.log("LOG: button action join");
