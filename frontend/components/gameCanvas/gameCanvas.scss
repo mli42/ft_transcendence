@@ -1,10 +1,36 @@
-.wrapperCanvas {
+@import '~/assets/Palette.scss';
+
+#gameCanvas {
   width: 100vw;
   height: 52.91vw;
   max-width: 188.97vh;
   max-height: 100vh;
-  background-color: red;
   position: absolute;
   margin: auto;
   left:0;right:0; /* horizontal center */
+  top: 0;bottom: 0;
+}
+
+.dot {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+}
+
+.playerBar {
+  width: 160px;
+  height: 32px;
+  display: inline-block;
+}
+
+#powCombo {
+  margin-top: 8px;
+}
+
+.v-btn-content {
+  text-transform: initial;
+  font-size: 18px;
+  line-height: 18px;
+  color: $pg-blue;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }

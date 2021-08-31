@@ -176,7 +176,6 @@ export default Vue.extend({
     },
   },
   mounted() {
-    console.log(this.$user.socket);
     this.$user.socket.on("messageAdded", (data: any) => {
       this.recvMsg(data);
     });

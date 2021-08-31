@@ -23,9 +23,17 @@ export default async function (context: any) {
   const avatarBaseURL: string = context.$user.avatarBaseURL;
   const avatarURL: string = `${avatarBaseURL}/${user.profile_picture}`;
 
-  if (context.$user.socket === null)
-    context.$user.socket = io(`ws://${window.location.hostname}:3000/`, {withCredentials: true});
   adminGuard(context, user);
   context.store.commit('updateUser', user);
+  if (context.$user.socket === null) {
+    context.$user.socket = io(`ws://${window.location.hostname}:3000/chat`, {
+      withCredentials: true,
+      query: {
+        gameId: context.from.params.id,
+        userId: context.store.state.user.userId,
+        username: context.store.state.user.username,
+      },
+    });
+  }
   context.store.commit('updateAvatarURL', avatarURL);
 };

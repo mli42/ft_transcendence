@@ -1,14 +1,18 @@
 <template>
   <div>
-    {{ this.$route.path }}
+    <gameCanvas />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue from "vue";
 
-export default Vue.extend ({
-  name: 'gameIdPage',
+export default Vue.extend({
+  name: "gameIdPage" as string,
+  data() {
+    return {
+    }
+  }
 });
 </script>
 

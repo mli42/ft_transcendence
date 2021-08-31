@@ -15,7 +15,7 @@ import { JoinedChannelI } from './interfaces/joined-channel.interface';
 import { RoleChannelService } from './role-channel.service';
 import { RoleChannelI } from './interfaces/role-channel.interface';
 
-@WebSocketGateway( { cors: { origin: 'http://localhost:3030', credentials: true }})
+@WebSocketGateway({ namespace: "/chat", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
 
     constructor(
@@ -86,7 +86,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.logger.log(`Client diconnect: ${client.id}`);
     }
 
-
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
@@ -126,7 +125,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     //     this.server.emit('msgToClient',text);
     // }
 
-
     @SubscribeMessage('newMessage')
     async onAddMessage(client: Socket, message: MessageI) {
         const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
@@ -139,7 +137,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* Join Channel *********************/
-
 
     /********************* Join Channel *********************/
     @SubscribeMessage('joinChannel')
@@ -156,6 +153,5 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async handleLeaveChannel(client: Socket) {
         await this.joinedChannelService.deleteBySocketId(client.id);
     }
-
 
 }
