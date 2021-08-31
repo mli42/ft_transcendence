@@ -70,17 +70,17 @@ function socketInit(url:string, gameId: string, vue: any): void {
     vue.updateDisplayedElem();
   });
   socket.on("updatePowTC", (enabledPowerUps: Array<string>) => {
-    console.log("LOG: updatePowTS");
+    console.log("LOG: updatePowTC");
     const game: Game = vue.$data.game;
     game.enabledPowerUps = enabledPowerUps;
   });
   socket.on("updateMapTC", (mapName: string) => {
-    console.log("LOG: updateMapTS");
+    console.log("LOG: updateMapTC");
     const game: Game = vue.$data.game;
     game.mapName = mapName;
   });
   socket.on("updateReadyTC", (payload: { playerId: string, isReady: boolean }) => {
-    console.log("LOG: updateReadyTS");
+    console.log("LOG: updateReadyTC");
     const game: Game = vue.$data.game;
     const player: Player | undefined = game.players.get(payload.playerId);
 

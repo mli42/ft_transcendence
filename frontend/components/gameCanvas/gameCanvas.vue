@@ -237,18 +237,16 @@ export default Vue.extend({
         this.isPowDisplayed = false;
         this.isMapsDisplayed = false;
       }
-      if (this.game.players.size == 1) { // If the game is not full
-        if (this.game.players.has(this.user.userId) == false) { // If the current user is not the creator
-          this.mainBtn.setFull("JOIN THE GAME", "green", this.btnActionJoin);
-        } else {
-          this.mainBtn.setFull("INVITE A PLAYER", "white", this.btnActionInvite);
-        }
-      } else if (this.game.players.size == 2) {                           // If the game is full
+      if (this.game.players.size == 2) {                           // If the game is full
         if (this.game.players.has(this.user.userId) == false) { // Waiting for players to be ready
           this.mainBtn.setFull("WAITING FOR PLAYERS", "white");
         } else {                                                  // Display a button for player to set as ready
           this.mainBtn.setFull("READY ?", "green", this.btnActionReady);
         }
+      } else if (this.game.players.has(this.user.userId) == false) { // If the current user is not the creator
+          this.mainBtn.setFull("JOIN THE GAME", "green", this.btnActionJoin);
+      } else {
+          this.mainBtn.setFull("INVITE A PLAYER", "white", this.btnActionInvite);
       }
     },
     updateDisplayedElem(): void {
@@ -305,7 +303,7 @@ export default Vue.extend({
     },
     btnActionInvite(): void { // Action to copy the link in the user clipboard
       navigator.clipboard.writeText('http://localhost:3030' + this.$nuxt.$route.fullPath);
-      this.$mytoast.succ("URL paste on your clipboard !");
+      this.$mytoast.succ("URL paste in your clipboard !");
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
 
