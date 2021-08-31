@@ -12,16 +12,14 @@ import { Message } from './entities/message.entity';
 import { JoinedChannel } from './entities/joined-channel.entity';
 import { MessageService } from './massage.service';
 import { JoinedChannelService } from './joined-channel.service';
-import { RoleChannelService } from './role-channel.service';
-import { RoleChannel } from './entities/role-channel.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ChannelRepository]),
-    TypeOrmModule.forFeature([Channel, ConnectedUser, Message, JoinedChannel, RoleChannel]),
+    TypeOrmModule.forFeature([Channel, ConnectedUser, Message, JoinedChannel]),
     TypeOrmModule.forFeature([UsersRepository]),
     UserModule,
   ],
-  providers: [ChatGateway, ChannelService, ConnectedUserService, MessageService, JoinedChannelService, RoleChannelService],
+  providers: [ChatGateway, ChannelService, ConnectedUserService, MessageService, JoinedChannelService],
 })
 export class ChatModule {}
