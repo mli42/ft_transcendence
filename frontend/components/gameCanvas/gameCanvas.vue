@@ -86,6 +86,7 @@
           id="mainBtn"
           v-bind:color="mainBtn.color"
           v-bind:class="mainBtn.class"
+          v-if="this.mainBtn.txt"
           @click="mainBtn.action"
         >{{ this.mainBtn.txt }}
         <v-icon>{{ this.mainBtn.ico}}</v-icon>
@@ -143,7 +144,7 @@ export default Vue.extend({
       isPowDisplayed: false as boolean,
       isGameDisplayed: false as boolean,
       isMapsDisplayed: false as boolean,
-      isColorDisplayed: true as boolean,
+      isColorDisplayed: false as boolean,
       // model to typeSelection tabs
       tabTypesIndex: 0 as number,
       mainBtn: new Button(),
@@ -303,7 +304,8 @@ export default Vue.extend({
       socket.emit("playerLeaveTS", this.user.userId);
     },
     btnActionInvite(): void { // Action to copy the link in the user clipboard
-
+      navigator.clipboard.writeText('http://localhost:3030' + this.$nuxt.$route.fullPath);
+      this.$mytoast.succ("URL paste on your clipboard !");
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
 
