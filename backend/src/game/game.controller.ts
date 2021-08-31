@@ -22,6 +22,16 @@ export class GameController {
         return this.gameService.getMap(res, nameMap);
     }
 
+    @ApiOperation({summary: 'Get Small Map'})
+	@ApiOkResponse({description: 'retrieve the map by sending its name as a parameter'})
+	@ApiParam({name: 'nameMap', required: true, description: 'name of the map'})
+    /*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/smallMap/:nameMap')
+	getSmallMap(@Res() res, @Param('nameMap') nameMap): Observable<object> {
+        return this.gameService.getSmallMap(res, nameMap);
+    }
+
     @ApiOperation({summary: 'Get All Map'})
 	@ApiOkResponse({description: 'returns a list of all available maps'})
     /*******/
