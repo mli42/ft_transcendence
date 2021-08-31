@@ -79,4 +79,14 @@ function socketInit(url:string, gameId: string, vue: any): void {
     const game: Game = vue.$data.game;
     game.mapName = mapName;
   });
+  socket.on("updateReadyTC", (payload: { playerId: string, isReady: boolean }) => {
+    console.log("LOG: updateReadyTS");
+    const game: Game = vue.$data.game;
+    const player: Player | undefined = game.players.get(payload.playerId);
+
+    if (game && player) {
+      player.isReady = payload.isReady;
+      vue.updateDisplayedElem();
+    }
+  });
 }

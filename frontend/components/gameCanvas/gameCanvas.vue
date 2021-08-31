@@ -67,14 +67,16 @@
           label
           v-bind:color="this.creatorColor"
         >
-          <v-icon v-if="creatorName" left>mdi-account-circle-outline</v-icon>
+          <v-icon v-if="isCreatorReady" left>mdi-check</v-icon>
+          <v-icon v-else left>mdi-dots-horizontal</v-icon>
           {{ creatorName }}
         </v-chip>
         <v-chip
           label
           v-bind:color="this.opponentColor"
         >
-          <v-icon v-if="opponentName" left>mdi-account-circle-outline</v-icon>
+          <v-icon v-if="isOpponentReady" left>mdi-check</v-icon>
+          <v-icon v-else left>mdi-dots-horizontal</v-icon>
           {{ opponentName }}
         </v-chip>
       </div>
@@ -148,8 +150,10 @@ export default Vue.extend({
       tabTypes: ["matchmaking", "private"] as Array<string>,
       creatorColor: "" as string,
       creatorName: "" as string,
+      isCreatorReady: false as boolean,
       opponentColor: "" as string,
       opponentName: "" as string,
+      isOpponentReady: false as boolean,
       barColor: "" as string,
     }
   },
@@ -258,7 +262,9 @@ export default Vue.extend({
         this.tabTypesIndex = 1;
       }
       this.creatorName = this.game.players.get(this.game.creatorId)?.name || "";
+      this.isCreatorReady = this.game.players.get(this.game.creatorId)?.isReady || false;
       this.opponentName = this.game.players.get(this.game.opponentId)?.name || "";
+      this.isOpponentReady = this.game.players.get(this.game.opponentId)?.isReady || false;
       this.updatePlayersColors();
     },
     updatePlayersColors(): void {
@@ -291,6 +297,7 @@ export default Vue.extend({
       this.updateDisplayedElem();
     },
     btnActionLeave(): void {  // Action to leave the game as a player
+      console.log("LOG: button action leave");
       this.game.opponentId = "";
       this.game.players.delete(this.user.userId);
       socket.emit("playerLeaveTS", this.user.userId);
@@ -302,13 +309,14 @@ export default Vue.extend({
 
     },
     btnActionReady(): void {  // Action to send to the server the information about the current player is ready
-      // const gameId: string = this.gameId;
-      // let player: Player | undefined = this.game.players.get(this.user.userId);
+      console.log("LOG: button action ready");
+      let player: Player | undefined = this.game.players.get(this.user.userId);
 
-      // if (player) {
-      //   player.isReady = !player.isReady;
-      //   socket.emit("updateReadyTS", {gameId: gameId, isReady: player.isReady});
-      // }
+      if (player && player.isReady === false) {
+        player.isReady = true;
+        socket.emit("updateReadyTS", player.isReady);
+        this.updateDisplayedElem();
+      }
     },
   },
   computed: {

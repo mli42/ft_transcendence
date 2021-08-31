@@ -122,14 +122,14 @@ export class gameGateway {
   }
 
   @SubscribeMessage("updateReadyTS")
-  updateReady(client: Socket, payload: {userId: string, isReady: boolean}): void {
-    const gameId: string = client.handshake.query.gameId as string;
-    const game: Game = gamesMap.get(gameId);
-    this.logger.log("LOG: updateReadyTS on " + gameId + " from " + client.handshake.query.username);
+  updateReady(client: Socket, isReady: boolean ): void {
+    const query: any = client.handshake.query;
+    const game: Game = gamesMap.get(query.gameId);
+    this.logger.log("LOG: updateReadyTS on " + query.gameId + " from " + query.username);
 
     if (game) {
-      game.players.get(payload.userId).isReady = payload.isReady;
-      client.to(gameId).emit("updateReadyTC", payload);
+      game.players.get(query.userId).isReady = isReady;
+      client.to(query.gameId).emit("updateReadyTC", {playerId: query.userId, isReady: isReady});
     }
   }
 
@@ -163,5 +163,6 @@ export class gameGateway {
 
   handleDisconnect(client: Socket) {
    this.logger.log(`Client disconnected: ${client.id}`);
+   this.playerLeave(client);
   }
 }
