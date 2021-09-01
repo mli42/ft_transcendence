@@ -68,6 +68,19 @@ class Button {
       this.color = "red";
     };
   }
+
+  public setHoverReady() {
+    this.actionHoverLeave = () => { 
+      this.isLoading = true;
+      this.color = "green";
+    };
+    this.actionHoverEnter = () => { 
+      this.isLoading = false;
+      this.txt = "Unready"
+      this.color = "red";
+    };
+  }
+
   public resetHover() {
     this.actionHoverLeave = () => {};
     this.actionHoverEnter = () => {};

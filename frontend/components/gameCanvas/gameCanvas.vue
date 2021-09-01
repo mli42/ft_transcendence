@@ -333,6 +333,24 @@ export default Vue.extend({
         player.isReady = true;
         socket.emit("updateReadyTS", player.isReady);
         this.updateDisplayedElem();
+        this.mainBtn.isLoading = true;
+        this.mainBtn.setHoverReady();
+        this.mainBtn.action = this.btnActionUnReady;
+      }
+    },
+    btnActionUnReady(): void {  // Action to send to the server the information about the current player is ready
+      console.log("LOG: button action unready");
+      let player: Player | undefined = this.game.players.get(this.user.userId);
+
+      if (player && player.isReady === true) {
+        player.isReady = false;
+        socket.emit("updateReadyTS", player.isReady);
+        this.mainBtn.resetHover();
+        this.mainBtn.color = "green";
+        this.mainBtn.txt = "Ready ?";
+        this.mainBtn.isLoading = false;
+        this.mainBtn.action = this.btnActionReady;
+        this.updateDisplayedElem();
       }
     },
   },
