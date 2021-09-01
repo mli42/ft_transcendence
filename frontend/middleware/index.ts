@@ -14,7 +14,10 @@ export default async function (context: any) {
     if (context.$user.socket !== null)
     {
       context.$user.socket.emit('disconnectUser');
-      context.$user.socket = null;
+      // console.log("My socket", context.$user.socket);
+      setTimeout(() => {
+        context.$user.socket = null;
+      }, 500);
     }
     return;
   }
