@@ -126,7 +126,7 @@ export default Vue.extend({
         members: [] as User[],
         addpassword: false as boolean,
       },
-      selectedChannel: null as number,
+      selectedChannel: 0 as number,
       friends: [],
       password: '' as string,
     }
@@ -146,17 +146,18 @@ export default Vue.extend({
       }
     },
     sendPassword() {
-      this.$user.socket.emit('passwordChannel', this.currentChannel, this.password)
-      .then((resp: boolean) => {
-          if (resp === false)
-            this.modalBool.showPrivacy = false;
-          else
-          {
-            this.$user.socket.emit('joinChannel', this.currentChannel);
-            this.currentChannel = this.channels[this.selectedChannel];
-          }
-      })
-      .catch(() => console.log('Oh no'));
+      this.$user.socket.emit('passwordChannel', this.channels[this.selectedChannel], this.password, (data: any) => {
+        if (data === false)
+        {
+          this.modalBool.showPrivacy = false;
+          console.log("wrong mdp!!");
+        }
+        else
+        {
+          this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
+          this.currentChannel = this.channels[this.selectedChannel];
+        }
+      });
       this.password = '';
     },
     sendMsg(): void {
