@@ -58,6 +58,7 @@ class Game {
   players: Map<string, Player>; // string -> userId
   creatorId: string;              // The userId of the game creator
   opponentId: string;             // The userId of the opponenent;
+  creationDate: Date;
   opponentIdFound: string;
   enabledPowerUps: Array<string>;
 
@@ -72,6 +73,8 @@ class Game {
     this.players.set(creatorId, this.assignPlayer(creatorName));
     this.creatorId = creatorId;
     this.opponentId = "";
+    this.creationDate = new Date();
+    console.log(this.creationDate);
     this.opponentIdFound = "";
     this.enabledPowerUps = new Array<string>();
   }
