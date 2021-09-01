@@ -84,9 +84,9 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
       <h1 id="settingModal">Join Channel</h1>
-      <ModalInput  name="Channel password :" v-model.lazy="passeword"  placeHolder="" :isPassword="true" :ispublic="true"></ModalInput>
+      <ModalInput  name="Channel password :" v-model.lazy="password"  placeHolder="" :isPassword="true" :ispublic="true"></ModalInput>
       <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false">
-        <p class="v-btn-content">Join</p>
+        <p class="v-btn-content" @click.prevent="sendPassword">Join</p>
       </v-btn>
     </SettingModal>
     
@@ -126,7 +126,7 @@ export default Vue.extend({
         members: [] as User[],
         addpassword: false as boolean,
       },
-      selectedChannel: false as boolean,
+      selectedChannel: null as number,
       friends: [],
       password: '' as string,
     }
@@ -134,11 +134,30 @@ export default Vue.extend({
   methods: {
     joinChannel(index: number): void{
       this.$user.socket.emit('leaveChannel');
-      this.currentChannel = this.channels[index];
-      if (!this.currentChannel.publicChannel)
+      if (!this.channels[index].publicChannel)
+      {
         this.modalBool.showPrivacy = true;
-      console.log("current channel :", this.currentChannel);
-      this.$user.socket.emit('joinChannel', this.channels[index]);
+        this.selectedChannel = index;
+      }
+      else
+      {
+        this.$user.socket.emit('joinChannel', this.channels[index]);
+        this.currentChannel = this.channels[index];
+      }
+    },
+    sendPassword() {
+      this.$user.socket.emit('passwordChannel', this.currentChannel, this.password)
+      .then((resp: boolean) => {
+          if (resp === false)
+            this.modalBool.showPrivacy = false;
+          else
+          {
+            this.$user.socket.emit('joinChannel', this.currentChannel);
+            this.currentChannel = this.channels[this.selectedChannel];
+          }
+      })
+      .catch(() => console.log('Oh no'));
+      this.password = '';
     },
     sendMsg(): void {
       this.$user.socket.emit('newMessage',
@@ -170,7 +189,8 @@ export default Vue.extend({
       {
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
         users: this.newChannel.members,
-        publicChannel: this.newChannel.public});
+        publicChannel: this.newChannel.public,
+        password: this.newChannel.password});
       }
     },
     hideModal(): void {
