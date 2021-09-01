@@ -15,18 +15,6 @@ import * as p5 from "p5";
 
 export default Vue.extend ({
   name: 'backgroundAnim',
-  data() {
-    return {
-        windowWidth: window.innerWidth,
-        windowHeight: window.innerHeight,
-    }
-  },
-  created() {
-    window.addEventListener('resize', () => {
-      this.windowWidth = window.innerWidth;
-      this.windowHeight = window.innerHeight;
-    })
-  },
   async mounted () {
     const { default: P5 } = await import('p5')
 
@@ -53,7 +41,7 @@ export default Vue.extend ({
       let fpsCounter: number = 0;
 
       s.setup = () => {
-        s.createCanvas(this.windowWidth, this.windowHeight - 64);
+        s.createCanvas(window.innerWidth, window.innerHeight - 64);
         s.noStroke();
       }
       s.draw = () => {
@@ -72,14 +60,13 @@ export default Vue.extend ({
           fpsCounter = Math.trunc(d1 / d2);
         }
         else if (fpsCounter > 0) { // Ball progression
-          delta = p5.Vector.sub(vectorDest, vectorSrc).normalize();
-          vectorSrc.add(delta.mult(speed));
+          vectorSrc.add(delta);
           fpsCounter--;
           s.ellipse(vectorSrc.x, vectorSrc.y, ballSize, ballSize);
         }
       }
       s.windowResized = () => {
-        s.resizeCanvas(this.windowWidth, this.windowHeight - 64);
+        s.resizeCanvas(window.innerWidth, window.innerHeight - 64);
       }
     };
     // eslint-disable-next-line no-unused-vars
@@ -87,13 +74,9 @@ export default Vue.extend ({
   },
   destroyed() {
     let elements: any = document.getElementsByClassName('p5Canvas');
-      console.log(elements);
-      console.log(elements.length);
     for (let i = 0; i < elements.length; i++) {
-      console.log(elements[i]);
       elements[i].remove();
     }
-    console.log(elements);
   },
 });
 </script>
