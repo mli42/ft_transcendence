@@ -49,13 +49,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             else {
                 client.data.user = user;
 
-                // await this.channelService.updatePublicChannelsForNewUser(user);
-
                 const channels = await this.channelService.getChannelsForUser(user.userId);
                 await this.connectedUserService.create({socketId: client.id, user});
 
                 this.logger.log(`Client connected: ${client.id}`);
-                // emit channels for the specific user
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -83,23 +80,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
         const { publicChannel } = channel;
-        // console.log(publicChannel);
-        // if (publicChannel === true) {
-        //     channel.users = await this.userRepository.find();
-        //     // console.log(channel.users);
-        // }
+
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
-        // console.log("USERS")
-        // console.log(createChannel.users);
-        for (const user of createChannel.users) {
-            const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
-            const channels = await this.channelService.getChannelsForUser(user.userId);
-            // console.log(channels);
+
+        if (publicChannel === true) {
+            const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
             for (const connection of connections) {
+                const channels = await this.channelService.getChannelsForUser(connection.user.userId);
                 await this.server.to(connection.socketId).emit('channel', channels);
             }
+        } else {
+            for (const user of createChannel.users) {
+                const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
+                const channels = await this.channelService.getChannelsForUser(user.userId);
+                for (const connection of connections) {
+                    await this.server.to(connection.socketId).emit('channel', channels);
+                }
+            }
         }
-
     }
 
     @SubscribeMessage('displayChannel')
@@ -157,9 +155,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         if (channel.publicChannel === false && await this.channelService.isAuthPrivateChannel(channel, client.data.user) == false)
             throw new WsException('The user is not authenticated in this private channel');
         const messages = await this.messageService.findMessagesForChannel(channel)
-        // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
-        // send last message from channel to user
         await this.server.to(client.id).emit('messages', messages);
     }
 
