@@ -28,7 +28,14 @@ function socketInit(url:string, gameId: string, vue: any): void {
     if (game.opponentIdFound != "" && game.opponentIdFound === vue.$data.user.userId) {
       vue.btnActionJoin();
     } else {
-      vue.updateDisplayedElem();
+      if (game.state === "started") {
+        vue.startGame();
+      } else if (game.state === "waiting") {
+        vue.$data.isPreGameDisplayed = true;
+        vue.updateDisplayedElem();
+      } else if (game.state === "ended") {
+        vue.$mytoast.err("The game is finished and this part is not done for now");
+      }
     }
   });
   socket.on("changePlayerColorTC", (payload: {userId: string, player: Player}) => {
@@ -102,5 +109,10 @@ function socketInit(url:string, gameId: string, vue: any): void {
   socket.on("foundSearchOppoTC", (gameId: string) => {
     console.log("LOG: foundSearchOppoTC");
     window.$nuxt.$router.push('/game/' + gameId); // Redirect client
+  });
+  socket.on("startGameTC", () => {
+    console.log("LOG: startGameTC");
+    vue.$data.game.state = "started";
+    vue.startGame();
   });
 }

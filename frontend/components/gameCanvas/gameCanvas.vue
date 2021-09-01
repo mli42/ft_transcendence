@@ -1,9 +1,9 @@
 <template>
   <div data-app>
   <v-app>
-    <v-btn v-on:click="isGameDisplayedNeg">SHOW/HIDE THE GAME</v-btn>
-    <hr>
-    <div id="gameSettings">
+    <div id="gameSettings" v-if="this.isPreGameDisplayed">
+      <v-btn v-on:click="isGameDisplayedNeg">SHOW/HIDE THE GAME</v-btn>
+      <hr>
       <h1>User settings</h1>
       <!-- GAME TYPE SELECTION -->
       <div id="type">
@@ -146,6 +146,7 @@ export default Vue.extend({
       isGameDisplayed: false as boolean,
       isMapsDisplayed: false as boolean,
       isColorDisplayed: false as boolean,
+      isPreGameDisplayed: false as boolean,
       // model to typeSelection tabs
       tabTypesIndex: 0 as number,
       mainBtn: new Button(),
@@ -162,10 +163,7 @@ export default Vue.extend({
   async mounted() {
     // Connect to the websocket & fetch remote game class
     socketInit(SOCKET_URL, this.gameId, this);
-    socket.emit("fetchGameTS", this.gameId);
-    // Start the sketch
-    const { default: P5 } = await import('p5');
-    const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
+    socket.emit("fetchGameTS", this.gameId); // This function will ask to the server to fetch game class
   },
   async destroyed() {
     socket.disconnect();
@@ -359,6 +357,14 @@ export default Vue.extend({
         this.updateDisplayedElem();
       }
     },
+    async startGame(): Promise<any> {
+      if (this.game.state === "started") {
+        this.isGameDisplayed = true;
+        this.isPreGameDisplayed = false;
+        const { default: P5 } = await import('p5');
+        const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
+      }
+    }
   },
   computed: {
     isTabsEnabled: function () : boolean {

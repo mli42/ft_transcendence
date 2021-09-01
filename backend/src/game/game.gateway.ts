@@ -87,6 +87,10 @@ export class gameGateway {
         game.opponentId = query.userId as string;
       }
       client.to(game.id).emit("playerJoinTC", {playerId: query.userId, player: player});
+      if (game.type === "matchmaking" && game.players.size === 2) {
+        client.to(query.gameId).emit("startGameTC");
+        client.emit("startGameTC");
+      }
     }
   }
 
@@ -148,6 +152,10 @@ export class gameGateway {
     if (game) {
       game.players.get(query.userId).isReady = isReady;
       client.to(query.gameId).emit("updateReadyTC", {playerId: query.userId, isReady: isReady});
+      if (game.players.get(game.creatorId).isReady && game.players.get(game.creatorId).isReady) {
+        client.to(query.gameId).emit("startGameTC");
+        client.emit("startGameTC");
+      }
     }
   }
 
