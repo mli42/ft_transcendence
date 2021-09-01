@@ -48,13 +48,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             } 
             else {
                 client.data.user = user;
-                // console.log("USER CONNECTED")
-                // console.log(client.data.user);
-                await this.channelService.updatePublicChannelsForNewUser(user);
+
+                // await this.channelService.updatePublicChannelsForNewUser(user);
+
                 const channels = await this.channelService.getChannelsForUser(user.userId);
-                // console.log("CHANNELS")
-                // console.log(channels);
-                // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
 
                 this.logger.log(`Client connected: ${client.id}`);
@@ -87,10 +84,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async onCreateChannel(client: Socket, channel: ChannelI) {
         const { publicChannel } = channel;
         // console.log(publicChannel);
-        if (publicChannel === true) {
-            channel.users = await this.userRepository.find();
-            // console.log(channel.users);
-        }
+        // if (publicChannel === true) {
+        //     channel.users = await this.userRepository.find();
+        //     // console.log(channel.users);
+        // }
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
         // console.log("USERS")
         // console.log(createChannel.users);
@@ -147,10 +144,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* Auth Private Channel *********************/
     @SubscribeMessage('passwordChannel')
-    async authPrivateChannel(client: Socket, channel: ChannelI, password: string) {
+    async authPrivateChannel(client: Socket, channel: ChannelI, password: string): Promise<boolean> {
         if (password != channel.password)
-            throw new WsException('Incorrect password');
+            return false;
         await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
+        return true;
     }
 
     /********************* Join Channel *********************/

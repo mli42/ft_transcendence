@@ -41,50 +41,65 @@ export class ChannelService {
 	}
 
 	async getChannelsForUser(userId: string): Promise <ChannelI[]> {
-		const query = this.channelRepository
+		let query = this.channelRepository
+		.createQueryBuilder('channel')
+		.where('channel.publicChannel = true')
+		const publicChannels: ChannelI[] = await query.getMany();
+		console.log("publicChannels");
+		console.log(publicChannels);
+
+		query = this.channelRepository
 		.createQueryBuilder('channel')
 		.leftJoin('channel.users', 'users')
 		.where('users.userId = :userId', {userId})
+		.andWhere('channel.publicChannel = false')
 		.leftJoinAndSelect('channel.users', 'all_users')
 		.orderBy('channel.update_at', 'DESC');
-		const channels: ChannelI[] = await query.getMany();
-		// console.log(channels)
+		const privateChannels: ChannelI[] = await query.getMany();
+		console.log("privateChannels");
+		console.log(privateChannels);
+
+		
+		const channels = publicChannels.concat(privateChannels);
+		console.log("channels")
+		console.log(channels)
+
 		return channels;
 	}
 
-	async updatePublicChannelsForNewUser(user: User) {
-		const { userId } = user;
-		const query = this.channelRepository
-		.createQueryBuilder('channel')
-		.leftJoin('channel.users', 'users')
-		.where('users.userId = :userId', {userId})
-		.andWhere('channel.publicChannel = true')
-		const channelsFound: ChannelI[] = await query.getMany();
-		if (channelsFound.length === 0){
-			const queryPublic = this.channelRepository
-			.createQueryBuilder('channel')
-			.where('channel.publicChannel = true')
-			const publicChannels: ChannelI[] = await queryPublic.getMany();
-			if (publicChannels.length > 0) {
-				for (const channel of publicChannels) {
-					console.log(channel.channelName)
-					// if (!Array.isArray(channel.users)) {
-					// 	channel.users = [];
-					// }
-					channel.users.push(user);
-					try {
-						await this.channelRepository.save(channel);
-					} catch (error) {
-						console.log(error);
-						throw new InternalServerErrorException('new user get public channels');
-					}
-				}
-			}
-		} else {
-			console.log("found")
-		}
-		// console.log(channels);
-	}
+	// async updatePublicChannelsForNewUser(user: User) {
+	// 	const { userId } = user;
+	// 	const query = this.channelRepository
+	// 	.createQueryBuilder('channel')
+	// 	.leftJoin('channel.users', 'users')
+	// 	.where('users.userId = :userId', {userId})
+	// 	.andWhere('channel.publicChannel = true')
+	// 	const channelsFound: ChannelI[] = await query.getMany();
+	// 	if (channelsFound.length === 0){
+	// 		const queryPublic = this.channelRepository
+	// 		.createQueryBuilder('channel')
+	// 		.where('channel.publicChannel = true')
+	// 		const publicChannels: ChannelI[] = await queryPublic.getMany();
+	// 		if (publicChannels.length > 0) {
+	// 			for (const channel of publicChannels) {
+	// 				console.log(channel.channelName)
+	// 				// if (!Array.isArray(channel.users)) {
+	// 				// 	channel.users = [];
+	// 				// }
+	// 				channel.users.push(user);
+	// 				try {
+	// 					await this.channelRepository.save(channel);
+	// 				} catch (error) {
+	// 					console.log(error);
+	// 					throw new InternalServerErrorException('new user get public channels');
+	// 				}
+	// 			}
+	// 		}
+	// 	} else {
+	// 		console.log("found")
+	// 	}
+	// 	// console.log(channels);
+	// }
 
 	async getUserFromSocket(client: Socket): Promise<User> {
 		const cookie = client.handshake.headers['cookie'];
@@ -111,9 +126,9 @@ export class ChannelService {
 		return false;
 	}
 
-	async addAuthUserPrivateChannel(channel: ChannelI, user: User) {
+	async addAuthUserPrivateChannel(channel: ChannelI, user: User): Promise<boolean>  {
 		if (await this.isAuthPrivateChannel(channel, user) === true) {
-			throw new UnauthorizedException('This user is already auth on this private channel');
+			return true;
 		}
 		channel.authPrivateChannelUsers.push(user.userId);
 		try {
@@ -122,6 +137,7 @@ export class ChannelService {
 			console.log(error);
 			throw new InternalServerErrorException('add Auth private channel');
 		}
+		return true;
 	}
 
 	async isBanUser(channel: ChannelI, user: User): Promise<boolean> {
