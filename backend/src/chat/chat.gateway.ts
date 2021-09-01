@@ -12,7 +12,7 @@ import { JoinedChannelService } from './joined-channel.service';
 import { MessageI } from './interfaces/message.interface';
 import { JoinedChannelI } from './interfaces/joined-channel.interface';
 
-@WebSocketGateway( { cors: { origin: 'http://localhost:3030', credentials: true }})
+@WebSocketGateway({ namespace: "/chat", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
 
     constructor(
@@ -82,7 +82,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.logger.log(`Client diconnect: ${client.id}`);
     }
 
-
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
@@ -120,7 +119,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     //     // this.server.to(message.room).emit('msgToClient', message);                      
     //     this.server.emit('msgToClient',text);
     // }
-
 
     @SubscribeMessage('newMessage')
     async onAddMessage(client: Socket, message: MessageI) {
@@ -172,6 +170,5 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async handleLeaveChannel(client: Socket) {
         await this.joinedChannelService.deleteBySocketId(client.id);
     }
-
 
 }

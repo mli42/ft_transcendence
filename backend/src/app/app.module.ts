@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
+import { gameGateway } from "../game/game.gateway";
+import { GameModule } from 'src/game/game.module';
 import { AdminModule } from 'src/admin/admin.module';
 import { ChatModule } from '../chat/chat.module';
 
@@ -24,7 +26,9 @@ import { ChatModule } from '../chat/chat.module';
     UserModule,
     AuthModule,
     AdminModule,
+    GameModule,
     ChatModule
-  ]
+  ],
+  providers: [ gameGateway ],
 })
 export class AppModule {}
