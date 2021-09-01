@@ -242,7 +242,13 @@ export default Vue.extend({
         if (this.game.players.has(this.user.userId) == false) { // Waiting for players to be ready
           this.mainBtn.setFull("WAITING FOR PLAYERS", "white");
         } else {                                                  // Display a button for player to set as ready
-          this.mainBtn.setFull("READY ?", "green", this.btnActionReady);
+          if (this.game.players.get(this.user.userId)?.isReady === true) {
+            this.isColorDisplayed = false;
+            this.isPowDisplayed = false;
+            this.isMapsDisplayed = false;
+          } else {
+            this.mainBtn.setFull("READY ?", "green", this.btnActionReady);
+          }
         }
       } else if (this.game.players.has(this.user.userId) == false) { // If the current user is not the creator
           this.mainBtn.setFull("JOIN THE GAME", "green", this.btnActionJoin);
