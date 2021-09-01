@@ -15,7 +15,7 @@ export class AdminController {
     @ApiOperation({description: 'Get numbers Users'})
     @UseGuards(AuthGuard('jwt'), UserAuth)
     @Get('/allUsers')
-    getNumbersUsers(@Req() req): Promise<number> {
+    getNumbersUsers(@Req() req): Promise<Partial<User[]>> {
         const user: User = req.user;
 
         if (user.isAdmin === false)

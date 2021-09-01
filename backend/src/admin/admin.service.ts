@@ -10,8 +10,15 @@ export class AdminService {
         private usersRepository: UsersRepository,
     ) {}
 
-    async getNumbersUsers(): Promise<number> {
-        const query = await this.usersRepository.createQueryBuilder('user').getCount()
+    async getNumbersUsers(): Promise<Partial<User[]>> {
+        const query = await this.usersRepository.createQueryBuilder('user').select([
+            "user.userId",
+            "user.username",
+            "user.status",
+            "user.profile_picture",
+            "user.isAdmin",
+            "user.isBan",
+        ]).getMany()
         return query;
     }
 
