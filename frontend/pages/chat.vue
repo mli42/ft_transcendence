@@ -17,28 +17,32 @@
     </div>
     <div class="chatChamp boxHVcenter">
       <div class="chatRoomName">
-        <img class="chanelImg" src="~/assets/img/chatbubble.svg">
-        <p> {{ currentChannel.channelName }} </p>
+        <div class="flexAlignRow">
+          <img class="chanelImg" src="~/assets/img/chatbubble.svg">
+          <p> {{ currentChannel.channelName }} </p>
+        </div>
         <div class="settingBtn flexHVcenter">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
-      <div class="received">
-        <ul>
-          <li class="newMsg" v-for="(msg, index) in messages" :key="index">
-            <img src="~/assets/img/avatar.jpeg">
-            <div class="msgDiv">
-              <p>{{ msg.user.username }}</p>
-              <div class="msgContent"> {{ msg.text }} </div>
+      <div class="chatMain">
+        <div class="received">
+          <ul>
+            <li class="newMsg" v-for="(msg, index) in messages" :key="index">
+              <img src="~/assets/img/avatar.jpeg">
+              <div class="msgDiv">
+                <p>{{ msg.user.username }}</p>
+                <div class="msgContent"> {{ msg.text }} </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="chatfield">
+          <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
+            <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
+              <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
             </div>
-          </li>
-        </ul>
-      </div>
-      <div class="chatfield">
-        <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
-          <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
-            <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
-          </div>
+        </div>
       </div>
       <div class="control">
         <ChatMember :channelUsers="currentChannel.users"></ChatMember>
