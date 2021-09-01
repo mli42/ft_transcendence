@@ -10,7 +10,7 @@ export class AdminService {
         private usersRepository: UsersRepository,
     ) {}
 
-    async getNumbersUsers(): Promise<Partial<User[]>> {
+    async getAllUsers(): Promise<Partial<User[]>> {
         const query = await this.usersRepository.createQueryBuilder('user').select([
             "user.userId",
             "user.username",
