@@ -25,7 +25,11 @@ function socketInit(url:string, gameId: string, vue: any): void {
     const deserialPlayers: Map<string, Player> = new Map(JSON.parse(serialPlayers));
     game.players = deserialPlayers;
     vue.$data.game = game;
-    vue.updateDisplayedElem();
+    if (game.opponentIdFound != "" && game.opponentIdFound === vue.$data.user.userId) {
+      vue.btnActionJoin();
+    } else {
+      vue.updateDisplayedElem();
+    }
   });
   socket.on("changePlayerColorTC", (payload: {userId: string, player: Player}) => {
     console.log("LOG: changePlayerTC");
@@ -37,7 +41,7 @@ function socketInit(url:string, gameId: string, vue: any): void {
     let game: Game = vue.$data.game;
 
     game.type = type;
-    if (type == "matchmaking" && game.players.size == 2) {
+    if (game.players.size == 2) {
       game.players.delete(game.opponentId);
       game.opponentId = "";
     }
@@ -88,5 +92,15 @@ function socketInit(url:string, gameId: string, vue: any): void {
       player.isReady = payload.isReady;
       vue.updateDisplayedElem();
     }
+  });
+  socket.on("foundSearchCreaTC", (payload: { userId: string, player: Player }) => {
+    console.log("LOG: foundSearchCreaTC");
+    vue.$mytoast.succ("A player found !");
+    vue.$data.mainBtn.resetHover();
+    vue.$data.mainBtn.isLoading = false;
+  });
+  socket.on("foundSearchOppoTC", (gameId: string) => {
+    console.log("LOG: foundSearchOppoTC");
+    window.$nuxt.$router.push('/game/' + gameId); // Redirect client
   });
 }

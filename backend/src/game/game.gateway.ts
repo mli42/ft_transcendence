@@ -4,7 +4,8 @@ import { Game, Player } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { AuthGuard } from "@nestjs/passport";
 
-let gamesMap: Map<string, Game> = new Map(); // Relation between games and gameIds
+let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
+let searchList: Map<string, {client: Socket, gameId: string, player: Player}> = new Map(); // Relation between playerId and Player class
 
 /**
  * Here you will found all message emitable by this server.
@@ -25,12 +26,29 @@ function getIdsFromRooms(rooms: Set<any>): Array<string> {
 @WebSocketGateway( { namespace: "/game", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class gameGateway {
 
+  /**
+   * LIST OF LOG FUNCTIONS
+   */
+
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger("gameGateway");
 
   afterInit(server: Server) {
     this.logger.log("game socket init !");
   }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    this.logger.log("Client connected: " + client.handshake.query.username);
+  }
+
+  handleDisconnect(client: Socket) {
+   this.logger.log(`Client disconnected: ${client.id}`);
+   this.playerLeave(client);
+  }
+
+  /**
+   * LIST OF MESSAGE LISTENERS
+   */
 
   // A client ask to get the entire game class. Or to create it if does not exists
   @SubscribeMessage("fetchGameTS")
@@ -157,12 +175,30 @@ export class gameGateway {
     }
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log("Client connected: " + client.handshake.query.username);
+  @SubscribeMessage("startSearchTS")
+  startSearch(client: Socket, player: Player): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: startSearchTS on " + query.gameId + " from " + query.username);
+
+    if (searchList.size >= 1) {
+      const playerCreaId: string = searchList.keys().next().value; // Selection of the first player who search for a game
+      const playerCrea: {client: Socket, gameId: string, player: Player} = searchList.values().next().value; // Get data from it
+      console.log(playerCrea);
+      gamesMap.get(playerCrea.gameId).opponentIdFound = query.userId;
+      searchList.delete(playerCreaId);
+      playerCrea.client.emit("foundSearchCreaTC", { userId: query.userId, player });
+      client.emit("foundSearchOppoTC", playerCrea.gameId);
+    } else if (searchList.has(query.userId) == false) {
+      searchList.set(query.userId, {client: client, gameId: query.gameId, player: player});
+    }
   }
 
-  handleDisconnect(client: Socket) {
-   this.logger.log(`Client disconnected: ${client.id}`);
-   this.playerLeave(client);
+  @SubscribeMessage("stopSearchTS")
+  stopSearch(client: Socket): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: startSearchTS on " + query.gameId + " from " + query.username);
+
+    searchList.delete(query.handshake.query.userId);
   }
+
 }

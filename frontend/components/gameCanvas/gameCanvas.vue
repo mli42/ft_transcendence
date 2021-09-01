@@ -81,15 +81,16 @@
         </v-chip>
       </div>
       <!-- MAIN BUTTON -->
-      <div id="mainBtn">
+      <div id="mainBtn" @mouseenter="mainBtn.actionHoverEnter" @mouseleave="mainBtn.actionHoverLeave">
         <v-btn
-          id="mainBtn"
+          id="mainBtnVueT"
           v-bind:color="mainBtn.color"
           v-bind:class="mainBtn.class"
+          v-bind:loading="mainBtn.isLoading"
           v-if="this.mainBtn.txt"
           @click="mainBtn.action"
         >{{ this.mainBtn.txt }}
-        <v-icon>{{ this.mainBtn.ico}}</v-icon>
+          <v-icon>{{ this.mainBtn.ico}}</v-icon>
         </v-btn>
       </div>
     </div>
@@ -213,7 +214,7 @@ export default Vue.extend({
       } else {
         this.isColorDisplayed = false;
       }
-      if (this.game.creatorId == this.user.userId) {          // If the current client is the creator
+      if (this.game.creatorId == this.user.userId && this.game.players.size == 1) {
         this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       } else {
         if (this.game.players.size === 1) {
@@ -290,7 +291,11 @@ export default Vue.extend({
       player = this.game.players.get(this.user.userId);
       if (player) {
         player.name = this.user.username;
-        player.color = playerPalette["Blue"];
+        if (this.game.creatorId == this.user.userId) {
+          player.color = playerPalette["Red"]; // default colors
+        } else {
+          player.color = playerPalette["Blue"]; // default colors
+        }
         socket.emit("playerJoinTS", player);
       }
       this.updateDisplayedElem();
@@ -306,7 +311,19 @@ export default Vue.extend({
       this.$mytoast.succ("URL paste in your clipboard !");
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
-
+      console.log("LOG: button action search");
+      this.mainBtn.isLoading = true;
+      this.mainBtn.color = "green";
+      this.mainBtn.action = this.btnActionSearchStop;
+      this.mainBtn.setHoverSearch();
+      this.$mytoast.info("Searching for a player...");
+      socket.emit("startSearchTS", this.game.players.get(this.user.userId));
+    },
+    btnActionSearchStop(): void {
+      console.log("LOG: button action search stop");
+      this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
+      this.mainBtn.resetHover(); // Delete actions when the client hover the button
+      socket.emit("stopSearchTS", this.game.players.get(this.user.userId));
     },
     btnActionReady(): void {  // Action to send to the server the information about the current player is ready
       console.log("LOG: button action ready");
