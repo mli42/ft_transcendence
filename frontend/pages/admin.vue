@@ -11,14 +11,12 @@
     </div>
 
     <!-- List of admins -->
-    <div class="primaryContent GameHistoryContainer">
-      <p>List of administrators</p>
-      <hr />
-      <div v-if="$fetchState.pending == false" class="GameHistory flexAlignCol">
-        <adminCard v-for="(user, index) in adminList" :key="index"
-        :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
-      </div>
-    </div>
+    <overflowContainer v-if="$fetchState.pending == false"
+    width="664px" height="458px" innerHeight="384px"
+    label="List of administrators">
+      <adminCard v-for="(user, index) in adminList" :key="index"
+      :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
+    </overflowContainer>
 
   </div>
   </div>

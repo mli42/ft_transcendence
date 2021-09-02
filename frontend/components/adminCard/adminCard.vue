@@ -1,5 +1,5 @@
 <template>
-  <div class="adminCardMain">
+  <div class="adminCardMain flexAlignRow">
     <div class="flexAlignRow flexHVcenter">
       <div class="pp">
         <Avatar :user="user"></Avatar>
