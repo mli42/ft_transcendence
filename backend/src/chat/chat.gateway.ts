@@ -28,10 +28,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
  
     private logger: Logger = new Logger('ChatGateway');
 
-    // afterInit(server: Server) {
-    //     this.logger.log('Initialized !')
-    // }
-
     /********************* CONNECTION ********************** */
 
     // Called once the host module's dependencies have been resolved
@@ -142,11 +138,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* Auth Private Channel *********************/
     @SubscribeMessage('passwordChannel')
-    async authPrivateChannel(client: Socket, channel: ChannelI, password: string): Promise<boolean> {
-        if (password != channel.password)
-            return false;
-        await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
-        return true;
+    async authPrivateChannel(client: Socket, channel: ChannelI, mdp: string) {
+        console.log("OK")
+        console.log(mdp)
+        console.log("CHANNEL")
+        console.log(channel)
+        // if (mdp != channel.password)
+        //     return false;
+        // await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
+        // return true;
     }
 
     /********************* Join Channel *********************/

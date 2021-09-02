@@ -1,6 +1,5 @@
 import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChannelRepository } from './channel.repository'
 import { User } from '../user/entities/user.entity';
 import { ChannelI } from './interfaces/channel.interface';
 import { Socket } from 'socket.io';
@@ -14,7 +13,7 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class ChannelService {
 	constructor(
-		@InjectRepository(ChannelRepository)
+		@InjectRepository(Channel)
 		private readonly channelRepository: Repository<Channel>,
 		private readonly jwtService: JwtService,
 		private readonly usersRepository: UsersRepository
@@ -25,6 +24,10 @@ export class ChannelService {
 		const name = await this.channelRepository.findOne({channelName: channelName});
 		if (name)
 			throw new UnauthorizedException('This channel name already exist');
+		channel.adminUsers = [];
+		channel.banedUsers = [];
+		channel.mutedUsers = [];
+		channel.authPrivateChannelUsers = [];
 		if (publicChannel === false) {
 			const newChannel = await this.addCreatorToChannel(channel, creator);
 			return this.channelRepository.save(newChannel);
@@ -78,6 +81,13 @@ export class ChannelService {
 	}
 
 	async isAuthPrivateChannel(channel: ChannelI, user: User): Promise<boolean> {
+		// console.log(typeof channel.authPrivateChannelUsers)
+		// if (!Array.isArray(channel.authPrivateChannelUsers)) {
+		// 	channel.users = [];
+		// }
+		channel.authPrivateChannelUsers = [];
+		if(channel.authPrivateChannelUsers.length === 0)
+			return false;
 		const userFound = channel.authPrivateChannelUsers.find(element => element === user.userId)
 		if (userFound) {
 			return true;
@@ -89,9 +99,13 @@ export class ChannelService {
 		if (await this.isAuthPrivateChannel(channel, user) === true) {
 			return true;
 		}
+		// console.log("OK1")
+		channel.authPrivateChannelUsers = [];
 		channel.authPrivateChannelUsers.push(user.userId);
+		// console.log(channel)
 		try {
 			await this.channelRepository.save(channel);
+			// console.log("OK3")
 		} catch (error) {
 			console.log(error);
 			throw new InternalServerErrorException('add Auth private channel');
@@ -154,4 +168,6 @@ export class ChannelService {
 		const index = channel.mutedUsers.indexOf(user.userId);
 		channel.banedUsers.splice(index, 1);
 	}
+
+	// add or remove a user to private channel
 }

@@ -147,20 +147,24 @@ export default Vue.extend({
       }
     },
     sendPassword() {
-      console.log("IICII!!");
-      this.$user.socket.emit('passwordChannel', this.channels[this.selectedChannel], this.password, (data: any) => {
-        if (data === false)
-        {
-          this.modalBool.showPrivacy = false;
-          console.log("wrong mdp!!");
-        }
-        else
-        {
-          console.log("correct mdp!!");
-          this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
-          this.currentChannel = this.channels[this.selectedChannel];
-        }
-      });
+      this.$user.socket.emit('passwordChannel', this.channels[this.selectedChannel], this.password)
+      console.log("avant");
+      // (data: any) => {
+      //   console.log("avant");
+      //   if (data === false)
+      //   {
+      //     this.modalBool.showPrivacy = false;
+      //     console.log("wrong mdp!!");
+      //   }
+      //   else
+      //   {
+      //     console.log("else!!");
+      //     this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
+      //     this.currentChannel = this.channels[this.selectedChannel];
+      //   }
+      //   console.log("la!!");
+      // });
+      console.log("la!!");
       this.password = '';
     },
     sendMsg(): void {
