@@ -147,9 +147,9 @@ export default Vue.extend({
       }
     },
     sendPassword() {
-      this.$user.socket.emit('passwordChannel', {channel: this.channels[this.selectedChannel],
-      password: this.password}, (data: any) => {
-        console.log("avant");
+      const arg = {channel: this.channels[this.selectedChannel],
+      password: this.password};
+      this.$user.socket.emit('passwordChannel', arg, (data: any) => {
         if (data === false)
         {
           this.modalBool.showPrivacy = false;
@@ -161,9 +161,7 @@ export default Vue.extend({
           this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
           this.currentChannel = this.channels[this.selectedChannel];
         }
-        console.log("la!!");
       });
-      console.log("la!!");
       this.password = '';
     },
     sendMsg(): void {
