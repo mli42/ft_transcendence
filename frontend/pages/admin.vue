@@ -10,12 +10,21 @@
       <div class="oneStat flexHVcenter"> <p># of Users: {{allUsers.length}}</p> </div>
     </div>
 
+    <template v-if="$fetchState.pending == false">
     <!-- List of admins -->
-    <overflowContainer v-if="$fetchState.pending == false"
+    <overflowContainer
     width="664px" heightMax="458px" label="List of administrators">
       <adminCard v-for="(user, index) in adminList" :key="index"
       :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
     </overflowContainer>
+
+    <!-- List of users -->
+    <overflowContainer
+    width="664px" heightMax="458px" label="List of users">
+      <adminCardUserCard v-for="(user, index) in allUsers" :key="index"
+      :user="user"></adminCardUserCard>
+    </overflowContainer>
+    </template>
 
   </div>
   </div>
