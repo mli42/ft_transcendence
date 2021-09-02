@@ -46,7 +46,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
                 const channels = await this.channelService.getChannelsForUser(user.userId);
                 await this.connectedUserService.create({socketId: client.id, user});
-                this.userStatus();
+                this.userStatus(client);
 
                 this.logger.log(`Client connected: ${client.id}`);
                 return this.server.to(client.id).emit('channel', channels);
@@ -165,9 +165,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
 
-    userStatus() {
-        console.log("TEST USERSTATUS");
-        return this.connectedUserService.userStatus();
+    userStatus(client: Socket) {
+        let userConnected = this.connectedUserService.userStatus();
+        return this.server.emit('userConnected', userConnected);
     }
 
 }
