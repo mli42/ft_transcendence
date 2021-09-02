@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Res, UseGuards, Header } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiParam, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Observable, of } from "rxjs";
@@ -25,8 +25,8 @@ export class GameController {
     /*******/
     @UseGuards(AuthGuard('jwt'))
     @Get('/mapList')
-    getAllMap(): object {
-        return this.gameService.getAllMap();
+    getAllMap(@Res() res): any {
+      return res.set({ 'Cache-Control': ['public', 'max-age=604800', 'immutable']}).json(this.gameService.getAllMap());
     }
 
 }

@@ -20,7 +20,7 @@ async function sketch (s: any): Promise<any> {
   let background: p5.Image;
 
   s.preload = () => {
-    s.loadImage(`http://localhost:3000/api/game/map/abstract-galaxy.jpeg`, (img: p5.Image) => {
+    s.loadImage(`http://localhost:3000/api/game/map/${game.mapName.replace(" ", "-")}.jpeg`, (img: p5.Image) => {
         background = img;
     });
   }
