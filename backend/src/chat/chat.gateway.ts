@@ -138,15 +138,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* Auth Private Channel *********************/
     @SubscribeMessage('passwordChannel')
-    async authPrivateChannel(client: Socket, channel: ChannelI, mdp: string) {
-        console.log("OK")
-        console.log(mdp)
-        console.log("CHANNEL")
-        console.log(channel)
-        // if (mdp != channel.password)
-        //     return false;
-        // await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
-        // return true;
+    async authPrivateChannel(client: Socket, data: any) {
+        // console.log("CHANNEL")
+        // console.log(channel)
+        const { channel, password } = data;
+        if (password != channel.password)
+            return false;
+        await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
+        return true;
     }
 
     /********************* Join Channel *********************/
