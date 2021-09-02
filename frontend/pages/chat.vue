@@ -1,11 +1,7 @@
 <template>
   <div class="content flexHVcenter">
     <div class="connected">
-      <!-- <div class="search flexHVcenter">
-        <input  type="text" name="mysearch" id="mysearch" v-model="searchName">
-        <div class="loop flexHVcenter" @click="modalBool.showSearch = true"><img src="~/assets/img/loop.png"></div>
-      </div> -->
-      <SearchResult  :channels="channels" :searchName="searchName"></SearchResult>
+      <SearchResult  :channels="channels"></SearchResult>
       <ul class="listChannel">
         <li v-for="(item, index) in channels" :key="index">
           <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
@@ -132,7 +128,6 @@ export default Vue.extend({
       selectedChannel: 0 as number,
       friends: [],
       password: '' as string,
-      searchName: '' as string,
     }
   },
   methods: {

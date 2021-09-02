@@ -7,6 +7,15 @@
     background-color: $pg-dark-blue;
 }
 
+.result {
+    width: 290px;
+    height: 200px;
+    padding: 16px;
+    background-color: $pg-dark-blue;
+    position:relative;
+    border-radius: 0px 0px 10px 10px;
+}
+
 .search input {
     width: 250px;
     height: 40px;

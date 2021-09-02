@@ -2,11 +2,13 @@
     <div class="content">
         <div class="search flexHVcenter">
         <input  type="text" name="mysearch" id="mysearch" v-model="searchName">
-        <div class="loop flexHVcenter" @click="showResult = true"><img src="~/assets/img/loop.png"></div>
+        <div class="loop flexHVcenter" @click="showResult = true, fetchData() "><img src="~/assets/img/loop.png"></div>
         </div>
-        <div v-if="showResult" class="result">
-
-        </div>
+        <ul v-if="showResult" class="result" v-click-outside="showResult = false">
+            <li v-for="(item, index) in result" :key="index">
+                {{item}}
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -18,11 +20,23 @@ export default Vue.extend({
   data() {
     return {
         showResult: false as boolean,
+        searchName: '' as string,
+        todisplay: [] as string[],
+        result: [] as string[],
     };
   },
-  props: ['channels', 'searchName' ]
+  props: ['channels'],
+  methods: {
+    fetchData(): void{
+        const result = this.channels.filter(el => console.log(el));
+        this.result = result.map(el => el.channelName);
+    },
+  }
+  // el.channelName.startsWith(this.searchName) == true
 });
 </script>
 
 <style scoped lang="scss" src="./SearchResult.scss">
 </style>
+
+
