@@ -2,7 +2,7 @@
   <div class="containerMain" :style="mainStyle">
     <p>{{label}}</p>
     <hr />
-    <div class="innerMain flexAlignCol" :style="innerStyle">
+    <div class="innerMain flexAlignCol">
       <slot></slot>
     </div>
   </div>
@@ -17,14 +17,12 @@ export default Vue.extend({
     return {
       mainStyle: {
         width: this.width,
-        height: this.height,
-      },
-      innerStyle: {
-        height: this.innerHeight,
+        'min-height': this.heightMin ?? 0,
+        'max-height': this.heightMax,
       },
     };
   },
-  props: ['label', 'width', 'height', 'innerHeight'],
+  props: ['label', 'width', 'heightMin', 'heightMax'],
 });
 </script>
 
