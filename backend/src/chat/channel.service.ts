@@ -59,7 +59,6 @@ export class ChannelService {
 		const privateChannels: ChannelI[] = await query.getMany();
 		
 		const channels = publicChannels.concat(privateChannels);
-
 		return channels;
 	}
 
@@ -81,11 +80,6 @@ export class ChannelService {
 	}
 
 	async isAuthPrivateChannel(channel: ChannelI, user: User): Promise<boolean> {
-		// console.log(typeof channel.authPrivateChannelUsers)
-		// if (!Array.isArray(channel.authPrivateChannelUsers)) {
-		// 	channel.users = [];
-		// }
-		// channel.authPrivateChannelUsers = [];
 		if(channel.authPrivateChannelUsers.length === 0)
 			return false;
 		const userFound = channel.authPrivateChannelUsers.find(element => element === user.userId)
@@ -99,13 +93,9 @@ export class ChannelService {
 		if (await this.isAuthPrivateChannel(channel, user) === true) {
 			return true;
 		}
-		// console.log("OK1")
-		channel.authPrivateChannelUsers = [];
 		channel.authPrivateChannelUsers.push(user.userId);
-		// console.log(channel)
 		try {
 			await this.channelRepository.save(channel);
-			// console.log("OK3")
 		} catch (error) {
 			console.log(error);
 			throw new InternalServerErrorException('add Auth private channel');

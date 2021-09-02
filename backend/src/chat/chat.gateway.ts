@@ -47,8 +47,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
                 const channels = await this.channelService.getChannelsForUser(user.userId);
                 await this.connectedUserService.create({socketId: client.id, user});
-
-                this.logger.log(`Client connected: ${client.id}`);
+                this.logger.log(`Client connected: ${client.id} - ${user.username}`);
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -63,13 +62,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         // remove connection from db
         await this.connectedUserService.deleteBySoketId(client.id);
         client.disconnect();
-        this.logger.log(`Client diconnect: ${client.id}`);
+        this.logger.log(`Client diconnect: ${client.id} - ${client.data.user.username}`);
     }
 
     private disconnectClient(client: Socket) {
         client.emit('Error', new UnauthorizedException());
         client.disconnect();
-        this.logger.log(`Client diconnect: ${client.id}`);
+        this.logger.log(`Client diconnect: ${client.id} - ${client.data.user.username}`);
     }
 
     /********************* CREATE CHANNEL **************** */
@@ -96,6 +95,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 }
             }
         }
+
     }
 
     @SubscribeMessage('displayChannel')
@@ -141,9 +141,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* Auth Private Channel *********************/
     @SubscribeMessage('passwordChannel')
     async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
-
-        // console.log("PASSWORD")
-        // console.log(data.password)
         const { channel, password } = data;
         if (password != channel.password)
             return false;
@@ -154,11 +151,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* Join Channel *********************/
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
-        // console.log("OK")
-        
-        if (channel.publicChannel === false && await this.channelService.isAuthPrivateChannel(channel, client.data.user) == false)
+        if (channel.publicChannel === false && await this.channelService.isAuthPrivateChannel(channel, client.data.user) == false){
+            console.log("FAUX")
             throw new WsException('The user is not authenticated in this private channel');
-            // console.log("OK1")
+        }
         const messages = await this.messageService.findMessagesForChannel(channel)
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
         await this.server.to(client.id).emit('messages', messages);
