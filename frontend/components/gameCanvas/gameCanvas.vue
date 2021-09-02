@@ -128,14 +128,7 @@ export default Vue.extend({
       game: new Game(), // Must be assignated by the server data
       gameId: this.$route.path.match("[^/]+$")?.toString() as string, // Get the id of the path
       user: this.$store.state.user as any,
-      mapNames: [
-        {text: "earth"},
-        {text: "abstract1"},
-        {text: "abstract2"},
-        {text: "abstract3"},
-        {text: "tennis"},
-        {text: "beach"},
-      ],
+      mapNames: [] as string[],
       playerColorClass: "playerRed",
       playersList: {} as Array<any>,
       powList: [
@@ -161,6 +154,14 @@ export default Vue.extend({
     }
   },
   async mounted() {
+    // Fetch map list
+    this.$axios.get("http://localhost:3000/api/game/mapList").then( response => {
+      response.data.forEach((mapName: any) => {
+        mapName = mapName.substr(0, mapName.lastIndexOf('.')) || mapName;
+        mapName = mapName.replace("-", " ");
+        this.mapNames.push(mapName);
+      });
+    });
     // Connect to the websocket & fetch remote game class
     socketInit(SOCKET_URL, this.gameId, this);
     socket.emit("fetchGameTS", this.gameId); // This function will ask to the server to fetch game class

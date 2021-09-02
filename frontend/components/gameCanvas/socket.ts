@@ -5,7 +5,7 @@ export { socket, socketInit };
 
 let socket: Socket;
 
-function socketInit(url:string, gameId: string, vue: any): void {
+function socketInit(url: string, gameId: string, vue: any): void {
   socket = io(url, {
     withCredentials: true,
     query: {
@@ -37,7 +37,7 @@ function socketInit(url:string, gameId: string, vue: any): void {
       vue.$mytoast.err("The game is finished and this part is not done for now");
     }
   });
-  socket.on("changePlayerColorTC", (payload: {userId: string, player: Player}) => {
+  socket.on("changePlayerColorTC", (payload: { userId: string, player: Player }) => {
     console.log("LOG: changePlayerTC");
     vue.$data.game.players.set(payload.userId, payload.player);
     vue.updatePlayersColors();
@@ -53,7 +53,7 @@ function socketInit(url:string, gameId: string, vue: any): void {
     }
     vue.updateDisplayedElem();
   });
-  socket.on("playerJoinTC", (payload: {playerId: string, player: Player}) => { // New opponent!
+  socket.on("playerJoinTC", (payload: { playerId: string, player: Player }) => { // New opponent!
     console.log("LOG: playerJoinTC");
     let game: Game = vue.$data.game;
     game.players.set(payload.playerId, payload.player);

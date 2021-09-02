@@ -1,6 +1,7 @@
 import { Injectable, Res } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { join } from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class GameService {
@@ -9,8 +10,7 @@ export class GameService {
         return of(res.sendFile(join(process.cwd(), '../upload/map/' + name)));
     }
 
-    getAllMap(): object {
-        let fs = require('fs');
+    getAllMap(): string[] {
         let files = fs.readdirSync('../upload/map/');
 
         // Remove extension
