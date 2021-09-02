@@ -85,7 +85,7 @@ export class ChannelService {
 		// if (!Array.isArray(channel.authPrivateChannelUsers)) {
 		// 	channel.users = [];
 		// }
-		channel.authPrivateChannelUsers = [];
+		// channel.authPrivateChannelUsers = [];
 		if(channel.authPrivateChannelUsers.length === 0)
 			return false;
 		const userFound = channel.authPrivateChannelUsers.find(element => element === user.userId)
