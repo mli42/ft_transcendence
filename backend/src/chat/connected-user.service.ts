@@ -40,8 +40,11 @@ export class ConnectedUserService {
 	}
 
 	async userStatus() {
-		const query = await this.connectedUserRepository.createQueryBuilder().leftJoinAndSelect('ConnectedUser.user', 'user').select('ConnectedUser').getMany(); //find({ relations: ["user"] })
-		console.log("TEST QUERY: ", query);
-		console.log(typeof query);
+		const query = await this.connectedUserRepository.find({ relations: ["user"] });
+		let userConnected = [];
+		for (const field of query) {
+			userConnected.push(field.user.userId);
+		}
+		return userConnected;
 	}
 }
