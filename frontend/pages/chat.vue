@@ -147,7 +147,8 @@ export default Vue.extend({
       }
     },
     sendPassword() {
-      this.$user.socket.emit('passwordChannel', this.channels[this.selectedChannel], this.password)
+      this.$user.socket.emit('passwordChannel', {channel: this.channels[this.selectedChannel],
+      password: this.password});
       console.log("avant");
       // (data: any) => {
       //   console.log("avant");
