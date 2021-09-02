@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../user/entities/user.entity";
-import { Repository } from "typeorm";
+import { createQueryBuilder, getRepository, Repository } from "typeorm";
 import { ConnectedUser } from "./entities/connected-user.entity";
 import { ConnectedUserI } from "./interfaces/user-connected.interface";
 
@@ -37,5 +37,11 @@ export class ConnectedUserService {
 		  .createQueryBuilder()
 		  .delete()
 		  .execute();
+	}
+
+	async userStatus() {
+		const query = await this.connectedUserRepository.createQueryBuilder().leftJoinAndSelect('ConnectedUser.user', 'user').select('ConnectedUser').getMany(); //find({ relations: ["user"] })
+		console.log("TEST QUERY: ", query);
+		console.log(typeof query);
 	}
 }

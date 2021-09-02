@@ -25,7 +25,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @WebSocketServer()
     server: Server;
- 
     private logger: Logger = new Logger('ChatGateway');
 
     /********************* CONNECTION ********************** */
@@ -41,12 +40,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             const user: User = await this.channelService.getUserFromSocket(client);
             if (!user) {
                 return this.disconnectClient(client);
-            } 
+            }
             else {
                 client.data.user = user;
 
                 const channels = await this.channelService.getChannelsForUser(user.userId);
                 await this.connectedUserService.create({socketId: client.id, user});
+                this.userStatus();
 
                 this.logger.log(`Client connected: ${client.id}`);
                 return this.server.to(client.id).emit('channel', channels);
@@ -107,7 +107,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     // @SubscribeMessage('msgToServer')
     // handleMessage(client: Socket, text: string) {
     //     this.logger.log('New message from a socket !');
-    //     // this.server.to(message.room).emit('msgToClient', message);                      
+    //     // this.server.to(message.room).emit('msgToClient', message);
     //     this.server.emit('msgToClient',text);
     // }
 
@@ -162,6 +162,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('leaveChannel')
     async handleLeaveChannel(client: Socket) {
         await this.joinedChannelService.deleteBySocketId(client.id);
+    }
+
+
+    userStatus() {
+        console.log("TEST USERSTATUS");
+        return this.connectedUserService.userStatus();
     }
 
 }
