@@ -44,6 +44,6 @@ export class Channel {
 	@Column("simple-array", {default: ""})
 	mutedUsers: string[];
 
-	@Column("simple-array", {default: ""})
+	@Column("simple-array")
 	authPrivateChannelUsers: string[];
 }

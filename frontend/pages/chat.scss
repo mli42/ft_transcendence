@@ -6,10 +6,14 @@
 }
 
 .chatChamp{
+    display: flex;
+    flex-direction: column;
     width: 1087px;
     height: 100vh;
     background-color: $pg-dark-blue;
     position: relative;
+    padding: 16px;
+    align-items: center;
 }
 
 .connected{
@@ -20,9 +24,9 @@
 
 .chatfield{
     display: flex;
-    position: absolute;
-    bottom: 6%;
-    margin-left: 240px;
+    width: 95%;
+    height: 40px;
+    margin: 16px 0;
 }
 
 .chatfield input {
@@ -49,11 +53,21 @@
 }
 
 .received{
+    width: 100%;
+    height: 100%;
+    background-color: $pg-dark-blue;
+    overflow-y: auto;
+}
+
+.chatMain{
+    display: flex;
+    flex-direction: column;
     width: 612px;
-    min-height: 100%;
-    margin : 100px auto 100px auto;
-    background-color: white;
-    overflow-y: scroll;
+    height: 90%;
+    margin-bottom: 16px;
+    padding: 10px;
+    align-items: center;
+    justify-content: space-between;
 }
 
 ul {
@@ -61,18 +75,19 @@ ul {
 }
 
 .listChannel{
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 1099px;
 }
 
 .chatRoomName {
-    position: absolute;
     width: 1058px;
     height: 72px;
     left: 16px;
     top: 16px;
     background-color: $pg-blue;
     border-radius: 10px;
+    margin-bottom: 16px;
+    padding: 16px;
 }
 
 .search, .creatChatRoom{
@@ -87,10 +102,23 @@ ul {
     bottom: 4%;
 }
 .search input {
-    width: 288px;
+    width: 250px;
     height: 40px;
     background-color: $pg-blue;
-    border-radius: 10px;
+    border-radius: 10px 0 0 10px;
+}
+
+.search div{
+    background-color: $pg-blue;
+    height: 40px;
+    width: 40px;
+    border-radius: 0px 10px 10px 0px;
+    
+}
+
+.search img{
+    width: 20px;
+    height: 20px;
 }
 
 #createChatRoomBtn{
@@ -110,12 +138,13 @@ ul {
 
 .chatRoomName{
     display: flex;
+    justify-content: space-between;
 }
 
 .chanelImg{
-    margin: auto 7px;
     width: 40px;
     height: 40px;
+    margin-right: 16px;
     border-radius: 150px;
 }
 
@@ -151,10 +180,7 @@ ul {
 }
 
 .settingBtn{
-    position: absolute;
-    right: 0;
-    top: 16;
-    margin: 16px 7px;
+
 }
 
 h1{
@@ -186,8 +212,6 @@ h1{
 .visibility{
     margin: 7px auto;
     width: 200px;
-    // display: flex;
-    // justify-content: space-between;
     color: $pg-white;
 }
 

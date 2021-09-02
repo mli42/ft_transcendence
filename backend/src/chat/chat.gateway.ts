@@ -28,10 +28,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
  
     private logger: Logger = new Logger('ChatGateway');
 
-    // afterInit(server: Server) {
-    //     this.logger.log('Initialized !')
-    // }
-
     /********************* CONNECTION ********************** */
 
     // Called once the host module's dependencies have been resolved
@@ -48,17 +44,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             } 
             else {
                 client.data.user = user;
-                // console.log("USER CONNECTED")
-                // console.log(client.data.user);
-                await this.channelService.updatePublicChannelsForNewUser(user);
+
                 const channels = await this.channelService.getChannelsForUser(user.userId);
-                // console.log("CHANNELS")
-                // console.log(channels);
-                // save connection
                 await this.connectedUserService.create({socketId: client.id, user});
 
                 this.logger.log(`Client connected: ${client.id}`);
-                // emit channels for the specific user
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -85,30 +75,33 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
+        console.log("CHANNEL")
+        console.log(channel)
         const { publicChannel } = channel;
-        // console.log(publicChannel);
-        if (publicChannel === true) {
-            channel.users = await this.userRepository.find();
-            // console.log(channel.users);
-        }
+
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
-        // console.log("USERS")
-        // console.log(createChannel.users);
-        for (const user of createChannel.users) {
-            const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
-            const channels = await this.channelService.getChannelsForUser(user.userId);
-            // console.log(channels);
+
+        if (publicChannel === true) {
+            const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
             for (const connection of connections) {
+                const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
                 await this.server.to(connection.socketId).emit('channel', channels);
             }
+        } else {
+            for (const user of createChannel.users) {
+                const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
+                const channels: ChannelI[] = await this.channelService.getChannelsForUser(user.userId);
+                for (const connection of connections) {
+                    await this.server.to(connection.socketId).emit('channel', channels);
+                }
+            }
         }
-
     }
 
     @SubscribeMessage('displayChannel')
-    async onChatPage(client: Socket) {
+    async onChatPage(client: Socket): Promise<ChannelI[]> {
         const user: User = await this.channelService.getUserFromSocket(client);
-        const channels = await this.channelService.getChannelsForUser(user.userId);
+        const channels: ChannelI[] = await this.channelService.getChannelsForUser(user.userId);
         return channels;
     }
 
@@ -147,10 +140,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* Auth Private Channel *********************/
     @SubscribeMessage('passwordChannel')
-    async authPrivateChannel(client: Socket, channel: ChannelI, password: string) {
+    async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
+
+        // console.log("PASSWORD")
+        // console.log(data.password)
+        const { channel, password } = data;
         if (password != channel.password)
-            throw new WsException('Incorrect password');
+            return false;
         await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
+        return true;
     }
 
     /********************* Join Channel *********************/
@@ -159,9 +157,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         if (channel.publicChannel === false && await this.channelService.isAuthPrivateChannel(channel, client.data.user) == false)
             throw new WsException('The user is not authenticated in this private channel');
         const messages = await this.messageService.findMessagesForChannel(channel)
-        // save connection to channel
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
-        // send last message from channel to user
         await this.server.to(client.id).emit('messages', messages);
     }
 

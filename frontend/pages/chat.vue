@@ -3,6 +3,7 @@
     <div class="connected">
       <div class="search flexHVcenter">
         <input  type="text" name="mysearch" id="mysearch">
+        <div class="loop flexHVcenter"><img src="~/assets/img/loop.png"></div>
       </div>
       <ul class="listChannel">
         <li v-for="(item, index) in channels" :key="index">
@@ -17,28 +18,32 @@
     </div>
     <div class="chatChamp boxHVcenter">
       <div class="chatRoomName">
-        <img class="chanelImg" src="~/assets/img/chatbubble.svg">
-        <p> {{ currentChannel.channelName }} </p>
+        <div class="flexAlignRow">
+          <img class="chanelImg" src="~/assets/img/chatbubble.svg">
+          <p> {{ currentChannel.channelName }} </p>
+        </div>
         <div class="settingBtn flexHVcenter">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
-      <div class="received">
-        <ul>
-          <li class="newMsg" v-for="(msg, index) in messages" :key="index">
-            <img src="~/assets/img/avatar.jpeg">
-            <div class="msgDiv">
-              <p>{{ msg.user.username }}</p>
-              <div class="msgContent"> {{ msg.text }} </div>
+      <div class="chatMain">
+        <div class="received">
+          <ul>
+            <li class="newMsg" v-for="(msg, index) in messages" :key="index">
+              <img src="~/assets/img/avatar.jpeg">
+              <div class="msgDiv">
+                <p>{{ msg.user.username }}</p>
+                <div class="msgContent"> {{ msg.text }} </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="chatfield">
+          <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
+            <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
+              <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
             </div>
-          </li>
-        </ul>
-      </div>
-      <div class="chatfield">
-        <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
-          <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
-            <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
-          </div>
+        </div>
       </div>
       <div class="control">
         <ChatMember :channelUsers="currentChannel.users"></ChatMember>
@@ -80,9 +85,9 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
       <h1 id="settingModal">Join Channel</h1>
-      <ModalInput  name="Channel password :" v-model.lazy="passeword"  placeHolder="" :isPassword="true" :ispublic="true"></ModalInput>
-      <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false">
-        <p class="v-btn-content">Join</p>
+      <ModalInput  name="Channel password :" v-model.lazy="password"  placeHolder="" :isPassword="true" :ispublic="true"></ModalInput>
+      <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false, sendPassword()">
+        <p class="v-btn-content" >Join</p>
       </v-btn>
     </SettingModal>
     
@@ -122,7 +127,7 @@ export default Vue.extend({
         members: [] as User[],
         addpassword: false as boolean,
       },
-      selectedChannel: false as boolean,
+      selectedChannel: 0 as number,
       friends: [],
       password: '' as string,
     }
@@ -130,11 +135,34 @@ export default Vue.extend({
   methods: {
     joinChannel(index: number): void{
       this.$user.socket.emit('leaveChannel');
-      this.currentChannel = this.channels[index];
-      if (!this.currentChannel.publicChannel)
+      if (!this.channels[index].publicChannel)
+      {
         this.modalBool.showPrivacy = true;
-      console.log("current channel :", this.currentChannel);
-      this.$user.socket.emit('joinChannel', this.channels[index]);
+        this.selectedChannel = index;
+      }
+      else
+      {
+        this.$user.socket.emit('joinChannel', this.channels[index]);
+        this.currentChannel = this.channels[index];
+      }
+    },
+    sendPassword() {
+      const arg = {channel: this.channels[this.selectedChannel],
+      password: this.password};
+      this.$user.socket.emit('passwordChannel', arg, (data: any) => {
+        if (data === false)
+        {
+          this.modalBool.showPrivacy = false;
+          console.log("wrong mdp!!");
+        }
+        else
+        {
+          console.log("else!!");
+          this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
+          this.currentChannel = this.channels[this.selectedChannel];
+        }
+      });
+      this.password = '';
     },
     sendMsg(): void {
       this.$user.socket.emit('newMessage',
@@ -166,7 +194,8 @@ export default Vue.extend({
       {
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
         users: this.newChannel.members,
-        publicChannel: this.newChannel.public});
+        publicChannel: this.newChannel.public,
+        password: this.newChannel.password});
       }
     },
     hideModal(): void {
