@@ -90,6 +90,7 @@ export class gameGateway {
       if (game.type === "matchmaking" && game.players.size === 2) {
         client.to(query.gameId).emit("startGameTC");
         client.emit("startGameTC");
+        game.state = "started";
       }
     }
   }
@@ -155,6 +156,7 @@ export class gameGateway {
       if (game.players.get(game.creatorId).isReady && game.players.get(game.creatorId).isReady) {
         client.to(query.gameId).emit("startGameTC");
         client.emit("startGameTC");
+        game.state = "started";
       }
     }
   }
