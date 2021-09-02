@@ -4,7 +4,6 @@ import { ApiOperation, ApiParam, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { Observable, of } from "rxjs";
 import { GameService } from './game.service';
 
-
 @ApiTags('game')
 @Controller('api/game')
 export class GameController {
@@ -16,7 +15,6 @@ export class GameController {
 	@ApiOkResponse({description: 'retrieve the map by sending its name as a parameter'})
 	@ApiParam({name: 'nameMap', required: true, description: 'name of the map'})
     /*******/
-	@UseGuards(AuthGuard('jwt'))
 	@Get('/map/:nameMap')
 	getMap(@Res() res, @Param('nameMap') nameMap): Observable<object> {
         return this.gameService.getMap(res, nameMap);
