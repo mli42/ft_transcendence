@@ -101,25 +101,26 @@ ul {
     position: absolute;
     bottom: 4%;
 }
-.search input {
-    width: 250px;
-    height: 40px;
-    background-color: $pg-blue;
-    border-radius: 10px 0 0 10px;
-}
+// .search input {
+//     width: 250px;
+//     height: 40px;
+//     background-color: $pg-blue;
+//     border-radius: 10px 0 0 10px;
+//     color: $pg-white;
+//     padding: 16px;
+// }
 
-.search div{
-    background-color: $pg-blue;
-    height: 40px;
-    width: 40px;
-    border-radius: 0px 10px 10px 0px;
-    
-}
+// .search div{
+//     background-color: $pg-blue;
+//     height: 40px;
+//     width: 40px;
+//     border-radius: 0px 10px 10px 0px;
+// }
 
-.search img{
-    width: 20px;
-    height: 20px;
-}
+// .search img{
+//     width: 20px;
+//     height: 20px;
+// }
 
 #createChatRoomBtn{
     width: 280px;

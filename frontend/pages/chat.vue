@@ -1,10 +1,11 @@
 <template>
   <div class="content flexHVcenter">
     <div class="connected">
-      <div class="search flexHVcenter">
-        <input  type="text" name="mysearch" id="mysearch">
-        <div class="loop flexHVcenter"><img src="~/assets/img/loop.png"></div>
-      </div>
+      <!-- <div class="search flexHVcenter">
+        <input  type="text" name="mysearch" id="mysearch" v-model="searchName">
+        <div class="loop flexHVcenter" @click="modalBool.showSearch = true"><img src="~/assets/img/loop.png"></div>
+      </div> -->
+      <SearchResult  :channels="channels" :searchName="searchName"></SearchResult>
       <ul class="listChannel">
         <li v-for="(item, index) in channels" :key="index">
           <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
@@ -113,6 +114,7 @@ export default Vue.extend({
         showCreate: false as boolean,
         showSettings: false as boolean,
         showPrivacy: false as boolean,
+        showSearch: false as boolean,
       },
       newChannel:{
         name: '' as string,
@@ -130,12 +132,13 @@ export default Vue.extend({
       selectedChannel: 0 as number,
       friends: [],
       password: '' as string,
+      searchName: '' as string,
     }
   },
   methods: {
     joinChannel(index: number): void{
       this.$user.socket.emit('leaveChannel');
-      if (!this.channels[index].publicChannel)
+      if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find(el => el === this.$store.state.user.userId))
       {
         this.modalBool.showPrivacy = true;
         this.selectedChannel = index;
@@ -151,13 +154,9 @@ export default Vue.extend({
       password: this.password};
       this.$user.socket.emit('passwordChannel', arg, (data: any) => {
         if (data === false)
-        {
           this.modalBool.showPrivacy = false;
-          console.log("wrong mdp!!");
-        }
         else
         {
-          console.log("else!!");
           this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
           this.currentChannel = this.channels[this.selectedChannel];
         }

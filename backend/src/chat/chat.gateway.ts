@@ -92,7 +92,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 }
             }
         }
-
     }
 
     @SubscribeMessage('displayChannel')
@@ -142,6 +141,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         if (password != channel.password)
             return false;
         await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
+        const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
+        for (const connection of connections) {
+            const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
+            await this.server.to(connection.socketId).emit('channel', channels);
+        }
         return true;
     }
 
