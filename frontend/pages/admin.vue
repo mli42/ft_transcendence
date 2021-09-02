@@ -6,7 +6,8 @@
     <!-- Stats -->
     <h2>Some stats</h2>
     <div class="stats flexAlignRow flexHVcenter">
-      <div class="oneStat flexHVcenter"> <p># Users: {{usersNB}}</p> </div>
+      <div class="oneStat flexHVcenter"> <p># of Admins: {{adminList.length}}</p> </div>
+      <div class="oneStat flexHVcenter"> <p># of Users: {{allUsers.length}}</p> </div>
     </div>
 
     <!-- List of admins -->
@@ -36,7 +37,7 @@ export default Vue.extend({
   data() {
     return {
       adminList: [] as any,
-      usersNB: 0 as number,
+      allUsers: [] as any,
     };
   },
   methods: {
@@ -57,7 +58,7 @@ export default Vue.extend({
     .then((resp: any) => resp.data)
     .catch(this.$mytoast.defaultCatch);
 
-    this.usersNB = await this.$axios
+    this.allUsers = await this.$axios
     .get('/api/admin/allUsers')
     .then((resp: any) => resp.data)
     .catch(this.$mytoast.defaultCatch);
