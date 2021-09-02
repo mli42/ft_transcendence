@@ -27,15 +27,14 @@ function socketInit(url:string, gameId: string, vue: any): void {
     vue.$data.game = game;
     if (game.opponentIdFound != "" && game.opponentIdFound === vue.$data.user.userId) {
       vue.btnActionJoin();
-    } else {
-      if (game.state === "started") {
-        vue.startGame();
-      } else if (game.state === "waiting") {
-        vue.$data.isPreGameDisplayed = true;
-        vue.updateDisplayedElem();
-      } else if (game.state === "ended") {
-        vue.$mytoast.err("The game is finished and this part is not done for now");
-      }
+    }
+    if (game.state === "started") {
+      vue.startGame();
+    } else if (game.state === "waiting") {
+      vue.$data.isPreGameDisplayed = true;
+      vue.updateDisplayedElem();
+    } else if (game.state === "ended") {
+      vue.$mytoast.err("The game is finished and this part is not done for now");
     }
   });
   socket.on("changePlayerColorTC", (payload: {userId: string, player: Player}) => {

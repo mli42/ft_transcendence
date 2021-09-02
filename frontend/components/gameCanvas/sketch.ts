@@ -1,14 +1,29 @@
 import { socket } from "./socket";
 import * as p5 from "p5";
-import { Mouse } from "./dataStructures";
+import { Mouse, Game } from "./dataStructures";
 
-export { sketch };
+export { sketchWrap };
+
+let vueInstance: any;
+let game: Game;
+
+async function sketchWrap(vue: any) {
+  vueInstance = vue;
+  game = vue.$data.game;
+  const { default: P5 } = await import('p5');
+  const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
+}
 
 async function sketch (s: any): Promise<any> {
   let canvasDom: any = document.getElementById("gameCanvas");
   let otherMouses: Map<string, Array<number>> = new Map();
-  let myMouse: Mouse = new Mouse(socket.id, 0, 0);
+  let background: p5.Image;
 
+  s.preload = () => {
+    s.loadImage(`http://localhost:3000/api/game/map/abstract-galaxy.jpeg`, (img: p5.Image) => {
+        background = img;
+    });
+  }
   s.setup = () => {
     s.createCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
     socket.on("mousePosToClient", (payload: Mouse) => { // [0]:string [1]:Mouse
@@ -16,14 +31,8 @@ async function sketch (s: any): Promise<any> {
     });
   }
   s.draw = () => {
-    s.background("#00FF00");
+    s.background(background);
     s.ellipse(s.mouseX, s.mouseY, 50, 50);
-    socket.emit("mousePosToServer", [s.mouseX, s.mouseY] as Array<number>);
-    otherMouses.forEach((value: any) => {
-        s.fill("#0000FF");
-        if (value)
-          s.ellipse(value[0], value[1], 50, 50);
-    });
   }
   s.windowResized = () => {
     s.resizeCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);

@@ -106,7 +106,7 @@ import { Game, Player, IcolorPalette, Button} from "./dataStructures";
 import lookup from "socket.io-client";
 import { use } from "vue/types/umd";
 import { socket, socketInit } from "./socket"
-import { sketch } from "./sketch";
+import { sketchWrap } from "./sketch";
 
 export { SOCKET_URL };
 
@@ -361,8 +361,7 @@ export default Vue.extend({
       if (this.game.state === "started") {
         this.isGameDisplayed = true;
         this.isPreGameDisplayed = false;
-        const { default: P5 } = await import('p5');
-        const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
+        sketchWrap(this);
       }
     }
   },
