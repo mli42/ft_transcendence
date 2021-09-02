@@ -39,7 +39,8 @@
       <!-- Game History -->
       <overflowContainer width="664px" heightMax="458px"
       label="Game History" style="margin: 32px">
-        <div class="placeholder"></div>
+        <!-- Placeholder to replace -->
+        <div style="height: 1000px;"></div>
       </overflowContainer>
     </div>
   </div>
