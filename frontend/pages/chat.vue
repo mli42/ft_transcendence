@@ -3,6 +3,7 @@
     <div class="connected">
       <div class="search flexHVcenter">
         <input  type="text" name="mysearch" id="mysearch">
+        <div class="loop flexHVcenter"><img src="~/assets/img/loop.png"></div>
       </div>
       <ul class="listChannel">
         <li v-for="(item, index) in channels" :key="index">
@@ -85,8 +86,8 @@
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
       <h1 id="settingModal">Join Channel</h1>
       <ModalInput  name="Channel password :" v-model.lazy="password"  placeHolder="" :isPassword="true" :ispublic="true"></ModalInput>
-      <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false">
-        <p class="v-btn-content" @click.prevent="sendPassword">Join</p>
+      <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false, sendPassword()">
+        <p class="v-btn-content" >Join</p>
       </v-btn>
     </SettingModal>
     
@@ -146,6 +147,7 @@ export default Vue.extend({
       }
     },
     sendPassword() {
+      console.log("IICII!!");
       this.$user.socket.emit('passwordChannel', this.channels[this.selectedChannel], this.password, (data: any) => {
         if (data === false)
         {
@@ -154,6 +156,7 @@ export default Vue.extend({
         }
         else
         {
+          console.log("correct mdp!!");
           this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
           this.currentChannel = this.channels[this.selectedChannel];
         }
