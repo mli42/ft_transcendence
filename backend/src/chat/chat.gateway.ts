@@ -75,6 +75,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
+        console.log("CHANNEL")
+        console.log(channel)
         const { publicChannel } = channel;
 
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
@@ -82,13 +84,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         if (publicChannel === true) {
             const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
             for (const connection of connections) {
-                const channels = await this.channelService.getChannelsForUser(connection.user.userId);
+                const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
                 await this.server.to(connection.socketId).emit('channel', channels);
             }
         } else {
             for (const user of createChannel.users) {
                 const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
-                const channels = await this.channelService.getChannelsForUser(user.userId);
+                const channels: ChannelI[] = await this.channelService.getChannelsForUser(user.userId);
                 for (const connection of connections) {
                     await this.server.to(connection.socketId).emit('channel', channels);
                 }
@@ -97,9 +99,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage('displayChannel')
-    async onChatPage(client: Socket) {
+    async onChatPage(client: Socket): Promise<ChannelI[]> {
         const user: User = await this.channelService.getUserFromSocket(client);
-        const channels = await this.channelService.getChannelsForUser(user.userId);
+        const channels: ChannelI[] = await this.channelService.getChannelsForUser(user.userId);
         return channels;
     }
 
@@ -138,9 +140,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* Auth Private Channel *********************/
     @SubscribeMessage('passwordChannel')
-    async authPrivateChannel(client: Socket, data: any) {
-        // console.log("CHANNEL")
-        // console.log(channel)
+    async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
+
+        // console.log("PASSWORD")
+        // console.log(data.password)
         const { channel, password } = data;
         if (password != channel.password)
             return false;
