@@ -1,5 +1,4 @@
 @import '~/assets/Palette.scss';
-@import '~/components/Profile/Profile.scss';
 
 div#HomePage {
   display: flex;
@@ -36,10 +35,6 @@ div.topContent h1 {
 
 div.topContent, div.homeRight {
   width: 726px;
-}
-
-div.homeRight {
-  margin: 0;
 }
 
 div.topContent {

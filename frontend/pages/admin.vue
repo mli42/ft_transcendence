@@ -12,8 +12,7 @@
 
     <!-- List of admins -->
     <overflowContainer v-if="$fetchState.pending == false"
-    width="664px" height="458px" innerHeight="384px"
-    label="List of administrators">
+    width="664px" heightMax="458px" label="List of administrators">
       <adminCard v-for="(user, index) in adminList" :key="index"
       :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
     </overflowContainer>

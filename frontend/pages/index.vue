@@ -20,15 +20,9 @@
 
       <hr class="topHR" style="visibility: hidden;" />
 
-      <div class="homeRight primaryContent GameHistoryContainer">
-        <p>Current games</p>
-        <hr />
-        <div class="GameHistory">
-          <!-- Replace with future v-for match card -->
-          <div class="placeholder"></div>
-        </div>
-      </div>
-
+      <!-- Current Games -->
+      <overflowContainer class="homeRight" width="726px;" heightMax="458px" label="Current games">
+      </overflowContainer>
     </div>
   </div>
 </template>
