@@ -16,10 +16,6 @@ export class AdminController {
     @UseGuards(AuthGuard('jwt'), UserAuth)
     @Get('/allUsers')
     getAllUsers(@Req() req): Promise<Partial<User[]>> {
-        const user: User = req.user;
-
-        if (user.isAdmin === false)
-			throw new UnauthorizedException('You aren\'t an administrator');
         return this.adminService.getAllUsers();
     }
 
