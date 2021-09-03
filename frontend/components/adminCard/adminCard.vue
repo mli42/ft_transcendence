@@ -8,7 +8,7 @@
         <p class="username">{{shortUsername}}</p>
       </NuxtLink>
     </div>
-    <v-btn class="downgradeBtn" @click="downgradeUserEmit">Downgrade</v-btn>
+    <v-btn class="modBtn redBg" @click="downgradeUserEmit">Downgrade</v-btn>
   </div>
 </template>
 

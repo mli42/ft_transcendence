@@ -8,9 +8,9 @@
         <p class="username">{{shortUsername}}</p>
       </NuxtLink>
     </div>
-    <div>
-      <v-btn class="downgradeBtn">Ban</v-btn>
-      <v-btn class="downgradeBtn">Promote</v-btn>
+    <div class="modButtons flexAlignRow">
+      <v-btn :class=[banBtnClass]>{{banStateStr}}</v-btn>
+      <v-btn :class=[adminStateBtnClass]>{{adminStateStr}}</v-btn>
     </div>
   </div>
 </template>
@@ -32,6 +32,28 @@ export default Vue.extend({
     },
     shortUsername(): string {
       return (this.$user.shortName(this.user.username, 15));
+    },
+    banStateStr(): string {
+      return !this.user.isBan ? 'Ban' : 'Unban';
+    },
+    banBtnClass(): object {
+      return {
+        modBtn: true,
+        modBanStateBtn: true,
+        redBg: !this.user.isBan,
+        greenBg: this.user.isBan,
+      };
+    },
+    adminStateStr(): string {
+      return !this.user.isAdmin ? 'Promote' : 'Downgrade';
+    },
+    adminStateBtnClass(): object {
+      return {
+        modBtn: true,
+        modAdminStateBtn: true,
+        redBg: this.user.isAdmin,
+        greenBg: !this.user.isAdmin,
+      };
     },
   },
   props: ['user'],

@@ -13,17 +13,20 @@
     <template v-if="$fetchState.pending == false">
     <!-- List of admins -->
     <overflowContainer
-    width="664px" heightMax="458px" label="List of administrators">
+    width="664px" heightMin="250px" heightMax="458px" label="List of administrators">
       <adminCard v-for="(user, index) in adminList" :key="index"
       :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
     </overflowContainer>
 
+    <hr style="margin: 16px; visibility: hidden;" />
+
     <!-- List of users -->
     <overflowContainer
-    width="664px" heightMax="458px" label="List of users">
+    width="664px" heightMin="250px" heightMax="458px" label="List of users">
       <adminCardUserCard v-for="(user, index) in allUsers" :key="index"
       :user="user"></adminCardUserCard>
     </overflowContainer>
+    <hr style="margin: 16px; visibility: hidden;" />
     </template>
 
   </div>
