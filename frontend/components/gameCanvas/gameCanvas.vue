@@ -358,7 +358,7 @@ export default Vue.extend({
         this.updateDisplayedElem();
       }
     },
-    async startGame(): Promise<any> {
+    startGame(): void {
       if (this.game.state === "started") {
         this.isGameDisplayed = true;
         this.isPreGameDisplayed = false;

@@ -42,12 +42,17 @@ export class gameGateway {
   }
 
   handleDisconnect(client: Socket) {
-   this.logger.log(`Client disconnected: ${client.id}`);
-   this.playerLeave(client);
+    const game: Game = gamesMap.get(client.handshake.query.gameId as string);
+    this.logger.log(`Client disconnected: ${client.id}`);
+
+    if (game) {
+      if (game.state === "waiting")
+        this.playerLeave(client);
+    }
   }
 
   /**
-   * LIST OF MESSAGE LISTENERS
+   * LIST OF PRE-GAME MESSAGE LISTENERS
    */
 
   // A client ask to get the entire game class. Or to create it if does not exists
@@ -210,5 +215,22 @@ export class gameGateway {
 
     searchList.delete(query.handshake.query.userId);
   }
+
+  /**
+   * GAME LISTENERS
+   */
+   @SubscribeMessage("posCreaTS")
+   posCrea(client: Socket, pos: number): void {
+     const query: any = client.handshake.query;
+
+     client.to(query.gameId).emit("posCreaTC", pos);
+   }
+
+   @SubscribeMessage("posOppoTS")
+   posOppo(client: Socket, pos: number): void {
+    const query: any = client.handshake.query;
+
+    client.to(query.gameId).emit("posOppoTC", pos);
+   }
 
 }
