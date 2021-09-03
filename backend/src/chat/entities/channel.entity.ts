@@ -35,6 +35,9 @@ export class Channel {
 	@OneToMany(() => Message, message => message.channel)
 	messages: Message[];
 
+	@Column("text", {default: ""})
+	owner: string;
+
 	@Column("simple-array", {default: ""})
 	adminUsers: string[];
 

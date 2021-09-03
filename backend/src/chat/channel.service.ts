@@ -28,6 +28,7 @@ export class ChannelService {
 		channel.banedUsers = [];
 		channel.mutedUsers = [];
 		channel.authPrivateChannelUsers = [];
+		channel.owner = creator.userId;
 		if (publicChannel === false) {
 			const newChannel = await this.addCreatorToChannel(channel, creator);
 			return this.channelRepository.save(newChannel);
@@ -156,7 +157,35 @@ export class ChannelService {
 		if (await this.isMuteUser(channel, user) === false)
 			return;
 		const index = channel.mutedUsers.indexOf(user.userId);
-		channel.banedUsers.splice(index, 1);
+		channel.mutedUsers.splice(index, 1);
+	}
+
+	async isAdminUser(channel: ChannelI, user: User): Promise<boolean> {
+		const userFound = channel.adminUsers.find(element => element === user.userId)
+		if (userFound) {
+			return true;
+		}
+		return false;
+	}
+
+	async addAdminUser(channel: ChannelI, user: User) {
+		if (await this.isAdminUser(channel, user) === true) {
+			throw new UnauthorizedException('This user is already ban');
+		}
+		channel.adminUsers.push(user.userId);
+		try {
+			await this.channelRepository.save(channel);
+		} catch (error) {
+			console.log(error);
+			throw new InternalServerErrorException('add an user');
+		}
+	}
+
+	async removeAdminUser(channel: ChannelI, user: User) {
+		if (await this.isAdminUser(channel, user) === false)
+			return;
+		const index = channel.adminUsers.indexOf(user.userId);
+		channel.adminUsers.splice(index, 1);
 	}
 
 	// add or remove a user to private channel
