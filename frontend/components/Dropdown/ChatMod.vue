@@ -2,7 +2,7 @@
     <div class="container">
       <h2>{{ toselect }}</h2>
       <div class="selectBox">
-        <div class="selected" @click="rotate = !rotate; toggleModal(); fillTab(result)">
+        <div class="selected" @click="rotate = !rotate; toggleModal()">
           <img :class="{ rotate: rotate }" src="~/assets/img/arrow.svg" >
         </div>
         <hr>
@@ -10,8 +10,8 @@
           <ul v-if="show">
               <li v-for="(item, index) in items" :key="index">
                 <div class="option">
-                  <input type="checkbox" :value="item" class="item" name="category" v-model="result"/>
-                  <label for="item">{{ item.username }}</label>
+                  <input type="radio" :value="item" class="item" name="category" v-model="result"/>
+                  <label for="item">{{ item }}</label>
                 </div>
               </li>
           </ul>
@@ -47,10 +47,6 @@ export default Vue.extend({
       type: [],
       required: true,
     },
-    fillTab:{
-      type: Function,
-      required: false,
-    }
   },
 });
 </script>

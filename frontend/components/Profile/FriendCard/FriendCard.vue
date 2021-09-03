@@ -43,7 +43,7 @@ export default Vue.extend({
   },
   methods: {
     sendEventChat(): void{
-      this.$nuxt.$emit('my-chat-event', this.userId);
+      this.$nuxt.$emit('my-chat-event', this.user);
     },
   },
   props: ['userId', 'page'],

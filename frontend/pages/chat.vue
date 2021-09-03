@@ -56,7 +56,7 @@
         <label for="private">Public</label>
       </div>
       <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
-      <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
+      <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :fillTab="fillMembers"></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
         <p class="v-btn-content">Create</p>
       </v-btn>
@@ -69,12 +69,12 @@
         <input type="radio" name="privateChange" @click="channelChanges.public = true" checked>
         <label for="privateChange">Public</label>
       </div>
-      <ModalInput v-if="!channelChanges.public" name="Change passeword :" v-model.lazy="channelChanges.newPassword"  placeHolder="" :isPassword="true" :ispublic="!channelChanges.public"></ModalInput>
+      <ModalInput v-if="!channelChanges.public" name="Change passeword :" v-model.lazy="channelChanges.newPassword" placeHolder="" :isPassword="true" :ispublic="!channelChanges.public"></ModalInput>
       <div class="checkBoxePassword flexHVcenter" v-if="!channelChanges.public">
         <input type="checkbox" name="addpassword" @click="addpassword = true" :disabled="channelChanges.public? true : false">
         <label class="addPassword" for="addpassword">Protected by new password</label>
       </div>
-      <Dropdown v-if="!channelChanges.public" toselect="Add members :" :items="friends" :value="channelChanges.members" :fillTab="fillMembers"></Dropdown>
+      <Dropdown v-if="!channelChanges.public" toselect="Add members :" :items="friends" :fillTab="fillMembers"></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showSettings = false">
         <p class="v-btn-content">Apply changes</p>
       </v-btn>
@@ -87,8 +87,21 @@
       </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showMembersMod">
+      <h1>{{ currentMemberMod.username }}</h1>
+      <div class="avatar"><Avatar :user="currentMemberMod"></Avatar></div>
+      <div class="checkBoxePassword flexHVcenter">
+        <input type="checkbox" name="addmoderator" v-model="moderation.newMod">
+        <label class="addPassword" for="addmoderator">Add this member to moderators</label>
+      </div>
+      <DropdownChatMod toselect="Ban for :" :items="moderation.timer"></DropdownChatMod>
+      <DropdownChatMod  toselect="Mute for :" :items="moderation.timer"></DropdownChatMod>
+      <v-btn class="BlockBtn" @click="modalBool.showMembersMod = false, sendModeration()">
+        <p class="v-btn-content">Block this user</p>
+      </v-btn>
+      <v-btn class="DoneBtn" @click="modalBool.showMembersMod = false, sendModeration()">
+        <p class="v-btn-content">Apply</p>
+      </v-btn>
     </SettingModal>
-    
   </div>
 </template>
 
@@ -96,9 +109,9 @@
 import Vue from 'vue';
 import io from 'socket.io-client';
 import {UserStatus, User, Message, Channel} from '~/types/chatTypes';
-import ChatMember from '../components/ChatMember/ChatMember.vue';
+import Dropdown from '../components/Dropdown/Dropdown.vue';
 export default Vue.extend({
-  components: { ChatMember },
+  components: { Dropdown },
   name: 'chat',
   layout: 'default',
   data(): any {
@@ -106,6 +119,7 @@ export default Vue.extend({
       txt: '' as string,
       messages: [] as Message[],
       channels: [] as Channel[],
+      currentUser: this.$store.state.user as User,
       currentChannel: new Channel as Channel,
       modalBool : {
         showCreate: false as boolean,
@@ -121,16 +135,16 @@ export default Vue.extend({
         members: [] as User[],
         admin: [] as User[],
       },
-      channelChanges:{
-        newPassword: '' as string,
-        public: true as boolean,
-        members: [] as User[],
-        addpassword: false as boolean,
+      moderation:{
+        newMod: false as boolean,
+        banTime: 0 as number,
+        muteTime: 0 as number,
+        timer: ['15 min', '30 min', '1 hour'] as String[],
       },
       selectedChannel: 0 as number,
       friends: [],
       password: '' as string,
-      currentMemberMod: '' as string,
+      currentMemberMod: {} as User,
     }
   },
   methods: {
@@ -145,6 +159,7 @@ export default Vue.extend({
       {
         this.$user.socket.emit('joinChannel', this.channels[index]); 
         this.currentChannel = this.channels[index];
+        console.log("owner = ", this.currentChannel.owner);
       }
     },
     sendPassword() {
@@ -161,6 +176,9 @@ export default Vue.extend({
       });
       this.password = '';
     },
+    sendModeration() {
+
+    }, 
     sendMsg(): void {
       this.$user.socket.emit('newMessage',
       	{text: this.txt,
@@ -223,9 +241,9 @@ export default Vue.extend({
     });
   },
   created() {
-    this.$nuxt.$on('my-chat-event', (userId: string) => {
+    this.$nuxt.$on('my-chat-event', (user: User) => {
       this.modalBool.showMembersMod = true;
-      this.currentMemberMod = userId;
+      this.currentMemberMod = user;
    })
   },
   destroyed(){
