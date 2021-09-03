@@ -23,7 +23,7 @@ export default Vue.extend({
   },
   methods: {
     downgradeUserEmit(): void {
-      this.$emit('downgradeUser');
+      this.$emit('downgradeAdmin');
     },
   },
   computed: {

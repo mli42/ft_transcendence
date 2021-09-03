@@ -9,8 +9,8 @@
       </NuxtLink>
     </div>
     <div class="modButtons flexAlignRow">
-      <v-btn :class=[banBtnClass]>{{banStateStr}}</v-btn>
-      <v-btn :class=[adminStateBtnClass]>{{adminStateStr}}</v-btn>
+      <v-btn :class=[banBtnClass] @click="emitBanState" >{{banStateStr}}</v-btn>
+      <v-btn :class=[adminStateBtnClass] @click="emitAdminState">{{adminStateStr}}</v-btn>
     </div>
   </div>
 </template>
@@ -25,6 +25,12 @@ export default Vue.extend({
     };
   },
   methods: {
+    emitBanState(): void {
+      this.$emit('toggleBanUser');
+    },
+    emitAdminState(): void {
+      this.$emit(this.user.isBan ? 'promoteUser' : 'downgradeUser');
+    },
   },
   computed: {
     userProfile(): string {

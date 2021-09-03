@@ -15,7 +15,7 @@
     <overflowContainer
     width="664px" heightMin="250px" heightMax="458px" label="List of administrators">
       <adminCard v-for="(user, index) in adminList" :key="index"
-      :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
+      :user="user" @downgradeAdmin="downgradeAdmin(user, index)"></adminCard>
     </overflowContainer>
 
     <hr style="margin: 16px; visibility: hidden;" />
@@ -24,7 +24,9 @@
     <overflowContainer
     width="664px" heightMin="250px" heightMax="458px" label="List of users">
       <adminCardUserCard v-for="(user, index) in allUsers" :key="index"
-      :user="user"></adminCardUserCard>
+      :user="user" @toggleBanUser="toggleBanUser(user, index)"
+      @promoteUser="promoteUser(user, index)" @downgradeUser="downgradeUser(user, index)"
+      ></adminCardUserCard>
     </overflowContainer>
     <hr style="margin: 16px; visibility: hidden;" />
     </template>
@@ -50,7 +52,7 @@ export default Vue.extend({
     };
   },
   methods: {
-    downgradeUser(user: any, index: number): void {
+    downgradeAdmin(user: any, index: number): void {
       this.$axios.patch(`/api/user/updateIsAdmin?userId=${user.userId}`, {
         toggle: false,
       })
@@ -59,6 +61,12 @@ export default Vue.extend({
         this.adminList.splice(index, 1);
       })
       .catch(this.$mytoast.defaultCatch);
+    },
+    toggleBanUser(user: any, index: number): void {
+    },
+    promoteUser(user: any, index: number): void {
+    },
+    downgradeUser(user: any, index: number): void {
     },
   },
   async fetch() {
