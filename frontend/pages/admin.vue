@@ -52,6 +52,10 @@ export default Vue.extend({
     };
   },
   methods: {
+    findIndexUserID(array: any, userId: string): number {
+      const index: number = array.findIndex((findUser: any) => findUser.userId === userId);
+      return index;
+    },
     downgradeAdmin(user: any, index: number): void {
       this.$axios.patch(`/api/user/updateIsAdmin?userId=${user.userId}`, {
         toggle: false,
@@ -59,6 +63,10 @@ export default Vue.extend({
       .then(() => {
         this.$mytoast.succ(`User ${user.username} downgraded`);
         this.adminList.splice(index, 1);
+        const allUsersIndex: number = this.findIndexUserID(this.allUsers, user.userId);
+        if (allUsersIndex != -1) {
+          this.allUsers[allUsersIndex].isAdmin = false;
+        }
       })
       .catch(this.$mytoast.defaultCatch);
     },
