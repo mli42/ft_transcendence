@@ -5,7 +5,7 @@ import { User } from 'src/user/entities/user.entity';
 import { UserAuth } from 'src/user/guards/userAuth.guard';
 import { AdminService } from './admin.service';
 
-@ApiTags('users')
+@ApiTags('admin')
 @Controller('api/admin')
 export class AdminController {
     constructor (
