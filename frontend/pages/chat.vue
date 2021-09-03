@@ -1,10 +1,7 @@
 <template>
   <div class="content flexHVcenter">
     <div class="connected">
-      <div class="search flexHVcenter">
-        <input  type="text" name="mysearch" id="mysearch">
-        <div class="loop flexHVcenter"><img src="~/assets/img/loop.png"></div>
-      </div>
+      <SearchResult  :channels="channels"></SearchResult>
       <ul class="listChannel">
         <li v-for="(item, index) in channels" :key="index">
           <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
@@ -60,7 +57,6 @@
       </div>
       <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
       <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" :value="newChannel.members" :fillTab="fillMembers"></Dropdown>
-      <Dropdown v-if="!newChannel.public" toselect="Choose administrators :" :items="newChannel.members" :value="newChannel.admin" :fillTab="fillAdmin"></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()">
         <p class="v-btn-content">Create</p>
       </v-btn>
@@ -113,6 +109,7 @@ export default Vue.extend({
         showCreate: false as boolean,
         showSettings: false as boolean,
         showPrivacy: false as boolean,
+        showSearch: false as boolean,
       },
       newChannel:{
         name: '' as string,
@@ -130,12 +127,13 @@ export default Vue.extend({
       selectedChannel: 0 as number,
       friends: [],
       password: '' as string,
+      allUsers: [] as User[],
     }
   },
   methods: {
     joinChannel(index: number): void{
       this.$user.socket.emit('leaveChannel');
-      if (!this.channels[index].publicChannel)
+      if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
       {
         this.modalBool.showPrivacy = true;
         this.selectedChannel = index;
@@ -151,13 +149,9 @@ export default Vue.extend({
       password: this.password};
       this.$user.socket.emit('passwordChannel', arg, (data: any) => {
         if (data === false)
-        {
           this.modalBool.showPrivacy = false;
-          console.log("wrong mdp!!");
-        }
         else
         {
-          console.log("else!!");
           this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
           this.currentChannel = this.channels[this.selectedChannel];
         }
@@ -222,6 +216,15 @@ export default Vue.extend({
       .get(`/api/user/partialInfo?userId=${element}`)
       .then((resp: any) => {this.friends.push(resp.data);})
       .catch(() => console.log('Oh no'));
+    });
+    this.$axios
+    .get(`/api/admin/allUsers`)
+    .then((response: any): void =>{
+      console.log(response);
+      // this.allUsers = response.data;
+    })
+    .catch((error: any): void =>{
+      console.log("error!!!!!!")
     });
   },
   destroyed(){
