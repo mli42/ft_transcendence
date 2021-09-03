@@ -132,9 +132,9 @@ class Player {
   constructor() {
     this.name = "";
     this.barX = 0;
-    this.barY = 1920 / 2;
+    this.barY = 432 / 2;
     this.color = "#FA163F";
-    this.barLen = 160; // in px
+    this.barLen = 48; // in px
     this.isReady = false;
     this.barSpeed = 1;
   }
