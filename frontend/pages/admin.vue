@@ -71,6 +71,15 @@ export default Vue.extend({
       .catch(this.$mytoast.defaultCatch);
     },
     toggleBanUser(user: any, index: number): void {
+      this.$axios.patch(`/api/user/updateIsBan?userId=${user.userId}`, {
+        toggle: !user.isBan,
+      })
+      .then(() => {
+        this.allUsers[index].isBan = !user.isBan;
+        const status: string = user.isBan ? 'banned' : 'un-banned';
+        this.$mytoast.succ(`User ${user.username} ${status}`);
+      })
+      .catch(this.$mytoast.defaultCatch);
     },
     promoteUser(user: any, index: number): void {
     },
