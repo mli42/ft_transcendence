@@ -4,7 +4,10 @@
       <div class="pp">
         <Avatar :user="user"></Avatar>
       </div>
-      <NuxtLink :to="userProfile">
+    <div v-if="page == 'chat'" @click="sendEventChat">
+      <p>{{shortUsername}}</p>
+    </div>
+      <NuxtLink v-else :to="userProfile">
         <p>{{shortUsername}}</p>
       </NuxtLink>
       <Iconify v-if="user.status == 'Playing'" title="Currently playing"
@@ -38,7 +41,12 @@ export default Vue.extend({
       return (this.$user.shortName(this.user.username));
     },
   },
-  props: ['userId'],
+  methods: {
+    sendEventChat(): void{
+      this.$nuxt.$emit('my-chat-event', this.userId);
+    },
+  },
+  props: ['userId', 'page'],
 });
 </script>
 

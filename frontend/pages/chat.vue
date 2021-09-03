@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="control">
-        <ChatMember :channelUsers="currentChannel.users"></ChatMember>
+        <ChatMember :channelUsers="currentChannel.users" :public="currentChannel.publicChannel"></ChatMember>
       </div>
     </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
@@ -86,6 +86,8 @@
         <p class="v-btn-content" >Join</p>
       </v-btn>
     </SettingModal>
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showMembersMod">
+    </SettingModal>
     
   </div>
 </template>
@@ -110,6 +112,7 @@ export default Vue.extend({
         showSettings: false as boolean,
         showPrivacy: false as boolean,
         showSearch: false as boolean,
+        showMembersMod: false as boolean,
       },
       newChannel:{
         name: '' as string,
@@ -127,7 +130,7 @@ export default Vue.extend({
       selectedChannel: 0 as number,
       friends: [],
       password: '' as string,
-      allUsers: [] as User[],
+      currentMemberMod: '' as string,
     }
   },
   methods: {
@@ -140,7 +143,7 @@ export default Vue.extend({
       }
       else
       {
-        this.$user.socket.emit('joinChannel', this.channels[index]);
+        this.$user.socket.emit('joinChannel', this.channels[index]); 
         this.currentChannel = this.channels[index];
       }
     },
@@ -196,6 +199,7 @@ export default Vue.extend({
       this.modalBool.showCreate = false;
       this.modalBool.showSettings = false;
       this.modalBool.showPrivacy = false;
+      this.modalBool.showMembersMod= false;
     },
   },
   mounted() {
@@ -217,21 +221,19 @@ export default Vue.extend({
       .then((resp: any) => {this.friends.push(resp.data);})
       .catch(() => console.log('Oh no'));
     });
-    this.$axios
-    .get(`/api/admin/allUsers`)
-    .then((response: any): void =>{
-      console.log(response);
-      // this.allUsers = response.data;
-    })
-    .catch((error: any): void =>{
-      console.log("error!!!!!!")
-    });
+  },
+  created() {
+    this.$nuxt.$on('my-chat-event', (userId: string) => {
+      this.modalBool.showMembersMod = true;
+      this.currentMemberMod = userId;
+   })
   },
   destroyed(){
     this.$user.socket.off("messageAdded");
     this.$user.socket.off("channel");
     this.$user.socket.off("messages");
     this.$user.socket.emit('leaveChannel');
+     this.$nuxt.$off('my-custom-event');
   }
 });
 </script>
