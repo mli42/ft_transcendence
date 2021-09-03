@@ -68,7 +68,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     private disconnectClient(client: Socket) {
         client.emit('Error', new UnauthorizedException());
         client.disconnect();
-        this.logger.log(`Client diconnect: ${client.id} - ${client.data.user.username}`);
+        this.logger.log(`Client diconnect: ${client.id}`);
     }
 
     /********************* CREATE CHANNEL **************** */
@@ -122,16 +122,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
     /********************* Autorisation Channel *********************/
     @SubscribeMessage('autorisationChannel')
-    async updateAutoricationChannel(client: Socket, channel: ChannelI, ban: boolean, mute: boolean) {
-        if (ban === true) {
-            this.channelService.addBanUser(channel, client.data.user);
+    async updateAutorisationChannel(client: Socket, channel: ChannelI, user:User, admin: boolean, ban: boolean, mute: boolean) {
+        if (admin === true) {
+            this.channelService.addAdminUser(channel, user);
         } else {
-            this.channelService.removeBanUser(channel, client.data.user);
+            this.channelService.removeAdminUser(channel, user);
+        }
+        if (ban === true) {
+            this.channelService.addBanUser(channel, user);
+        } else {
+            this.channelService.removeBanUser(channel, user);
         }
         if (mute === true) {
-            this.channelService.addMuteUser(channel, client.data.user);
+            this.channelService.addMuteUser(channel, user);
         } else {
-            this.channelService.removeMuteUser(channel, client.data.user);
+            this.channelService.removeMuteUser(channel, user);
         }
     }
 
