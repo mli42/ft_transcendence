@@ -5,7 +5,7 @@ import { User } from 'src/user/entities/user.entity';
 import { UserAuth } from 'src/user/guards/userAuth.guard';
 import { AdminService } from './admin.service';
 
-@ApiTags('users')
+@ApiTags('admin')
 @Controller('api/admin')
 export class AdminController {
     constructor (
@@ -16,10 +16,6 @@ export class AdminController {
     @UseGuards(AuthGuard('jwt'), UserAuth)
     @Get('/allUsers')
     getAllUsers(@Req() req): Promise<Partial<User[]>> {
-        const user: User = req.user;
-
-        if (user.isAdmin === false)
-			throw new UnauthorizedException('You aren\'t an administrator');
         return this.adminService.getAllUsers();
     }
 
