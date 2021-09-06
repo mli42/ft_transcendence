@@ -13,7 +13,7 @@
     <template v-if="$fetchState.pending == false">
     <!-- List of admins -->
     <overflowContainer
-    width="664px" heightMin="250px" heightMax="458px" label="List of administrators">
+    width="664px" heightMax="458px" label="List of administrators">
       <adminCard v-for="(user, index) in adminList" :key="index"
       :user="user" @downgradeAdmin="downgradeAdmin(user, index)"></adminCard>
     </overflowContainer>
@@ -22,10 +22,10 @@
 
     <!-- List of users -->
     <overflowContainer
-    width="664px" heightMin="250px" heightMax="458px" label="List of users">
+    width="664px" heightMax="458px" label="List of users">
       <adminCardUserCard v-for="(user, index) in allUsers" :key="index"
       :user="user" @toggleBanUser="toggleBanUser(user, index)"
-      @promoteUser="reqAdminState(user, index, promoteUser)" @downgradeUser="reqAdminState(user, index, downgradeUser)"
+      @toggleAdminState="reqAdminState(user, index)"
       ></adminCardUserCard>
     </overflowContainer>
     <hr style="margin: 16px; visibility: hidden;" />
@@ -81,21 +81,31 @@ export default Vue.extend({
       })
       .catch(this.$mytoast.defaultCatch);
     },
-    reqAdminState(user: any, index: number, callback: Function): void {
+    reqAdminState(user: any, index: number): void {
       this.$axios.patch(`/api/user/updateIsAdmin?userId=${user.userId}`, {
         toggle: !user.isAdmin,
       })
       .then(() => {
         this.allUsers[index].isAdmin = !user.isAdmin;
-        callback(user, index);
+        user.isAdmin ? this.promoteUser(user) : this.downgradeUser(user);
         const status: string = user.isAdmin ? 'promoted' : 'downgraded';
         this.$mytoast.succ(`User ${user.username} ${status}`);
       })
       .catch(this.$mytoast.defaultCatch);
     },
-    promoteUser(user: any, index: number): void {
+    promoteUser(user: any): void {
+      let index = 0;
+
+      while (index < this.adminList.length && this.sortUsers(this.adminList[index], user) < 0) {
+        ++index;
+      }
+      this.adminList.splice(index, 0, user);
     },
-    downgradeUser(user: any, index: number): void {
+    downgradeUser(user: any): void {
+      const allAdminsIndex: number = this.findIndexUserID(this.adminList, user.userId);
+      if (allAdminsIndex != -1) {
+        this.adminList.splice(allAdminsIndex, 1);
+      }
     },
     sortUsers(userA: any, userB: any): number {
       return userA.username.localeCompare(userB.username);
