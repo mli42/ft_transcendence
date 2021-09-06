@@ -27,10 +27,10 @@ export default Vue.extend({
   },
   props: ['channels'],
   methods: {
-    fetchData(): void{
-        const result = this.channels.filter(el => console.log(el));
-        this.result = result.map((el: string) => el.channelName);
-    },
+    // fetchData(): void{
+    //     const result = this.channels.filter(el => console.log(el));
+    //     // this.result = result.map((el: string) => el.channelName);
+    // },
   }
   // el.channelName.startsWith(this.searchName) == true
 });

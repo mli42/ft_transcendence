@@ -2,7 +2,7 @@
     <div class="container">
       <h2>{{ toselect }}</h2>
       <div class="selectBox">
-        <div class="selected" @click="rotate = !rotate; toggleModal(); fillTab(result)">
+        <div class="selected" @click="rotate = !rotate; toggleModal()">
           <img :class="{ rotate: rotate }" src="~/assets/img/arrow.svg" >
         </div>
         <hr>
@@ -36,7 +36,12 @@ export default Vue.extend({
   methods: {
     toggleModal(): void{
         this.show = !this.show;
-    }
+    },
+  },
+  watch:{
+    result(){
+      this.$nuxt.$emit('send-userlist', this.result);
+    },
   },
   props: {
     toselect: {
@@ -47,10 +52,6 @@ export default Vue.extend({
       type: [],
       required: true,
     },
-    fillTab:{
-      type: Function,
-      required: false,
-    }
   },
 });
 </script>

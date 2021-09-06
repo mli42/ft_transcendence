@@ -29,14 +29,22 @@ export default Vue.extend({
   data(): any {
     return {
       show: false as boolean,
-      result: [] as User[],
+      result: 0 as number,
       rotate: false as boolean,
     }
   },
   methods: {
     toggleModal(): void{
         this.show = !this.show;
-    }
+    },
+  },
+  watch:{
+    result(){
+      if (this.action === 'ban')
+        this.$nuxt.$emit('send-banTime', this.result);
+      if (this.action === 'mute')
+        this.$nuxt.$emit('send-muteTime', this.result);
+    },
   },
   props: {
     toselect: {
@@ -45,6 +53,10 @@ export default Vue.extend({
     },
     items: {
       type: [],
+      required: true,
+    },
+    action:{
+      type: String,
       required: true,
     },
   },
