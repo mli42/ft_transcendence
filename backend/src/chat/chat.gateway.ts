@@ -122,17 +122,36 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('autorisationChannel')
     async updateAutorisationChannel(client: Socket, data: any) {
 
-        const { user, channel, admin, ban, mute, block } = data;
+        let { user, channel, admin, ban, mute, block } = data;
         console.log(data)
         if (admin === true) {
             this.channelService.addAdminUser(channel, user);
         } else {
             this.channelService.removeAdminUser(channel, user);
         }
-        let dateBan = Date.now();
-        // console.log(dateBan.getDate())
+
+        // console.log("OK")
+        // let dateBan = new Date;
+        // console.log(dateBan)
+        // if (ban > 0) {
+        //     console.log("Ban !");
+        //     var day = dateBan.getDate()
+        //     var month = dateBan.getMonth() + 1
+        //     var year = dateBan.getFullYear()
+        //     console.log("---" + day + "/" + month + "/" + year + "---")
+    
+        //     dateBan.setDate(dateBan.getDate() + ban)
+    
+        //     day = dateBan.getDate()
+        //     month = dateBan.getMonth() + 1
+        //     year = dateBan.getFullYear()
+        //     console.log("---" + day + "/" + month + "/" + year + "---")
+        //     ban = dateBan;
+        // }
         // const role: RoleUserI = {userId: user.userId, block, ban, mute, channel}
         // this.roleUserService.create(role);
+
+
         // this.emitUpdateChannel(channel, channel.publicChannel);
         // if (ban === true) {
         //     this.channelService.addBanUser(channel, user);

@@ -170,14 +170,14 @@ export class ChannelService {
 
 	async addAdminUser(channel: ChannelI, user: User) {
 		if (await this.isAdminUser(channel, user) === true) {
-			throw new UnauthorizedException('This user is already ban');
+			return;
 		}
 		channel.adminUsers.push(user.userId);
 		try {
 			await this.channelRepository.save(channel);
 		} catch (error) {
 			console.log(error);
-			throw new InternalServerErrorException('add an user');
+			throw new InternalServerErrorException('add an user admin');
 		}
 	}
 
