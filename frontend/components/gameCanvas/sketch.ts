@@ -67,7 +67,9 @@ async function sketch(s: any): Promise<any> {
         pOppo.barY = pos;
       });
     }
-    s.rectMode(s.CENTER);
+    s.frameRate(50);
+    s.noStroke();
+    s.textAlign(s.CENTER, s.CENTER);
   }
   /**
    * SKETCH DRAW
@@ -93,6 +95,8 @@ async function sketch(s: any): Promise<any> {
     s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen));
     s.fill(pOppo.color);
     s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen));
+    ball.pos[0] += ball.delta[0] * 2;
+    ball.pos[1] += ball.delta[1] * 2;
     s.fill(game.ball.color);
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
   }

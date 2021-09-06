@@ -109,9 +109,10 @@ function socketInit(url: string, gameId: string, vue: any): void {
     console.log("LOG: foundSearchOppoTC");
     window.$nuxt.$router.push('/game/' + gameId); // Redirect client
   });
-  socket.on("startGameTC", () => {
+  socket.on("startGameTC", (ballDelta: Array<number>) => {
     console.log("LOG: startGameTC");
     vue.$data.game.state = "started";
+    vue.$data.game.ball.delta = ballDelta;
     vue.startGame();
   });
 }

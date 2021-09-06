@@ -59,9 +59,17 @@ export class gameGateway {
    */
 
   startGame(client: Socket, game: Game): void {
-    client.emit("startGameTC");
+    let ballDelta: Array<number> = new Array();
+
+    ballDelta[0] = Math.random();
+    if (Math.round(Math.random())) { ballDelta[0] = -ballDelta[0] } // Add negative ranges between -1 and 0
+    ballDelta[1] = Math.random();
+    if (Math.round(Math.random())) { ballDelta[1] = -ballDelta[1] }
+    client.to(client.handshake.query.gameId).emit("startGameTC", ballDelta);
+    client.emit("startGameTC", ballDelta);
     game.state = "started";
     playingGames.push(game.id);
+    game.ball.delta = ballDelta;
   }
 
   // A client ask to get the entire game class. Or to create it if does not exists
@@ -101,8 +109,7 @@ export class gameGateway {
         game.opponentId = query.userId as string;
       }
       client.to(game.id).emit("playerJoinTC", {playerId: query.userId, player: player});
-      if (game.type === "matchmaking" && game.players.size === 2) {
-        client.to(query.gameId).emit("startGameTC");
+      if (game.type === "matchmaking" && game.players.size === 2 && game.state === "waiting") {
         this.startGame(client, game);
       }
     }
@@ -167,8 +174,7 @@ export class gameGateway {
       game.players.get(query.userId).isReady = isReady;
       client.to(query.gameId).emit("updateReadyTC", {playerId: query.userId, isReady: isReady});
       if (game.players.get(game.creatorId).isReady && game.players.get(game.creatorId).isReady) {
-        client.to(query.gameId).emit("startGameTC");
-        client.emit("startGameTC");
+        this.startGame(client, game);
         game.state = "started";
       }
     }
@@ -229,18 +235,17 @@ export class gameGateway {
   /**
    * GAME LISTENERS
    */
-   @SubscribeMessage("posCreaTS")
-   posCrea(client: Socket, pos: number): void {
-     const query: any = client.handshake.query;
+  @SubscribeMessage("posCreaTS")
+  posCrea(client: Socket, pos: number): void {
+    const query: any = client.handshake.query;
 
-     client.to(query.gameId).emit("posCreaTC", pos);
-   }
+    client.to(query.gameId).emit("posCreaTC", pos);
+  }
 
-   @SubscribeMessage("posOppoTS")
-   posOppo(client: Socket, pos: number): void {
+  @SubscribeMessage("posOppoTS")
+  posOppo(client: Socket, pos: number): void {
     const query: any = client.handshake.query;
 
     client.to(query.gameId).emit("posOppoTC", pos);
-   }
-
+  }
 }

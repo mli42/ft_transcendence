@@ -166,7 +166,6 @@ class Game {
     this.creatorId = "";
     this.opponentId = "";
     this.creationDate = new Date();
-    console.log(this.creationDate);
     this.opponentIdFound = "";
     this.enabledPowerUps = new Array<string>();
   }
