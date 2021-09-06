@@ -2,6 +2,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { JoinedChannel } from './joined-channel.entity';
+import { RoleUser } from './role-user.entity'
 import { Message } from './message.entity';
 
 @Entity()
@@ -32,20 +33,17 @@ export class Channel {
 	@OneToMany(() => JoinedChannel, joinedChannel => joinedChannel.channel)
 	joinedUsers: JoinedChannel[];
 
+	@OneToMany(() => RoleUser, roleUser => roleUser.channel)
+	roleUser: RoleUser[];
+
+	@Column("simple-array", {default: ""})
+	adminUsers: string[];
+	
 	@OneToMany(() => Message, message => message.channel)
 	messages: Message[];
 
 	@Column("text", {default: ""})
 	owner: string;
-
-	@Column("simple-array", {default: ""})
-	adminUsers: string[];
-
-	@Column("simple-array", {default: ""})
-	banedUsers: string[];
-
-	@Column("simple-array", {default: ""})
-	mutedUsers: string[];
 
 	@Column("simple-array")
 	authPrivateChannelUsers: string[];

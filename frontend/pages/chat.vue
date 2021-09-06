@@ -184,7 +184,7 @@ export default Vue.extend({
       ban: this.moderation.banTime,
       mute: this.moderation.muteTime,
       block: this.moderation.blockedUser}
-      this.$user.socket.emit('leaveChannel', arg);
+      this.$user.socket.emit('autorisationChannel', arg);
     }, 
     sendMsg(): void {
       this.$user.socket.emit('newMessage',
