@@ -21,7 +21,7 @@
       <hr class="topHR" style="visibility: hidden;" />
 
       <!-- Current Games -->
-      <overflowContainer class="homeRight" width="726px;" heightMax="458px" label="Current games">
+      <overflowContainer width="726px" heightMax="458px" label="Current games">
       </overflowContainer>
     </div>
   </div>

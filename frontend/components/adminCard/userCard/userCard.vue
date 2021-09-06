@@ -29,7 +29,7 @@ export default Vue.extend({
       this.$emit('toggleBanUser');
     },
     emitAdminState(): void {
-      this.$emit(this.user.isBan ? 'promoteUser' : 'downgradeUser');
+      this.$emit('toggleAdminState');
     },
   },
   computed: {
