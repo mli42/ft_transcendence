@@ -20,6 +20,10 @@ function logout(context: any): Function {
   }
 }
 
+function sortCmp(userA: any, userB: any): number {
+  return userA.username.localeCompare(userB.username);
+}
+
 export default (context: any, inject: Function) => {
   const port: number = 3000;
   const loc: any = window.location;
@@ -33,5 +37,6 @@ export default (context: any, inject: Function) => {
     logout: logout(context),
     avatarBaseURL,
     socket,
+    sortCmp,
   });
 };

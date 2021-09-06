@@ -96,7 +96,7 @@ export default Vue.extend({
     addUserAdminList(user: any): void {
       let index = 0;
 
-      while (index < this.adminList.length && this.sortUsers(this.adminList[index], user) < 0) {
+      while (index < this.adminList.length && this.$user.sortCmp(this.adminList[index], user) < 0) {
         ++index;
       }
       this.adminList.splice(index, 0, user);
@@ -107,19 +107,16 @@ export default Vue.extend({
         this.adminList.splice(allAdminsIndex, 1);
       }
     },
-    sortUsers(userA: any, userB: any): number {
-      return userA.username.localeCompare(userB.username);
-    },
   },
   async fetch() {
     this.adminList = await this.$axios
     .get('/api/admin/allAdmin')
-    .then((resp: any) => resp.data.sort(this.sortUsers))
+    .then((resp: any) => resp.data.sort(this.$user.sortCmp))
     .catch(this.$mytoast.defaultCatch);
 
     this.allUsers = await this.$axios
     .get('/api/admin/allUsers')
-    .then((resp: any) => resp.data.sort(this.sortUsers))
+    .then((resp: any) => resp.data.sort(this.$user.sortCmp))
     .catch(this.$mytoast.defaultCatch);
   },
 });
