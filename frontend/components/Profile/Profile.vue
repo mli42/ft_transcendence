@@ -36,14 +36,12 @@
         <div> <div class="bullet lose"></div> <p>{{user.lost_game}} losses</p> </div>
         <div> <div class="bullet ratio"></div> <p>{{ratio}} ratio</p> </div>
       </div>
-      <div class="primaryContent GameHistoryContainer">
-        <p>Game History</p>
-        <hr />
-        <div class="GameHistory">
-          <!-- Replace with future v-for match card -->
-          <div class="placeholder"></div>
-        </div>
-      </div>
+      <!-- Game History -->
+      <overflowContainer width="664px" heightMax="458px"
+      label="Game History" style="margin: 32px">
+        <!-- Placeholder to replace -->
+        <div style="height: 1000px;"></div>
+      </overflowContainer>
     </div>
   </div>
 </template>

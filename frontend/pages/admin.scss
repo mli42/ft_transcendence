@@ -1,5 +1,4 @@
 @import '~/assets/Palette.scss';
-@import '~/components/Profile/Profile.scss';
 
 #adminMain {
   align-items: center;
@@ -17,7 +16,7 @@ h1 {
 }
 
 .stats {
-  margin-top: 16px;
+  margin: 16px 0;
   justify-content: space-evenly;
   width: 80%;
 }

@@ -41,17 +41,8 @@ div.modBtnContainer {
 .modBan { background: $pg-red; }
 .modPromote { background: $pg-dark-yellow; transform: rotate(45deg);}
 
-div.modBtnContainer,
-div.friendContainer {
+div.modBtnContainer {
   width: 256px;
-}
-
-p.NoFriend {
-  width: 200px;
-  font-size: 18px;
-  line-height: 18px;
-  text-align: center;
-  margin-bottom: 16px;
 }
 
 // Right side
@@ -68,7 +59,7 @@ div.primaryContent {
   margin: 32px;
 }
 
-div.friendContainer, div.primaryContent {
+div.primaryContent {
   /* Dark Blue */
   border: 3px solid $pg-dark-blue;
   box-sizing: border-box;
@@ -113,48 +104,4 @@ div.bullet.lose {
 
 div.bullet.ratio {
   background-color: $pg-white;
-}
-
-// Game History
-
-div.friendContainer,
-div.GameHistoryContainer {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  height: auto;
-}
-
-div.friendContainer p, div.GameHistoryContainer p {
-  margin-top: 16px;
-}
-
-div.friendContainer hr, div.GameHistoryContainer hr {
-  margin: 16px 0;
-}
-
-div.friendContainer hr,
-div.GameHistoryContainer hr {
-  border: 1px solid $pg-blue;
-  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-  border-radius: 5px;
-}
-
-div.friendContainer hr {
-  width: 190px;
-}
-
-div.GameHistoryContainer hr {
-  width: 536px;
-}
-
-div.friendList,
-div.GameHistory {
-  max-height: 384px;
-  overflow-y: auto;
-  width: 100%;
-}
-
-div.placeholder {
-  height: 1000px;
 }

@@ -1,0 +1,33 @@
+@import '~/assets/Palette.scss';
+
+.containerMain {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border: 3px solid $pg-dark-blue;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+}
+
+.containerMain p {
+  font-size: 24px;
+  line-height: 24px;
+  margin-top: 16px;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+.containerMain hr {
+  border: 1px solid $pg-blue;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  margin: 16px 0;
+  width: 80%;
+}
+
+.innerMain {
+  display: flex;
+  align-items: center;
+  overflow-y: auto;
+  width: 100%;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}

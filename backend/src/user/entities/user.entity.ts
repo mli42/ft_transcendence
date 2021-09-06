@@ -4,7 +4,6 @@ import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany, OneToMany }
 import { JoinedChannel } from '../../chat/entities/joined-channel.entity';
 import { ConnectedUser } from '../../chat/entities/connected-user.entity';
 import { Message } from '../../chat/entities/message.entity';
-import { RoleChannel } from '../../chat/entities/role-channel.entity';
 
 @Entity()
 export class User {
@@ -63,9 +62,6 @@ export class User {
 
   @OneToMany(() => Message, message => message.user)
   messages: Message[];
-
-  @OneToMany(() => RoleChannel, roleChannel => roleChannel.channel)
-	roleInChannel: RoleChannel[];
   
   @Column("boolean", {default: false})
   twoFactorAuth: boolean;

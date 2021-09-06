@@ -1,15 +1,13 @@
 <template>
-  <div class="friendContainer">
-    <p>Friends</p> <hr />
+  <overflowContainer width="256px" heightMax="384px" label="Friends">
     <p class="NoFriend" v-if="user.friends.length == 0">
       Search some profiles to add new friends!
     </p>
-    <div v-else class="friendList">
-      <div v-for="(userId, index) in user.friends" :key="index">
-        <ProfileFriendCard :userId="userId"></ProfileFriendCard>
-      </div>
+    <div v-else style="width: 100%;">
+      <ProfileFriendCard v-for="(userId, index) in user.friends" :key="index"
+      :userId="userId"></ProfileFriendCard>
     </div>
-  </div>
+  </overflowContainer>
 </template>
 
 <script lang="ts">
@@ -21,5 +19,12 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss" src="../Profile.scss">
+<style scoped lang="scss">
+p.NoFriend {
+  width: 200px;
+  font-size: 18px !important;
+  line-height: 18px !important;
+  text-align: center;
+  margin-bottom: 16px;
+}
 </style>

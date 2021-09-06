@@ -12,15 +12,9 @@ export class GameController {
     private gameService: GameService
   ) {}
 
-  @ApiOperation({summary: 'Get One Map'})
-  @ApiOkResponse({description: 'retrieve the map by sending its name as a parameter'})
-  @ApiParam({name: 'nameMap', required: true, description: 'name of the map'})
-  /*******/
-  @Get('/map/:nameMap')
-  getMap(@Res() res, @Param('nameMap') nameMap): Observable<object> {
-    return this.gameService.getMap(res, nameMap);
-  }
-
+  /**
+   * MAPS ROUTES
+   */
   @ApiOperation({summary: 'Get All Map'})
   @ApiOkResponse({description: 'returns a list of all available maps'})
   /*******/
@@ -30,6 +24,28 @@ export class GameController {
     return res.set({ 'Cache-Control': ['public', 'max-age=604800', 'immutable']}).json(this.gameService.getAllMap());
   }
 
+  @ApiOperation({summary: 'Get One Map'})
+  @ApiOkResponse({description: 'retrieve the map by sending its name as a parameter'})
+  @ApiParam({name: 'nameMap', required: true, description: 'name of the map'})
+  /*******/
+  @Get('/map/:nameMap')
+  getMap(@Res() res, @Param('nameMap') nameMap): Observable<object> {
+    return this.gameService.getMap(res, nameMap);
+  }
+
+  @ApiOperation({summary: 'Get Small Map'})
+	@ApiOkResponse({description: 'retrieve the map by sending its name as a parameter'})
+	@ApiParam({name: 'nameMap', required: true, description: 'name of the map'})
+  /*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/smallMap/:nameMap')
+	getSmallMap(@Res() res, @Param('nameMap') nameMap): Observable<object> {
+    return this.gameService.getSmallMap(res, nameMap);
+  }
+
+  /**
+   * GAMES ROUTES
+   */
   @ApiOperation({summary: 'Get All Playing Games'})
   @ApiOkResponse({description: 'returns a list of all playing maps'})
   /*******/
@@ -48,5 +64,4 @@ export class GameController {
   getGameClass(@Res({passthrough: true}) res, @Param('gameId') id): any {
     return (gamesMap.get(id));
   }
-
 }

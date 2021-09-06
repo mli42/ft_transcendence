@@ -10,7 +10,15 @@ export class GameService {
         return of(res.sendFile(join(process.cwd(), '../upload/map/' + name)));
     }
 
-    getAllMap(): string[] {
+    getSmallMap(@Res() res, name: string): Observable<object> {
+        let s: string = "_small";
+        let dotIndex: number = name.lastIndexOf(".");
+        let smallMap = name.substring(0, dotIndex) + s + name.substring(dotIndex);
+        return of(res.sendFile(join(process.cwd(), '../upload/map/' + smallMap)));
+    }
+
+    getAllMap(): object {
+        let fs = require('fs');
         let files = fs.readdirSync('../upload/map/');
 
         // Remove extension
