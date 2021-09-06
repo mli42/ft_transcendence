@@ -193,7 +193,7 @@ export class UserService {
 		return user.isBan;
 	}
 
-	async updateIsBan(bool: boolean, userId: string, userIsAdmin: User): Promise<boolean> {
+	async updateIsBan(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
 		let user: User = undefined;
 
 		if (userIsAdmin.isAdmin === false)
@@ -211,7 +211,6 @@ export class UserService {
 			console.log(e);
 			throw new InternalServerErrorException();
 		}
-		return true;
 	}
 
 	async getIsAdmin(userId: string, userIsAdmin: User): Promise<boolean> {
