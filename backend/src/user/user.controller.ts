@@ -286,13 +286,10 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'), UserAuth)
 	@Patch('/updateIsBan')
-	async updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req, @Res({passthrough: true}) res: Response): Promise<void> {
+	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): void {
 		const user: User = req.user;
 		let result: boolean = false;
-		result = await this.userService.updateIsBan(bool, userId, user);
-		if (result === true) {
-			this.logout(res);
-		}
+		this.userService.updateIsBan(bool, userId, user);
 	}
 
 	@ApiOperation({summary: 'Get Boolean isAdmin'})
