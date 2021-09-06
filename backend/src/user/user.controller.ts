@@ -287,10 +287,9 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'), UserAuth, AdminGuard)
 	@Patch('/updateIsBan')
-	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): void {
+	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req) {
 		const user: User = req.user;
-		let result: boolean = false;
-		this.userService.updateIsBan(bool, userId, user);
+		return this.userService.updateIsBan(bool, userId, user);
 	}
 
 	@ApiOperation({summary: 'Get Boolean isAdmin'})

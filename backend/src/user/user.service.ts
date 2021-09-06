@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, NotFoundException, UploadedFile, Res, InternalServerErrorException, Req, ConsoleLogger } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, UploadedFile, Res, InternalServerErrorException, Req, ConsoleLogger, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -196,8 +196,10 @@ export class UserService {
 	async updateIsBan(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
 		let user: User = undefined;
 
-		if (userIsAdmin.userId === userId)
-			throw new UnauthorizedException("Cannot change your own ban state");
+		if (userIsAdmin.userId === userId) {
+			throw new UnauthorizedException('Cannot change your own admin state');
+		}
+
 		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');
@@ -223,8 +225,10 @@ export class UserService {
 	async updateIsAdmin(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
 		let user: User = undefined;
 
-		if (userIsAdmin.userId === userId)
-			throw new UnauthorizedException("Cannot change your own admin state");
+		if (userIsAdmin.userId === userId) {
+			throw new UnauthorizedException('Cannot change your own admin state');
+		}
+
 		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');
