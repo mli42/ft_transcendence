@@ -206,6 +206,7 @@ export class gameGateway {
     if (searchList.size >= 1) {
       const playerCreaId: string = searchList.keys().next().value; // Selection of the first player who search for a game
       const playerCrea: {client: Socket, gameId: string, player: Player} = searchList.values().next().value; // Get data from it
+      console.log(gamesMap.entries());
       console.log(playerCrea.gameId);
       console.log(gamesMap.get(playerCrea.gameId));
       gamesMap.get(playerCrea.gameId).opponentIdFound = query.userId;

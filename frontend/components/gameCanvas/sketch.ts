@@ -1,6 +1,6 @@
 import { socket } from "./socket";
 import * as p5 from "p5";
-import { Mouse, Game, Player } from "./dataStructures";
+import { Mouse, Game, Player, Ball } from "./dataStructures";
 import Vue from "vue";
 
 export { sketchWrap };
@@ -33,12 +33,12 @@ async function sketch(s: any): Promise<any> {
   temp = game.players.get(game.creatorId);
   if (temp) {
     pCrea = temp;
-    pCrea.barX = 32 + 16; // Padding + bar width / 2
+    pCrea.barX = 16 + 8; // Padding + bar width
   }
   temp = game.players.get(game.opponentId);
   if (temp) {
     pOppo = temp;
-    pOppo.barX = 768 - (32 + 16);
+    pOppo.barX = 768 - (16 + 8); // Screen width - (bar width + padding)
   }
   if (vueInstance.$data.user.userId === game.creatorId ||
     vueInstance.$data.user.userId === game.opponentId) {
@@ -53,7 +53,6 @@ async function sketch(s: any): Promise<any> {
    * SKETCH SETUP
    */
   let canvasDom: any = document.getElementById("gameCanvas");
-  let graphic: p5.Graphics = s.createGraphics(768, 432);
   s.disableFriendlyErrors = true; // Optimize code
 
   s.setup = () => {
@@ -68,8 +67,7 @@ async function sketch(s: any): Promise<any> {
         pOppo.barY = pos;
       });
     }
-    graphic.rectMode(s.CENTER);
-    graphic.noStroke();
+    s.rectMode(s.CENTER);
   }
   /**
    * SKETCH DRAW
@@ -80,18 +78,29 @@ async function sketch(s: any): Promise<any> {
   let modifierDownCrea = () => { pCrea.barY += 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY) };
   let modifierUpOppo = () => { pOppo.barY -= 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY) };
   let modifierDownOppo = () => { pOppo.barY += 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY) };
+  let ball: Ball = game.ball;
+  let factX: number = canvasDom.offsetWidth / 768;
+  let factY: number = canvasDom.offsetHeight / 432;
+  let transX = (coord: number) => { return (coord * factX); };
+  let transY = (coord: number) => { return (coord * factY); };
+  let barWidthFacted: number = transX(8);
+  let ballSizeFacted: number = transX(16);
 
   s.draw = () => {
     s.clear();
-    graphic.clear();
     mod();
-    graphic.fill(pCrea.color);
-    graphic.rect(pCrea.barX, pCrea.barY, 8, pCrea.barLen);
-    graphic.fill(pOppo.color);
-    graphic.rect(pOppo.barX, pOppo.barY, 8, pOppo.barLen);
-    s.image(graphic, 0, 0, canvasDom.offsetWidth, canvasDom.offsetHeight);
+    s.fill(pCrea.color);
+    s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen));
+    s.fill(pOppo.color);
+    s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen));
+    s.fill(game.ball.color);
+    s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
   }
   s.windowResized = () => {
+    barWidthFacted = transX(8);
+    ballSizeFacted = transX(16);
+    factX = canvasDom.offsetWidth / 768;
+    factY = canvasDom.offsetHeight / 432;
     s.resizeCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
   }
   s.keyPressed = (event: any) => {
