@@ -211,9 +211,9 @@ export class gameGateway {
   @SubscribeMessage("stopSearchTS")
   stopSearch(client: Socket): void {
     const query: any = client.handshake.query;
-    this.logger.log("LOG: startSearchTS on " + query.gameId + " from " + query.username);
+    this.logger.log("LOG: stopSearchTS on " + query.gameId + " from " + query.username);
 
-    searchList.delete(query.handshake.query.userId);
+    searchList.delete(query.userId);
   }
 
   /**

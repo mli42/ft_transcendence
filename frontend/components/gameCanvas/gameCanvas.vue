@@ -181,6 +181,8 @@ export default Vue.extend({
         if (type === "matchmaking") {
           this.tabTypesIndex = 0;
         } else if (type === "private") {
+          if (this.mainBtn.isLoading === true)
+            this.btnActionSearchStop();
           this.tabTypesIndex = 1;
         }
         if (this.game.opponentId != "") {
@@ -329,6 +331,7 @@ export default Vue.extend({
       console.log("LOG: button action search stop");
       this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       this.mainBtn.resetHover(); // Delete actions when the client hover the button
+      this.mainBtn.isLoading = false;
       socket.emit("stopSearchTS", this.game.players.get(this.user.userId));
     },
     btnActionReady(): void {  // Action to send to the server the information about the current player is ready
