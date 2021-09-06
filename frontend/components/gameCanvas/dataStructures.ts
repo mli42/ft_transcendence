@@ -13,6 +13,9 @@ class Button {
   ico: string;        // Name of an icon in the button
   class: any;         // List of HTML classes of this object
   action: () => void; // function called when the btn is clicked
+  actionHoverEnter: () => void; // function called when the client hover the button
+  actionHoverLeave: () => void; // function called when the client hover the button
+  isLoading: boolean;
   uiPalette: IcolorPalette;
 
   private _color: string;
@@ -26,6 +29,9 @@ class Button {
     this.class = {'v-btn-content': false};
     this._color = this.uiPalette["white"];
     this.action = function () {};
+    this.actionHoverEnter = function () {};
+    this.actionHoverLeave = function () {};
+    this.isLoading = false;
   }
 
   public get color(): string {
@@ -49,6 +55,35 @@ class Button {
     } else {
       this.action = function () {};
     }
+  }
+
+  public setHoverSearch() {
+    this.actionHoverLeave = () => { 
+      this.isLoading = true;
+      this.color = "green";
+    };
+    this.actionHoverEnter = () => { 
+      this.isLoading = false;
+      this.txt = "Stop the research"
+      this.color = "red";
+    };
+  }
+
+  public setHoverReady() {
+    this.actionHoverLeave = () => { 
+      this.isLoading = true;
+      this.color = "green";
+    };
+    this.actionHoverEnter = () => { 
+      this.isLoading = false;
+      this.txt = "Unready"
+      this.color = "red";
+    };
+  }
+
+  public resetHover() {
+    this.actionHoverLeave = () => {};
+    this.actionHoverEnter = () => {};
   }
 }
 
@@ -87,15 +122,21 @@ class Ball {
 
 class Player {
   name: string;
+  barX: number;     // Init bar X. Will be set in the game if the player is crea or opponent
+  barY: number;     // Init bar Y. Same for two players
   color: string;
-  barLen: number; // in px
+  barLen: number;   // in px
   isReady: boolean; // is player ready to start a game ?
+  barSpeed: number; // Factor of the bar speed. Each keyboard input = 2px * barSpeed
 
   constructor() {
     this.name = "";
-    this.color = "#000000";
-    this.barLen = 160; // in px
+    this.barX = 0;
+    this.barY = 432 / 2;
+    this.color = "#FA163F";
+    this.barLen = 48; // in px
     this.isReady = false;
+    this.barSpeed = 1;
   }
 }
 
@@ -106,10 +147,12 @@ class Game {
   type: string;                 // Type of the game. Matchmaking | Private
   state: string;
   score: Array<number>;
-  creatorId: string;              // The userId of the game creator
   mapName: string;
   players: Map<string, Player>; // string -> userId
+  creatorId: string;              // The userId of the game creator
   opponentId: string;             // The userId of the opponenent;
+  creationDate: Date;
+  opponentIdFound: string;
   enabledPowerUps: Array<string>;
 
   constructor() {
@@ -118,10 +161,13 @@ class Game {
     this.type = "matchmaking";
     this.state = "waiting";
     this.score = [0, 0] as Array<number>;
-    this.creatorId = "";
     this.mapName = "tennis";
     this.players = new Map();
+    this.creatorId = "";
     this.opponentId = "";
+    this.creationDate = new Date();
+    console.log(this.creationDate);
+    this.opponentIdFound = "";
     this.enabledPowerUps = new Array<string>();
   }
 }

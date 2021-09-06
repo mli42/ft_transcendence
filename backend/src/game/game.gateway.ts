@@ -4,7 +4,11 @@ import { Game, Player } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { AuthGuard } from "@nestjs/passport";
 
-let gamesMap: Map<string, Game> = new Map(); // Relation between games and gameIds
+let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
+let playingGames: Array<string> = new Array();
+let searchList: Map<string, {client: Socket, gameId: string, player: Player}> = new Map(); // Relation between playerId and Player class
+
+export { playingGames, gamesMap };
 
 /**
  * Here you will found all message emitable by this server.
@@ -25,11 +29,39 @@ function getIdsFromRooms(rooms: Set<any>): Array<string> {
 @WebSocketGateway( { namespace: "/game", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class gameGateway {
 
+  /**
+   * LIST OF LOG FUNCTIONS
+   */
+
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger("gameGateway");
 
   afterInit(server: Server) {
     this.logger.log("game socket init !");
+  }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    this.logger.log("Client connected: " + client.handshake.query.username);
+  }
+
+  handleDisconnect(client: Socket) {
+    const game: Game = gamesMap.get(client.handshake.query.gameId as string);
+    this.logger.log(`Client disconnected: ${client.id}`);
+
+    if (game) {
+      if (game.state === "waiting")
+        this.playerLeave(client);
+    }
+  }
+
+  /**
+   * LIST OF PRE-GAME MESSAGE LISTENERS
+   */
+
+  startGame(client: Socket, game: Game): void {
+    client.emit("startGameTC");
+    game.state = "started";
+    playingGames.push(game.id);
   }
 
   // A client ask to get the entire game class. Or to create it if does not exists
@@ -69,6 +101,10 @@ export class gameGateway {
         game.opponentId = query.userId as string;
       }
       client.to(game.id).emit("playerJoinTC", {playerId: query.userId, player: player});
+      if (game.type === "matchmaking" && game.players.size === 2) {
+        client.to(query.gameId).emit("startGameTC");
+        this.startGame(client, game);
+      }
     }
   }
 
@@ -122,14 +158,19 @@ export class gameGateway {
   }
 
   @SubscribeMessage("updateReadyTS")
-  updateReady(client: Socket, payload: {userId: string, isReady: boolean}): void {
-    const gameId: string = client.handshake.query.gameId as string;
-    const game: Game = gamesMap.get(gameId);
-    this.logger.log("LOG: updateReadyTS on " + gameId + " from " + client.handshake.query.username);
+  updateReady(client: Socket, isReady: boolean ): void {
+    const query: any = client.handshake.query;
+    const game: Game = gamesMap.get(query.gameId);
+    this.logger.log("LOG: updateReadyTS on " + query.gameId + " from " + query.username);
 
     if (game) {
-      game.players.get(payload.userId).isReady = payload.isReady;
-      client.to(gameId).emit("updateReadyTC", payload);
+      game.players.get(query.userId).isReady = isReady;
+      client.to(query.gameId).emit("updateReadyTC", {playerId: query.userId, isReady: isReady});
+      if (game.players.get(game.creatorId).isReady && game.players.get(game.creatorId).isReady) {
+        client.to(query.gameId).emit("startGameTC");
+        client.emit("startGameTC");
+        game.state = "started";
+      }
     }
   }
 
@@ -157,11 +198,48 @@ export class gameGateway {
     }
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log("Client connected: " + client.handshake.query.username);
+  @SubscribeMessage("startSearchTS")
+  startSearch(client: Socket, player: Player): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: startSearchTS on " + query.gameId + " from " + query.username);
+
+    if (searchList.size >= 1) {
+      const playerCreaId: string = searchList.keys().next().value; // Selection of the first player who search for a game
+      const playerCrea: {client: Socket, gameId: string, player: Player} = searchList.values().next().value; // Get data from it
+      console.log(playerCrea.gameId);
+      console.log(gamesMap.get(playerCrea.gameId));
+      gamesMap.get(playerCrea.gameId).opponentIdFound = query.userId;
+      searchList.delete(playerCreaId);
+      playerCrea.client.emit("foundSearchCreaTC", { userId: query.userId, player });
+      client.emit("foundSearchOppoTC", playerCrea.gameId);
+    } else if (searchList.has(query.userId) == false) {
+      searchList.set(query.userId, {client: client, gameId: query.gameId, player: player});
+    }
   }
 
-  handleDisconnect(client: Socket) {
-   this.logger.log(`Client disconnected: ${client.id}`);
+  @SubscribeMessage("stopSearchTS")
+  stopSearch(client: Socket): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: stopSearchTS on " + query.gameId + " from " + query.username);
+
+    searchList.delete(query.userId);
   }
+
+  /**
+   * GAME LISTENERS
+   */
+   @SubscribeMessage("posCreaTS")
+   posCrea(client: Socket, pos: number): void {
+     const query: any = client.handshake.query;
+
+     client.to(query.gameId).emit("posCreaTC", pos);
+   }
+
+   @SubscribeMessage("posOppoTS")
+   posOppo(client: Socket, pos: number): void {
+    const query: any = client.handshake.query;
+
+    client.to(query.gameId).emit("posOppoTC", pos);
+   }
+
 }
