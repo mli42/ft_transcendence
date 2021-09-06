@@ -87,13 +87,13 @@ export default Vue.extend({
       })
       .then(() => {
         this.allUsers[index].isAdmin = !user.isAdmin;
-        user.isAdmin ? this.promoteUser(user) : this.downgradeUser(user);
+        user.isAdmin ? this.addUserAdminList(user) : this.delUserAdminList(user);
         const status: string = user.isAdmin ? 'promoted' : 'downgraded';
         this.$mytoast.succ(`User ${user.username} ${status}`);
       })
       .catch(this.$mytoast.defaultCatch);
     },
-    promoteUser(user: any): void {
+    addUserAdminList(user: any): void {
       let index = 0;
 
       while (index < this.adminList.length && this.sortUsers(this.adminList[index], user) < 0) {
@@ -101,7 +101,7 @@ export default Vue.extend({
       }
       this.adminList.splice(index, 0, user);
     },
-    downgradeUser(user: any): void {
+    delUserAdminList(user: any): void {
       const allAdminsIndex: number = this.findIndexUserID(this.adminList, user.userId);
       if (allAdminsIndex != -1) {
         this.adminList.splice(allAdminsIndex, 1);
