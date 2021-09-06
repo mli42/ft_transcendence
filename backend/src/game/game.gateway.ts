@@ -5,7 +5,10 @@ import { Socket, Server } from "socket.io";
 import { AuthGuard } from "@nestjs/passport";
 
 let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
+let playingGames: Array<string> = new Array();
 let searchList: Map<string, {client: Socket, gameId: string, player: Player}> = new Map(); // Relation between playerId and Player class
+
+export { playingGames, gamesMap };
 
 /**
  * Here you will found all message emitable by this server.
@@ -55,6 +58,12 @@ export class gameGateway {
    * LIST OF PRE-GAME MESSAGE LISTENERS
    */
 
+  startGame(client: Socket, game: Game): void {
+    client.emit("startGameTC");
+    game.state = "started";
+    playingGames.push(game.id);
+  }
+
   // A client ask to get the entire game class. Or to create it if does not exists
   @SubscribeMessage("fetchGameTS")
   fetchGame(client: Socket, gameId: string): void {
@@ -94,8 +103,7 @@ export class gameGateway {
       client.to(game.id).emit("playerJoinTC", {playerId: query.userId, player: player});
       if (game.type === "matchmaking" && game.players.size === 2) {
         client.to(query.gameId).emit("startGameTC");
-        client.emit("startGameTC");
-        game.state = "started";
+        this.startGame(client, game);
       }
     }
   }
@@ -198,7 +206,8 @@ export class gameGateway {
     if (searchList.size >= 1) {
       const playerCreaId: string = searchList.keys().next().value; // Selection of the first player who search for a game
       const playerCrea: {client: Socket, gameId: string, player: Player} = searchList.values().next().value; // Get data from it
-      console.log(playerCrea);
+      console.log(playerCrea.gameId);
+      console.log(gamesMap.get(playerCrea.gameId));
       gamesMap.get(playerCrea.gameId).opponentIdFound = query.userId;
       searchList.delete(playerCreaId);
       playerCrea.client.emit("foundSearchCreaTC", { userId: query.userId, player });

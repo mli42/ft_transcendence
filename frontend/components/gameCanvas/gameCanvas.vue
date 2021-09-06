@@ -2,8 +2,6 @@
   <div data-app>
   <v-app>
     <div id="gameSettings" v-if="this.isPreGameDisplayed">
-      <v-btn v-on:click="isGameDisplayedNeg">SHOW/HIDE THE GAME</v-btn>
-      <hr>
       <h1>User settings</h1>
       <!-- GAME TYPE SELECTION -->
       <div id="type">
