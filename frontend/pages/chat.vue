@@ -38,7 +38,7 @@
         <div class="chatfield">
           <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
             <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
-              <Iconify v-if="isAdmin() === true" class="imgIcone" iconName="carbon-send-alt"></Iconify>
+              <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
             </div>
         </div>
       </div>
@@ -220,6 +220,12 @@ export default Vue.extend({
     },
     isAdmin(): Boolean{
       if (this.currentChannel.adminUsers.indexOf(this.currentUser.userId) != -1 || this.currentChannel.owner === this.currentUser.userId)
+        return true;
+      else
+        return false;
+    },
+    isModerator(): Boolean{
+      if (this.currentChannel.adminUsers.indexOf(this.currentMemberMod.userId) != -1 || this.currentChannel.owner === this.currentMemberMod.userId)
         return true;
       else
         return false;

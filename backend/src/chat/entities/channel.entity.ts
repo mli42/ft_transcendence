@@ -36,7 +36,7 @@ export class Channel {
 	@OneToMany(() => RoleUser, roleUser => roleUser.channel)
 	roleUser: RoleUser[];
 
-	@Column("simple-array", {default: ""})
+	@Column("simple-array", {default: []})
 	adminUsers: string[];
 	
 	@OneToMany(() => Message, message => message.channel)
