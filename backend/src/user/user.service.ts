@@ -185,8 +185,8 @@ export class UserService {
 	async getIsBan(userId: string, userIsAdmin: User): Promise<boolean> {
 		let user: User = undefined;
 
-		if (userIsAdmin.isAdmin === false)
-			throw new UnauthorizedException('You aren\'t an administrator');
+		// if (userIsAdmin.isAdmin === false)
+		// 	throw new UnauthorizedException('You aren\'t an administrator');
 		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');
@@ -196,8 +196,6 @@ export class UserService {
 	async updateIsBan(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
 		let user: User = undefined;
 
-		if (userIsAdmin.isAdmin === false)
-			throw new UnauthorizedException('You aren\'t an administrator');
 		if (userIsAdmin.userId === userId)
 			throw new UnauthorizedException("Cannot change your own ban state");
 		user = await this.usersRepository.findOne({userId: userId});
@@ -216,8 +214,6 @@ export class UserService {
 	async getIsAdmin(userId: string, userIsAdmin: User): Promise<boolean> {
 		let user: User = undefined;
 
-		if (userIsAdmin.isAdmin === false)
-			throw new UnauthorizedException('You aren\'t an administrator');
 		user = await this.usersRepository.findOne({userId: userId});
 		if (!user)
 			throw new NotFoundException('No user found');
@@ -227,8 +223,6 @@ export class UserService {
 	async updateIsAdmin(bool: boolean, userId: string, userIsAdmin: User): Promise<void> {
 		let user: User = undefined;
 
-		if (userIsAdmin.isAdmin === false)
-			throw new UnauthorizedException('You aren\'t an administrator');
 		if (userIsAdmin.userId === userId)
 			throw new UnauthorizedException("Cannot change your own admin state");
 		user = await this.usersRepository.findOne({userId: userId});

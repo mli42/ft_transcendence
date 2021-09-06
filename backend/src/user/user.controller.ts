@@ -15,6 +15,7 @@ import { Response, Request } from 'express';
 import { join } from "path";
 import multer = require("multer");
 import { UserAuth } from "./guards/userAuth.guard";
+import { AdminGuard } from "./guards/admin.guard";
 
 type validMimeType =  'image/png' | 'image/jpg' | 'image/jpeg' | 'image/gif'
 
@@ -265,7 +266,7 @@ export class UserController {
 
 	@ApiOperation({summary: 'Get Boolean isBan'})
 	/*******/
-	@UseGuards(AuthGuard('jwt'), UserAuth)
+	@UseGuards(AuthGuard('jwt'), UserAuth, AdminGuard)
 	@Get('/isBan')
 	getIsBan(@Query('userId') userId: string, @Req() req): Promise<boolean> {
 		const user: User = req.user;
@@ -284,7 +285,7 @@ export class UserController {
 		}
 	})
 	/*******/
-	@UseGuards(AuthGuard('jwt'), UserAuth)
+	@UseGuards(AuthGuard('jwt'), UserAuth, AdminGuard)
 	@Patch('/updateIsBan')
 	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): void {
 		const user: User = req.user;
@@ -294,7 +295,7 @@ export class UserController {
 
 	@ApiOperation({summary: 'Get Boolean isAdmin'})
 	/*******/
-	@UseGuards(AuthGuard('jwt'), UserAuth)
+	@UseGuards(AuthGuard('jwt'), UserAuth, AdminGuard)
 	@Get('/isAdmin')
 	getIsAdmin(@Query('userId') userId: string, @Req() req): Promise<boolean> {
 		const user: User = req.user;
@@ -313,7 +314,7 @@ export class UserController {
 		}
 	})
 	/*******/
-	@UseGuards(AuthGuard('jwt'), UserAuth)
+	@UseGuards(AuthGuard('jwt'), UserAuth, AdminGuard)
 	@Patch('/updateIsAdmin')
 	updateIsAdmin(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
 		const user: User = req.user;
