@@ -1,14 +1,12 @@
 <template>
-  <v-app dark>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
-    <NuxtLink to="/">
-      Home page
-    </NuxtLink>
+  <v-app id="errMain">
+    <div class="errMain flexAlignCol">
+    <h1>{{ errMessage }}</h1>
+    <img alt="Sad cat" class="funImg" src="https://images.unsplash.com/photo-1525785967371-87ba44b3e6cf">
+    <p class="homeLink">
+      <NuxtLink to="/">Return to home page</NuxtLink>
+    </p>
+    </div>
   </v-app>
 </template>
 
@@ -23,27 +21,18 @@ export default Vue.extend({
       default: null
     }
   },
-  data () {
-    return {
-      pageNotFound: '404 Not Found',
-    }
-  },
   head (): object {
-    const title = this.error.statusCode === 404 ? this.pageNotFound : this.otherError;
     return {
-      title,
+      title: this.errMessage,
     };
   },
   computed: {
-    otherError(): string {
-      return this?.error?.message || 'An error occurred';
+    errMessage(): string {
+      return this.error.statusCode === 404 ? '404 Not Found' : (this?.error?.message || 'An error occurred');
     },
   },
 });
 </script>
 
-<style scoped>
-h1 {
-  font-size: 20px;
-}
+<style scoped lang="scss" src="./error.scss">
 </style>
