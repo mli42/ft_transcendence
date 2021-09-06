@@ -85,16 +85,19 @@ export default Vue.extend({
     },
     downgradeUser(user: any, index: number): void {
     },
+    sortUsers(userA: any, userB: any): number {
+      return userA.username.localeCompare(userB.username);
+    },
   },
   async fetch() {
     this.adminList = await this.$axios
     .get('/api/admin/allAdmin')
-    .then((resp: any) => resp.data)
+    .then((resp: any) => resp.data.sort(this.sortUsers))
     .catch(this.$mytoast.defaultCatch);
 
     this.allUsers = await this.$axios
     .get('/api/admin/allUsers')
-    .then((resp: any) => resp.data)
+    .then((resp: any) => resp.data.sort(this.sortUsers))
     .catch(this.$mytoast.defaultCatch);
   },
 });
