@@ -12,11 +12,10 @@ function adminGuard(context: any, user: any): void {
 export default async function (context: any) {
   if (context.store.state.isLogged == false) {
     if (context.$user.socket !== null) {
+      context.$user.socket.off('userConnected');
       context.$user.socket.emit('disconnectUser');
       // console.log("My socket", context.$user.socket);
-      setTimeout(() => {
-        context.$user.socket = null;
-      }, 500);
+      setTimeout(() => { context.$user.socket = null; }, 500);
     }
     return;
   }
@@ -40,6 +39,9 @@ export default async function (context: any) {
         userId: user.userId,
         username: user.username,
       },
+    });
+    context.$user.socket.on('userConnected', (users: any) => {
+      context.store.commit('updateConnectedUsers', users);
     });
   }
 };

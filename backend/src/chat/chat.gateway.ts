@@ -170,8 +170,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
 
-    userStatus(client: Socket) {
-        let userConnected = this.connectedUserService.userStatus();
+    async userStatus(client: Socket) {
+        let userConnected = await this.connectedUserService.userStatus();
         return this.server.emit('userConnected', userConnected);
     }
 
