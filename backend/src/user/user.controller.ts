@@ -287,7 +287,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'), UserAuth, AdminGuard)
 	@Patch('/updateIsBan')
-	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req) {
+	updateIsBan(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateIsBan(bool, userId, user);
 	}

@@ -197,7 +197,7 @@ export class UserService {
 		let user: User = undefined;
 
 		if (userIsAdmin.userId === userId) {
-			throw new UnauthorizedException('Cannot change your own admin state');
+			throw new UnauthorizedException('Cannot change your own banned state');
 		}
 
 		user = await this.usersRepository.findOne({userId: userId});
