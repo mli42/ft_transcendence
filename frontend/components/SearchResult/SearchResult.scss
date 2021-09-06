@@ -12,8 +12,9 @@
     height: 200px;
     padding: 16px;
     background-color: $pg-dark-blue;
-    position:relative;
+    position: relative;
     border-radius: 0px 0px 10px 10px;
+    overflow: auto;
 }
 
 .search input {
@@ -36,4 +37,30 @@
 .search img{
     width: 20px;
     height: 20px;
+}
+
+ul {
+    list-style: none;
+}
+
+li{
+    display: flex;
+    margin: 16px;
+    padding: 8px;
+    border-radius: 10px;
+}
+
+li:hover{
+    background-color: $pg-blue;
+}
+
+li p{
+    margin: auto 16px;
+}
+
+
+
+.pp{
+    width: 30px;
+    height: 30px;
 }

@@ -1,12 +1,15 @@
 <template>
     <div class="content">
         <div class="search flexHVcenter">
-        <input  type="text" name="mysearch" id="mysearch" v-model="searchName">
-        <div class="loop flexHVcenter" @click="showResult = true, fetchData() "><img src="~/assets/img/loop.png"></div>
+          <input  type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false">
+          <div class="loop flexHVcenter" @click="showResult = true, fetchData()"><img src="~/assets/img/loop.png"></div>
         </div>
-        <ul v-if="showResult" class="result" v-click-outside="showResult = false">
-            <li v-for="(item, index) in result" :key="index">
-                {{item}}
+        <ul v-if="showResult" class="result">
+            <li v-for="(user, index) in result" :key="index" @click="joinUserChannel(user); showResult = false">
+              <div class="pp">
+                <Avatar :user="user"></Avatar>
+              </div>
+                <p>{{user.username}}</p>
             </li>
         </ul>
     </div>
@@ -14,6 +17,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import {User} from '~/types/chatTypes';
 
 export default Vue.extend({
   name: 'search',
@@ -22,17 +26,19 @@ export default Vue.extend({
         showResult: false as boolean,
         searchName: '' as string,
         todisplay: [] as string[],
-        result: [] as string[],
+        result: [] as User[],
     };
   },
-  props: ['channels'],
+  props: ['friends', 'joinUserChannel'],
   methods: {
-    // fetchData(): void{
-    //     const result = this.channels.filter(el => console.log(el));
-    //     // this.result = result.map((el: string) => el.channelName);
-    // },
-  }
-  // el.channelName.startsWith(this.searchName) == true
+    fetchData(): void{
+        this.result = []
+        this.friends.filter((el: User) => {
+        if (el.username.startsWith(this.searchName) == true)
+          this.result.push(el)});
+        console.log(this.result);
+    },
+  },
 });
 </script>
 

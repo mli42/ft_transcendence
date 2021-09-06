@@ -1,7 +1,7 @@
 <template>
   <div class="content flexHVcenter">
     <div class="connected">
-      <SearchResult  :channels="channels"></SearchResult>
+      <SearchResult :friends="friends" :joinUserChannel="joinUserChannel"></SearchResult>
       <ul class="listChannel">
         <li v-for="(item, index) in channels" :key="index">
           <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
@@ -38,7 +38,7 @@
         <div class="chatfield">
           <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
             <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
-              <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
+              <Iconify v-if="isAdmin() === true" class="imgIcone" iconName="carbon-send-alt"></Iconify>
             </div>
         </div>
       </div>
@@ -61,7 +61,7 @@
         <p class="v-btn-content">Create</p>
       </v-btn>
     </SettingModal>
-    <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
+    <!-- <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
       <h1 id="settingModal">Channel Settings</h1>
       <div class="visibility">
         <input type="radio" name="privateChange" >
@@ -78,7 +78,7 @@
       <v-btn class="DoneBtn" @click="modalBool.showSettings = false">
         <p class="v-btn-content">Apply changes</p>
       </v-btn>
-    </SettingModal>
+    </SettingModal> -->
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
       <h1 id="settingModal">Join Channel</h1>
       <ModalInput  name="Channel password :" v-model.lazy="password"  placeHolder="" :isPassword="true" :ispublic="true"></ModalInput>
@@ -144,7 +144,7 @@ export default Vue.extend({
         blockedUser: false as boolean,
       },
       selectedChannel: 0 as number,
-      friends: [],
+      friends: [] as User[],
       password: '' as string,
       currentMemberMod: {} as User,
     }
@@ -224,6 +224,9 @@ export default Vue.extend({
       else
         return false;
     },
+    joinUserChannel(user: User): void{
+      console.log("je veux parler a mon copain ", user.username);
+    }
   },
   mounted() {
     this.$user.socket.on("messageAdded", (data: any) => {
