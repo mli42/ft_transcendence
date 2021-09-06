@@ -1,8 +1,8 @@
 <template>
-  <div class="containerMain" :style="mainStyle">
+  <div class="containerMain">
     <p>{{label}}</p>
     <hr />
-    <div class="innerMain flexAlignCol">
+    <div class="innerMain flexAlignCol" :style="mainStyle">
       <slot></slot>
     </div>
   </div>
