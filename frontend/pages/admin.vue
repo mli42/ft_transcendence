@@ -10,12 +10,26 @@
       <div class="oneStat flexHVcenter"> <p># of Users: {{allUsers.length}}</p> </div>
     </div>
 
+    <template v-if="$fetchState.pending == false">
     <!-- List of admins -->
-    <overflowContainer v-if="$fetchState.pending == false"
-    width="664px" heightMax="458px" label="List of administrators">
+    <overflowContainer
+    width="664px" heightMin="250px" heightMax="458px" label="List of administrators">
       <adminCard v-for="(user, index) in adminList" :key="index"
-      :user="user" @downgradeUser="downgradeUser(user, index)"></adminCard>
+      :user="user" @downgradeAdmin="downgradeAdmin(user, index)"></adminCard>
     </overflowContainer>
+
+    <hr style="margin: 16px; visibility: hidden;" />
+
+    <!-- List of users -->
+    <overflowContainer
+    width="664px" heightMin="250px" heightMax="458px" label="List of users">
+      <adminCardUserCard v-for="(user, index) in allUsers" :key="index"
+      :user="user" @toggleBanUser="toggleBanUser(user, index)"
+      @promoteUser="promoteUser(user, index)" @downgradeUser="downgradeUser(user, index)"
+      ></adminCardUserCard>
+    </overflowContainer>
+    <hr style="margin: 16px; visibility: hidden;" />
+    </template>
 
   </div>
   </div>
@@ -38,15 +52,38 @@ export default Vue.extend({
     };
   },
   methods: {
-    downgradeUser(user: any, index: number): void {
+    findIndexUserID(array: any, userId: string): number {
+      const index: number = array.findIndex((findUser: any) => findUser.userId === userId);
+      return index;
+    },
+    downgradeAdmin(user: any, index: number): void {
       this.$axios.patch(`/api/user/updateIsAdmin?userId=${user.userId}`, {
         toggle: false,
       })
       .then(() => {
         this.$mytoast.succ(`User ${user.username} downgraded`);
         this.adminList.splice(index, 1);
+        const allUsersIndex: number = this.findIndexUserID(this.allUsers, user.userId);
+        if (allUsersIndex != -1) {
+          this.allUsers[allUsersIndex].isAdmin = false;
+        }
       })
       .catch(this.$mytoast.defaultCatch);
+    },
+    toggleBanUser(user: any, index: number): void {
+      this.$axios.patch(`/api/user/updateIsBan?userId=${user.userId}`, {
+        toggle: !user.isBan,
+      })
+      .then(() => {
+        this.allUsers[index].isBan = !user.isBan;
+        const status: string = user.isBan ? 'banned' : 'un-banned';
+        this.$mytoast.succ(`User ${user.username} ${status}`);
+      })
+      .catch(this.$mytoast.defaultCatch);
+    },
+    promoteUser(user: any, index: number): void {
+    },
+    downgradeUser(user: any, index: number): void {
     },
   },
   async fetch() {
