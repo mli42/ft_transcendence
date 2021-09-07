@@ -80,9 +80,12 @@ async function sketch(s: any): Promise<any> {
         game.score[0]++;
       }
     });
+    socket.on("newRoundTC", (delta: Array<number>) => {
+      ball.delta = delta;
+      ball.pos = [768 / 2, 432 / 2];
+    });
     s.frameRate(50);
     s.noStroke();
-    s.textAlign(s.CENTER, s.CENTER);
   }
   /**
    * SKETCH DRAW
@@ -113,8 +116,7 @@ async function sketch(s: any): Promise<any> {
     if (ball.pos[1] - (ball.size / 2) < 0 || ball.pos[1] + (ball.size / 2) > 432) { // top & bot collision
       ball.delta[1] *= -1;
     } else if (ball.pos[0] - (ball.size / 2) < 0 || ball.pos[0] + (ball.size / 2) > 768) {
-      ball.pos[0] = 768 / 2;
-      ball.pos[1] = 432 / 2;
+      ball.pos = [768 / 2, 432 / 2];
       ball.delta = [0, 0];
       socket.emit("pointTS", (ball.pos[0] - (ball.size / 2) < 0)); // If it's true, oppo win a point, if else it's crea that win;
     }
