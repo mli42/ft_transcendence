@@ -18,7 +18,7 @@ export default Vue.extend({
       return `${this.$user.avatarBaseURL}/${this.user.profile_picture}`;
     },
     title(): string {
-      return `is ${this.user.status}`;
+      return (this.isConnected) ? 'is Online' : 'is Offline';
     },
     statusClass(): Object {
       return {
@@ -29,8 +29,11 @@ export default Vue.extend({
     },
     statusStyle(): Object {
       return {
-        background: (this.user.status == 'Offline' ? 'grey' : 'green'),
+        background: (this.isConnected ? 'green' : 'grey'),
       };
+    },
+    isConnected(): boolean {
+      return (this.$store.state.connectedUsers.includes(this.user.userId));
     },
   },
   props: {

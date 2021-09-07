@@ -4,18 +4,21 @@ enum elogState {
   loggedout,
 };
 
-function isLoginCatch(err: any): elogState {
+function isLoginCatch(context: any, err: any): elogState {
   if (err.response.data.message === 'need 2FA')
     return elogState.need2FA;
+  if (err.response.status == 403) {
+    context.$mytoast.defaultCatch(err);
+  }
   return elogState.loggedout;
 }
 
 export default async function (context: any) {
-  const isLoginPage = (context.route.fullPath === '/login');
+  const isLoginPage: boolean = (context.route.fullPath === '/login');
   const is2faPage: boolean = (context.route.fullPath === '/authentification');
   const isLogged: elogState = await context.app.$axios.get('/api/user/isLogin')
   .then(() => elogState.logged)
-  .catch(isLoginCatch);
+  .catch((err: any) => isLoginCatch(context, err));
 
   context.store.commit('updateLogState', (isLogged === elogState.logged));
 

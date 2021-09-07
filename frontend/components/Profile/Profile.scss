@@ -37,9 +37,9 @@ div.modBtnContainer {
   margin-bottom: 32px;
 }
 
-.modAddFriend { background: $pg-green; }
-.modBan { background: $pg-red; }
-.modPromote { background: $pg-dark-yellow; transform: rotate(45deg);}
+.modAddFriend { background: $pg-green !important; }
+.modBan { background: $pg-red !important; }
+.modPromote { background: $pg-dark-yellow !important; transform: rotate(45deg);}
 
 div.modBtnContainer {
   width: 256px;

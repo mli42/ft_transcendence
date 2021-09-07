@@ -15,13 +15,14 @@ export class UserAuth implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const user: User = request.user;
 
-        if (user.twoFactorAuth === false)
-            return true;
+        if (user.isBan === true) {
+            throw new ForbiddenException('You are banned, you no longer have access to our site');
+        }
 
         let decode = jwt_decode(request.cookies.jwt);
-        if (decode['auth'] === false) {
+        if (decode['auth'] === false && user.twoFactorAuth === true) {
             throw new ForbiddenException('need 2FA');
         }
-        return true
+        return true;
     }
 }
