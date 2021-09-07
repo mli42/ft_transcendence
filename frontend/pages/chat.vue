@@ -35,7 +35,7 @@
             </li>
           </ul>
         </div>
-        <div class="chatfield" v-if="currentChannel.channelName != ''">
+        <div class="chatfield" v-if="currentChannel.channelName != '' && checkIfMute(currentChannel) === false">
           <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
             <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
               <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
@@ -153,6 +153,11 @@ export default Vue.extend({
   methods: {
     joinChannel(index: number): void{
       this.$user.socket.emit('leaveChannel');
+      if (this.checkIfBan(this.channels[index]) === true)
+      {
+        this.$mytoast.err(`no access to "${this.channels[index].channelName}" YOU'VE BEEN BANNED!!!`);
+        return;
+      }
       if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
       {
         this.modalBool.showPrivacy = true;
@@ -167,6 +172,11 @@ export default Vue.extend({
     sendPassword() {
       const arg = {channel: this.channels[this.selectedChannel],
       password: this.password};
+      // if (this.checkIfBan(this.channels[this.selectedChannel]) === true)
+      // {
+      //   this.$mytoast.err(`no access to "${this.channels[this.selectedChannel].channelName}" YOU'VE BEEN BANNED!!!`);
+      //   return;
+      // }
       this.$user.socket.emit('passwordChannel', arg, (data: any) => {
         if (data === false)
           this.modalBool.showPrivacy = false;
@@ -236,7 +246,32 @@ export default Vue.extend({
     },
     getModStatus(): void{
       this.moderation.newMod = this.isModerator();
-    }
+    },
+    checkIfBan(channel: Channel): boolean{
+      try
+      {
+        this.$user.socket.emit("checkRoleChannelBan", channel);
+        console.log('La');
+        return false;
+      }
+      catch (any)
+      {
+        console.log('error')
+        return true;
+      }
+      console.log('ICI');
+    },
+    checkIfMute(channel: Channel): boolean{
+      try
+      {
+        this.$user.socket.emit("checkRoleChannelMute", channel);
+        return false;
+      }
+      catch (e)
+      {
+        return true;
+      }
+    },
   },
   mounted() {
     this.$user.socket.on("messageAdded", (data: any) => {
@@ -258,13 +293,6 @@ export default Vue.extend({
       .then((resp: any) => {this.friends.push(resp.data);})
       .catch(() => console.log('Oh no'));
     });
-    if (this.currentChannel.channelName != '')
-    {
-      this.$user.socket.on("checkRoleChannel", (data: any) => {
-        console.log(data);
-    });
-
-    }
   },
   created() {
     this.$nuxt.$on('my-chat-event', (user: User) => {
