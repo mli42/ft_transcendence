@@ -4,7 +4,7 @@
           <input  type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false">
           <div class="loop flexHVcenter" @click="showResult = true, fetchData()"><img src="~/assets/img/loop.png"></div>
         </div>
-        <ul v-if="showResult" class="result">
+        <ul v-if="showResult" class="result" @click.self="showResult = false">
             <li v-for="(user, index) in result" :key="index" @click="joinUserChannel(user); showResult = false">
               <div class="pp">
                 <Avatar :user="user"></Avatar>
@@ -36,7 +36,6 @@ export default Vue.extend({
         this.friends.filter((el: User) => {
         if (el.username.startsWith(this.searchName) == true)
           this.result.push(el)});
-        console.log(this.result);
     },
   },
 });

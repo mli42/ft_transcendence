@@ -1,5 +1,5 @@
 <template>
-  <div class="friendContainer">
+  <div class="friendContainer" @click.prevent="getModStatus">
     <p>Members</p> <hr />
     <div class="friendList">
       <div v-for="(user, index) in users" :key="index">
@@ -20,7 +20,7 @@ export default Vue.extend({
       users: [] as User[],
     }
   },
-  props: ['channelUsers', 'public'],
+  props: ['channelUsers', 'public', 'getModStatus'],
   async fetch() {
     this.users = await this.$axios
     .get(`/api/admin/allUsers`)
