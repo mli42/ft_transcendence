@@ -14,12 +14,12 @@
       </div>
     </div>
     <div class="chatChamp boxHVcenter">
-      <div class="chatRoomName">
+      <div class="chatRoomName" v-if="currentChannel.channelName != ''">
         <div class="flexAlignRow">
           <img class="chanelImg" src="~/assets/img/chatbubble.svg">
           <p> {{ currentChannel.channelName }} </p>
         </div>
-        <div class="settingBtn flexHVcenter">
+        <div class="settingBtn flexHVcenter" v-if="isAdmin() === true">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
@@ -35,15 +35,15 @@
             </li>
           </ul>
         </div>
-        <div class="chatfield">
+        <div class="chatfield" v-if="currentChannel.channelName != ''">
           <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt">
             <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
               <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
             </div>
         </div>
       </div>
-      <div class="control">
-        <ChatMember :channelUsers="currentChannel.users" :public="currentChannel.publicChannel"></ChatMember>
+      <div class="control" v-if="currentChannel.channelName != ''">
+        <ChatMember :channelUsers="currentChannel.users" :public="currentChannel.publicChannel" :getModStatus="getModStatus"></ChatMember>
       </div>
     </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
@@ -89,9 +89,9 @@
     <SettingModal :hideModal="hideModal" v-if="modalBool.showMembersMod">
       <h1>{{ currentMemberMod.username }}</h1>
       <div class="avatar"><Avatar :user="currentMemberMod"></Avatar></div>
-      <div class="checkBoxePassword flexHVcenter" v-if="this.currentChannel.owner === this.currentUser.userId">
+      <div class="checkBoxeModerator flexHVcenter" v-if="this.currentChannel.owner === this.currentUser.userId">
         <input type="checkbox" name="addmoderator" v-model="moderation.newMod">
-        <label class="addPassword" for="addmoderator">Add this member to moderators</label>
+        <label class="addPassword" for="addmoderator">Moderator</label>
       </div>
       <DropdownChatMod toselect="Ban for (days):" :items="moderation.timer" action="ban" v-if="isAdmin() === true"></DropdownChatMod>
       <DropdownChatMod  toselect="Mute for (days):" :items="moderation.timer" action="mute"  v-if="isAdmin() === true"></DropdownChatMod>
@@ -117,6 +117,7 @@ export default Vue.extend({
   layout: 'default',
   data(): any {
     return {
+      bool: true as boolean,
       txt: '' as string,
       messages: [] as Message[],
       channels: [] as Channel[],
@@ -232,6 +233,9 @@ export default Vue.extend({
     },
     joinUserChannel(user: User): void{
       console.log("je veux parler a mon copain ", user.username);
+    },
+    getModStatus(): void{
+      this.moderation.newMod = this.isModerator();
     }
   },
   mounted() {
@@ -240,6 +244,7 @@ export default Vue.extend({
     });
     this.$user.socket.emit("displayChannel", (data: any) => {
       this.channels = data;
+      this.currentChannel = data[0];
     });
     this.$user.socket.on("channel", (data: any) => {
       this.channels = data;
@@ -253,6 +258,13 @@ export default Vue.extend({
       .then((resp: any) => {this.friends.push(resp.data);})
       .catch(() => console.log('Oh no'));
     });
+    if (this.currentChannel.channelName != '')
+    {
+      this.$user.socket.on("checkRoleChannel", (data: any) => {
+        console.log(data);
+    });
+
+    }
   },
   created() {
     this.$nuxt.$on('my-chat-event', (user: User) => {
