@@ -25,8 +25,7 @@ export class ChannelService {
 		if (name)
 			throw new UnauthorizedException('This channel name already exist');
 		channel.adminUsers = [];
-		// channel.banedUsers = [];
-		// channel.mutedUsers = [];
+		channel.blockUsers = [];
 		channel.authPrivateChannelUsers = [];
 		channel.owner = creator.userId;
 		if (publicChannel === false) {
@@ -104,61 +103,7 @@ export class ChannelService {
 		return true;
 	}
 
-	// async isBanUser(channel: ChannelI, user: User): Promise<boolean> {
-	// 	const userFound = channel.banedUsers.find(element => element === user.userId)
-	// 	if (userFound) {
-	// 		return true;
-	// 	}
-	// 	return false;
-	// }
 
-	// async addBanUser(channel: ChannelI, user: User) {
-	// 	if (await this.isBanUser(channel, user) === true) {
-	// 		throw new UnauthorizedException('This user is already ban');
-	// 	}
-	// 	channel.banedUsers.push(user.userId);
-	// 	try {
-	// 		await this.channelRepository.save(channel);
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 		throw new InternalServerErrorException('add an user');
-	// 	}
-	// }
-
-	// async removeBanUser(channel: ChannelI, user: User) {
-	// 	if (await this.isBanUser(channel, user) === false)
-	// 		return;
-	// 	const index = channel.banedUsers.indexOf(user.userId);
-	// 	channel.banedUsers.splice(index, 1);
-	// }
-
-	// async isMuteUser(channel: ChannelI, user: User): Promise<boolean> {
-	// 	const userFound = channel.mutedUsers.find(element => element === user.userId)
-	// 	if (userFound) {
-	// 		return true;
-	// 	}
-	// 	return false;
-	// }
-
-	// async addMuteUser(channel: ChannelI, user: User) {
-	// 	if (await this.isMuteUser(channel, user) === true) {
-	// 		throw new UnauthorizedException('This user is already ban');
-	// 	}
-	// 	channel.mutedUsers.push(user.userId);
-	// 	try {
-	// 		await this.channelRepository.save(channel);
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 		throw new InternalServerErrorException('add an user');
-	// 	}
-	// }
-
-	// async removeMuteUser(channel: ChannelI, user: User) {
-	// 	if (await this.isMuteUser(channel, user) === false)
-	// 		return;
-	// 	const index = channel.mutedUsers.indexOf(user.userId);
-	// 	channel.mutedUsers.splice(index, 1);
-	// }
 
 	async isAdminUser(channel: ChannelI, user: User): Promise<boolean> {
 		const userFound = channel.adminUsers.find(element => element === user.userId)
@@ -187,6 +132,37 @@ export class ChannelService {
 		const index = channel.adminUsers.indexOf(user.userId);
 		channel.adminUsers.splice(index, 1);
 	}
+
+
+
+	async isBlockUser(channel: ChannelI, user: User): Promise<boolean> {
+		const userFound = channel.blockUsers.find(element => element === user.userId)
+		if (userFound) {
+			return true;
+		}
+		return false;
+	}
+
+	async addBlockUser(channel: ChannelI, user: User) {
+		if (await this.isBlockUser(channel, user) === true) {
+			return;
+		}
+		channel.blockUsers.push(user.userId);
+		try {
+			await this.channelRepository.save(channel);
+		} catch (error) {
+			console.log(error);
+			throw new InternalServerErrorException('add an blocked user');
+		}
+	}
+
+	async removeBlockUser(channel: ChannelI, user: User) {
+		if (await this.isBlockUser(channel, user) === false)
+			return;
+		const index = channel.blockUsers.indexOf(user.userId);
+		channel.blockUsers.splice(index, 1);
+	}
+
 
 	// add or remove a user to private channel
 }

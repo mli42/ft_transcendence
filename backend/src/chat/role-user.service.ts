@@ -12,7 +12,49 @@ export class RoleUserService {
         private readonly roleUserRepository: Repository<RoleUser>
     ) {}
 
-    async create(role: RoleUserI): Promise<RoleUserI> {
-        return this.roleUserRepository.save(role);
+    async create(data:any) {
+        let { user, channel, ban, mute } = data;
+
+        if (ban > 0) {
+            let dateBan = new Date;
+            dateBan.setDate(dateBan.getDate() + ban);
+            ban = dateBan;
+        } else {
+            ban = null;
+        }
+        if (mute > 0) {
+            let dateMute = new Date;
+            dateMute.setDate(dateMute.getDate() + mute)
+            mute = dateMute;
+        } else {
+            mute = null;
+        }
+
+        const role: RoleUserI = {userId: user.userId, ban, mute, channel}
+        await this.roleUserRepository.save(role);
+    }
+
+    async findByUserId(userId: string): Promise<RoleUserI> {
+        return this.roleUserRepository.findOne({userId: userId});
+    }
+
+    async updateRole(role: RoleUserI, data: any) {
+        let { ban, mute } = data;
+        
+        if (ban > 0) {
+            let dateBan = new Date;
+            dateBan.setDate(dateBan.getDate() + ban);
+            role.ban = dateBan;
+        } else {
+            ban = null;
+        }
+        if (mute > 0) {
+            let dateMute = new Date;
+            dateMute.setDate(dateMute.getDate() + mute)
+            role.mute = dateMute;
+        } else {
+            mute = null;
+        }
+        await this.roleUserRepository.save(role);
     }
 }

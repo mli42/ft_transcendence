@@ -38,6 +38,9 @@ export class Channel {
 
 	@Column("simple-array", {default: []})
 	adminUsers: string[];
+
+	@Column("simple-array", {default: []})
+	blockUsers: string[];
 	
 	@OneToMany(() => Message, message => message.channel)
 	messages: Message[];
@@ -45,6 +48,6 @@ export class Channel {
 	@Column("text", {default: ""})
 	owner: string;
 
-	@Column("simple-array")
+	@Column("simple-array", {default: []})
 	authPrivateChannelUsers: string[];
 }

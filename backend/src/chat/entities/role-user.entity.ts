@@ -9,14 +9,11 @@ export class RoleUser {
 
 	@Column()
 	userId: string;
-
-    @Column("boolean", {default: false})
-    block: boolean;
     
-	@Column()
+	@Column({nullable: true, type: 'timestamptz'})
 	ban: Date;
 
-	@Column()
+	@Column({nullable: true, type: 'timestamptz'})
     mute: Date;
 
 	@ManyToOne(() => Channel, channel => channel.joinedUsers)
