@@ -134,12 +134,29 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         } else {
             this.channelService.removeBlockUser(channel, user);
         }
-        const roleFound: RoleUserI = await this.roleUserService.findByUserId(user.userId);
+        const roleFound: RoleUserI = await this.roleUserService.findUserByChannel(channel, user.userId);
         if (roleFound) {
             await this.roleUserService.updateRole(roleFound, data);
         }
         else {
             this.roleUserService.create(data);
+        }
+    }
+    @SubscribeMessage('checkRoleChannel')
+    async checkRoleForChannel(client: Socket, channel: ChannelI) {
+        const channelFound = await this.channelService.getChannel(channel.channelId);
+        const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
+        // console.log(userChannelRolesFound)
+        let date = new Date;
+        if (userChannelRolesFound && userChannelRolesFound.ban > date) {
+            throw new WsException('The user is ban of this channel');
+        } else { 
+            console.log("NOT BAN!")
+        }
+        if (userChannelRolesFound && userChannelRolesFound.mute > date) {
+            throw new WsException('The user is mute of this channel');
+        } else { 
+            console.log("NOT MUTE!")
         }
     }
 
@@ -164,7 +181,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* Join Channel *********************/
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
-        // creer un eventpour check si user ban ou mute 
         const channelFound = await this.channelService.getChannel(channel.channelId);
         if (channelFound.publicChannel === false && await this.channelService.isAuthPrivateChannel(channelFound, client.data.user) == false){
             console.log("FAUX")

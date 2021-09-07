@@ -34,10 +34,6 @@ export class RoleUserService {
         await this.roleUserRepository.save(role);
     }
 
-    async findByUserId(userId: string): Promise<RoleUserI> {
-        return this.roleUserRepository.findOne({userId: userId});
-    }
-
     async updateRole(role: RoleUserI, data: any) {
         let { ban, mute } = data;
         
@@ -56,5 +52,13 @@ export class RoleUserService {
             mute = null;
         }
         await this.roleUserRepository.save(role);
+    }
+
+    async findByUserId(userId: string): Promise<RoleUserI> {
+        return this.roleUserRepository.findOne({userId: userId});
+    }
+
+    async findUserByChannel(channel: ChannelI, userId: string): Promise<RoleUserI> {
+        return this.roleUserRepository.findOne({where: {channel: channel, userId: userId }});
     }
 }
