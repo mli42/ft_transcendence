@@ -67,6 +67,19 @@ async function sketch(s: any): Promise<any> {
         pOppo.barY = pos;
       });
     }
+    socket.on("ballTC", (payload: {deltaX: number, deltaY: number, posX: number, posY: number}) => {
+      ball.delta[0] = payload.deltaX;
+      ball.delta[1] = payload.deltaY;
+      ball.pos[0] = payload.posX;
+      ball.pos[1] = payload.posY;
+    });
+    socket.on("pointTC", (isCreatorLoose: boolean) => {
+      if (isCreatorLoose) {
+        game.score[1]++;
+      } else {
+        game.score[0]++;
+      }
+    });
     s.frameRate(50);
     s.noStroke();
     s.textAlign(s.CENTER, s.CENTER);
@@ -86,7 +99,7 @@ async function sketch(s: any): Promise<any> {
   let transX = (coord: number) => { return (coord * factX); };
   let transY = (coord: number) => { return (coord * factY); };
   let barWidthFacted: number = transX(8);
-  let ballSizeFacted: number = transX(16);
+  let ballSizeFacted: number = transX(ball.size);
 
   s.draw = () => {
     s.clear();
@@ -97,6 +110,14 @@ async function sketch(s: any): Promise<any> {
     s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen));
     ball.pos[0] += ball.delta[0] * 2;
     ball.pos[1] += ball.delta[1] * 2;
+    if (ball.pos[1] - (ball.size / 2) < 0 || ball.pos[1] + (ball.size / 2) > 432) { // top & bot collision
+      ball.delta[1] *= -1;
+    } else if (ball.pos[0] - (ball.size / 2) < 0 || ball.pos[0] + (ball.size / 2) > 768) {
+      ball.pos[0] = 768 / 2;
+      ball.pos[1] = 432 / 2;
+      ball.delta = [0, 0];
+      socket.emit("pointTS", (ball.pos[0] - (ball.size / 2) < 0)); // If it's true, oppo win a point, if else it's crea that win;
+    }
     s.fill(game.ball.color);
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
   }
