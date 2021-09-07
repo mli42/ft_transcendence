@@ -76,19 +76,11 @@ export class GameController {
 
   @ApiOperation({summary: 'Verifying a UUID'})
   @ApiOkResponse({description: 'returns true or false'})
-  @ApiBody({
-		schema: {
-			properties: {
-				uuid: {
-					type: 'string',
-				}
-			}
-		}
-	})
+  @ApiParam({name: 'uuid', required: true, description: 'uuid to check'})
   /*******/
   @UseGuards(AuthGuard('jwt'))
-  @Get('/isUuid')
-  isUuid(@Query('uuid') uuid: string): boolean {
+  @Get('/isUuid/:uuid')
+  isUuid(@Param('uuid') uuid: string): boolean {
     return this.gameService.isUuid(uuid);
   }
 }
