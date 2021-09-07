@@ -149,12 +149,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         // console.log(userChannelRolesFound)
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.ban > date) {
-            throw new WsException('The user is ban of this channel');
+            throw new WsException('ban');
         } else { 
             console.log("NOT BAN!")
         }
         if (userChannelRolesFound && userChannelRolesFound.mute > date) {
-            throw new WsException('The user is mute of this channel');
+            throw new WsException('mute');
         } else { 
             console.log("NOT MUTE!")
         }
