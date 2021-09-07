@@ -1,6 +1,6 @@
-import { Controller, Get, Param, Res, UseGuards, Header } from '@nestjs/common';
+import { Controller, Get, Param, Res, UseGuards, Header, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiOperation, ApiParam, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiOkResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { Observable, of } from "rxjs";
 import { GameService } from './game.service';
 import { playingGames, gamesMap } from "./game.gateway";
@@ -51,7 +51,7 @@ export class GameController {
   /*******/
   @UseGuards(AuthGuard('jwt'))
   @Get('/playingGames')
-  getPlayingGames(@Res({passthrough: true}) res): string[] {
+  getPlayingGames(): string[] {
     return (playingGames);
   }
 
@@ -61,7 +61,34 @@ export class GameController {
   /*******/
   @UseGuards(AuthGuard('jwt'))
   @Get('/playingGames/:gameId')
-  getGameClass(@Res({passthrough: true}) res, @Param('gameId') id): any {
+  getGameClass(@Param('gameId') id): any {
     return (gamesMap.get(id));
+  }
+
+  @ApiOperation({summary: 'Get UUID'})
+  @ApiOkResponse({description: 'returns UUID for the game ID'})
+  /*******/
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/uuid')
+  getUuid(): string {
+    return this.gameService.getUuid();
+  }
+
+  @ApiOperation({summary: 'Verifying a UUID'})
+  @ApiOkResponse({description: 'returns true or false'})
+  @ApiBody({
+		schema: {
+			properties: {
+				uuid: {
+					type: 'string',
+				}
+			}
+		}
+	})
+  /*******/
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/isUuid')
+  isUuid(@Query('uuid') uuid: string): boolean {
+    return this.gameService.isUuid(uuid);
   }
 }
