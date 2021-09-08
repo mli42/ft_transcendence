@@ -92,7 +92,7 @@
         </v-btn>
       </div>
     </div>
-    <div v-show="isGameDisplayed" id="gameCanvas" :style="gameCanvasStyle" class="flexHVcenter" >
+    <div v-show="isGameDisplayed" id="gameCanvas" >
     </div>
   </v-app>
   </div>
@@ -365,7 +365,10 @@ export default Vue.extend({
         this.isPreGameDisplayed = false;
         sketchWrap(this);
       }
-    }
+    },
+    bgImgURL(): string {
+      return `url(${this.$axios.defaults.baseURL}/api/game/map/${this.game.mapName.replace(' ', '-')}.jpeg)`;
+    },
   },
   computed: {
     isTabsEnabled: function () : boolean {
@@ -373,11 +376,6 @@ export default Vue.extend({
         return (false);
       }
       return (true);
-    },
-    gameCanvasStyle(): object {
-      return {
-        backgroundImage : `url(${this.$axios.defaults.baseURL}/api/game/map/${this.game.mapName.replace(' ', '-')}.jpeg)`,
-      };
     },
   },
   watch: {

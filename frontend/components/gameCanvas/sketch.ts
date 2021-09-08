@@ -7,6 +7,7 @@ export { sketchWrap };
 
 let vueInstance: any;
 let game: Game;
+let backgroundURL: string;
 let canvasWidth: number;
 let canvasHeight: number;
 
@@ -25,8 +26,9 @@ function updateCanvasDim(innerWidth: number, innerHeight: number): void {
   }
 }
 
-async function sketchWrap(vue: Vue) {
+async function sketchWrap(vue: any) {
   vueInstance = vue;
+  backgroundURL = vue.bgImgURL();
   game = vue.$data.game;
   const { default: P5 } = await import('p5');
   const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
@@ -74,7 +76,13 @@ async function sketch(s: any): Promise<any> {
   updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
 
   s.setup = () => {
-    s.createCanvas(canvasWidth, canvasHeight);
+    let myCanvas: any = s.createCanvas(canvasWidth, canvasHeight);
+    myCanvas.style('border', '2px dashed white');
+    myCanvas.style('position', 'relative');
+    myCanvas.style('margin', 'auto');
+    myCanvas.style('backgroundImage', backgroundURL);
+    myCanvas.style('background-size', '100% 100%'); // background-size: 100% 100%;
+
     if (vueInstance.$data.user.userId != game.creatorId) {  // Subscribe to bar player info
       socket.on("posCreaTC", (pos: number) => {
         pCrea.barY = pos;
