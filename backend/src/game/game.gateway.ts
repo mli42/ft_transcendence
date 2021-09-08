@@ -183,7 +183,7 @@ export class gameGateway {
     if (game) {
       game.players.get(query.userId).isReady = isReady;
       client.to(query.gameId).emit("updateReadyTC", {playerId: query.userId, isReady: isReady});
-      if (game.players.get(game.creatorId).isReady && game.players.get(game.creatorId).isReady) {
+      if (game.players.get(game.opponentId).isReady && game.players.get(game.creatorId).isReady) {
         this.startGame(client, game);
         game.state = "started";
       }
