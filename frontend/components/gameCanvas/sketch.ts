@@ -62,6 +62,7 @@ async function sketch(s: any): Promise<any> {
       if (ball.pos[0] - (ball.size / 2) >= pCrea.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] - (ball.size / 2) <= pCrea.barX + (BAR_WIDTH / 2)) {
         ball.delta[0] *= -1;
+        ball.speed *= 1.25;
         ball.color = pCrea.color;
         collBarChecker = collOppoChecker;
       }
@@ -73,6 +74,7 @@ async function sketch(s: any): Promise<any> {
       if (ball.pos[0] + (ball.size / 2) >= pOppo.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] + (ball.size / 2) <= pOppo.barX + (BAR_WIDTH / 2)) {
         ball.delta[0] *= -1;
+        ball.speed *= 1.25;
         ball.color = pOppo.color;
         collBarChecker = collCreaChecker;
       }
@@ -104,6 +106,7 @@ async function sketch(s: any): Promise<any> {
       } else {
         game.score[0]++;
       }
+      ball.speed = 5;
     });
     socket.on("newRoundTC", (delta: Array<number>) => {
       ball.delta = delta;
@@ -152,13 +155,14 @@ async function sketch(s: any): Promise<any> {
     s.fill(pOppo.color);
     s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen));
     collBarChecker();
-    ball.pos[0] += ball.delta[0] * 4;
-    ball.pos[1] += ball.delta[1] * 4;
+    ball.pos[0] += ball.delta[0] * ball.speed;
+    ball.pos[1] += ball.delta[1] * ball.speed;
     if (ball.pos[1] - (ball.size / 2) <= 0 || ball.pos[1] + (ball.size / 2) >= 432) { // top & bot collision
       ball.delta[1] *= -1;
     } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) { // left & right collision
       ball.pos = [768 / 2, 432 / 2];
       ball.delta = [0, 0];
+      ball.speed = 4;
       if (vueInstance.$data.user.userId === game.creatorId) {
         socket.emit("pointTS", (ball.pos[0] - (ball.size / 2) < 0)); // If it's true, oppo win a point, if else it's crea that win;
       }
@@ -174,7 +178,6 @@ async function sketch(s: any): Promise<any> {
     s.resizeCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
   }
   s.keyPressed = (event: any) => {
-    console.log(game.id);
     if (event.key === "ArrowUp") {
       if (vueInstance.$data.user.userId === game.creatorId) {
         mod = modifierUpCrea;

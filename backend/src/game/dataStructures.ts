@@ -27,7 +27,7 @@ class Ball {
   constructor() {
     this.pos = [768 / 2, 432 / 2];
     this.size = 16;
-    this.speed = 3;
+    this.speed = 5;
     this.color = "#DCE1E5";
     this.delta = [0, 0];
   }
