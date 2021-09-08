@@ -140,9 +140,11 @@ async function sketch(s: any): Promise<any> {
   let transY = (coord: number) => { return (coord * factY); };
   let barWidthFacted: number = transX(BAR_WIDTH);
   let ballSizeFacted: number = transX(ball.size);
-  
+
   s.draw = () => {
     s.clear();
+    s.textSize(40);
+    s.text(canvasDom.offsetWidth + "x" + canvasDom.offsetHeight, 20, 100);
     mod();
     s.fill(pCrea.color);
     s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen));
@@ -162,10 +164,10 @@ async function sketch(s: any): Promise<any> {
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
   }
   s.windowResized = () => {
-    barWidthFacted = transX(BAR_WIDTH);
-    ballSizeFacted = transX(16);
     factX = canvasDom.offsetWidth / 768;
     factY = canvasDom.offsetHeight / 432;
+    barWidthFacted = transX(BAR_WIDTH);
+    ballSizeFacted = transX(16);
     s.resizeCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
   }
   s.keyPressed = (event: any) => {
