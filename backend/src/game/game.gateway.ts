@@ -47,9 +47,13 @@ export class gameGateway {
 
   handleDisconnect(client: Socket) {
     const game: Game = gamesMap.get(client.handshake.query.gameId as string);
+    const query: any = client.handshake.query;
     this.logger.log(`Client disconnected: ${client.id}`);
 
     if (game) {
+      if (searchList.has(query.userId)) {
+        searchList.delete(query.userId as string);
+      }
       if (game.state === "waiting")
         this.playerLeave(client);
     }
