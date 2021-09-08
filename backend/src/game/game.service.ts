@@ -7,26 +7,19 @@ import * as fs from 'fs';
 export class GameService {
 
     getMap(@Res() res, name: string): Observable<object> {
-        return of(res.sendFile(join(process.cwd(), '../upload/map/' + name)));
+        return of(res.sendFile(join(process.cwd(), '../upload/map/standard/' + name)));
     }
 
     getSmallMap(@Res() res, name: string): Observable<object> {
-        let s: string = "_small";
+        let s: string = "-small";
         let dotIndex: number = name.lastIndexOf(".");
         let smallMap = name.substring(0, dotIndex) + s + name.substring(dotIndex);
-        return of(res.sendFile(join(process.cwd(), '../upload/map/' + smallMap)));
+        return of(res.sendFile(join(process.cwd(), '../upload/map/small/' + smallMap)));
     }
 
     getAllMap(): object {
         let fs = require('fs');
-        let files = fs.readdirSync('../upload/map/');
-
-        // Remove extension
-        // let i = 0;
-        // while (files[i] !== undefined) {
-        //     files[i] = files[i].split('.').slice(0, -1).join('.');
-        //     i++;
-        // }
+        let files = fs.readdirSync('../upload/map/standard/');
         return files;
     }
 }
