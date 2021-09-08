@@ -21,6 +21,7 @@ async function sketch(s: any): Promise<any> {
   let pOppo: Player = new Player(); // Opposent player
   let isAPlayer: boolean = false;   // Is true if the client is a player
   let msgBarTS: string;
+  const BAR_WIDTH: number = 8;
 
   /**
    * SKETCH INIT
@@ -33,12 +34,12 @@ async function sketch(s: any): Promise<any> {
   temp = game.players.get(game.creatorId);
   if (temp) {
     pCrea = temp;
-    pCrea.barX = 16 + 8; // Padding + bar width
+    pCrea.barX = 16 + BAR_WIDTH; // Padding + bar width
   }
   temp = game.players.get(game.opponentId);
   if (temp) {
     pOppo = temp;
-    pOppo.barX = 768 - (16 + 8); // Screen width - (bar width + padding)
+    pOppo.barX = 768 - (16 + BAR_WIDTH); // Screen width - (bar width + padding)
   }
   if (vueInstance.$data.user.userId === game.creatorId ||
     vueInstance.$data.user.userId === game.opponentId) {
@@ -54,6 +55,27 @@ async function sketch(s: any): Promise<any> {
    */
   let canvasDom: any = document.getElementById("gameCanvas");
   s.disableFriendlyErrors = true; // Optimize code
+  let collCreaChecker = function(): void { // Check if the ball collide to the crea paddle
+    if (ball.pos[1] >= pCrea.barY - (pCrea.barLen / 2) &&
+        ball.pos[1] <= pCrea.barY + (pCrea.barLen / 2)) { // Vertical check
+      if (ball.pos[0] - (ball.size / 2) >= pCrea.barX &&
+          ball.pos[0] - (ball.size / 2) <= pCrea.barX + (BAR_WIDTH / 2)) {
+        ball.delta[0] *= -1;
+        collBarChecker = collOppoChecker;
+      }
+    }
+  };
+  let collOppoChecker = function(): void { // Check if the ball collide to the oppo paddle
+    if (ball.pos[1] >= pOppo.barY - (pOppo.barLen / 2) &&
+        ball.pos[1] <= pOppo.barY + (pOppo.barLen / 2)) { // Vertical check
+      if (ball.pos[0] + (ball.size / 2) >= pOppo.barX &&
+          ball.pos[0] + (ball.size / 2) <= pOppo.barX + (BAR_WIDTH / 2)) {
+        ball.delta[0] *= -1;
+        collBarChecker = collCreaChecker;
+      }
+    }
+  };
+  let collBarChecker: () => void; // Default behavior
 
   s.setup = () => {
     s.createCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
@@ -82,11 +104,23 @@ async function sketch(s: any): Promise<any> {
     });
     socket.on("newRoundTC", (delta: Array<number>) => {
       ball.delta = delta;
+      if (ball.delta[0] > 0) {
+        collBarChecker = collOppoChecker;
+      } else {
+        collBarChecker = collCreaChecker;
+      }
       ball.pos = [768 / 2, 432 / 2];
     });
+    if (ball.delta[0] > 0) {
+      collBarChecker = collOppoChecker;
+    } else {
+      collBarChecker = collCreaChecker;
+    }
     s.frameRate(50);
     s.noStroke();
+    s.rectMode(s.CENTER);
   }
+
   /**
    * SKETCH DRAW
    * Draw function is entierly executed each p5 frames.
@@ -101,9 +135,9 @@ async function sketch(s: any): Promise<any> {
   let factY: number = canvasDom.offsetHeight / 432;
   let transX = (coord: number) => { return (coord * factX); };
   let transY = (coord: number) => { return (coord * factY); };
-  let barWidthFacted: number = transX(8);
+  let barWidthFacted: number = transX(BAR_WIDTH);
   let ballSizeFacted: number = transX(ball.size);
-
+  
   s.draw = () => {
     s.clear();
     mod();
@@ -111,11 +145,12 @@ async function sketch(s: any): Promise<any> {
     s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen));
     s.fill(pOppo.color);
     s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen));
-    ball.pos[0] += ball.delta[0] * 2;
-    ball.pos[1] += ball.delta[1] * 2;
-    if (ball.pos[1] - (ball.size / 2) < 0 || ball.pos[1] + (ball.size / 2) > 432) { // top & bot collision
+    collBarChecker();
+    ball.pos[0] += ball.delta[0] * 4;
+    ball.pos[1] += ball.delta[1] * 4;
+    if (ball.pos[1] - (ball.size / 2) <= 0 || ball.pos[1] + (ball.size / 2) >= 432) { // top & bot collision
       ball.delta[1] *= -1;
-    } else if (ball.pos[0] - (ball.size / 2) < 0 || ball.pos[0] + (ball.size / 2) > 768) {
+    } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) {
       ball.pos = [768 / 2, 432 / 2];
       ball.delta = [0, 0];
       socket.emit("pointTS", (ball.pos[0] - (ball.size / 2) < 0)); // If it's true, oppo win a point, if else it's crea that win;
@@ -124,7 +159,7 @@ async function sketch(s: any): Promise<any> {
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
   }
   s.windowResized = () => {
-    barWidthFacted = transX(8);
+    barWidthFacted = transX(BAR_WIDTH);
     ballSizeFacted = transX(16);
     factX = canvasDom.offsetWidth / 768;
     factY = canvasDom.offsetHeight / 432;

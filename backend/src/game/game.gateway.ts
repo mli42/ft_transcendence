@@ -62,13 +62,13 @@ export class gameGateway {
     let ballDeltaSum: number = 1;
     let ballDeltaRand: number = Math.random();
 
-    while (ballDeltaRand * 10 < 2) // Ajust to start with a delta more horizontal
+    while (ballDeltaRand * 10 < 2 || ballDeltaRand * 10 > 8) {// Ajust to start with a delta more horizontal
       ballDeltaRand = Math.random();
+    }
     ballDelta[0] = ballDeltaSum - ballDeltaRand;
     if (Math.round(Math.random())) { ballDelta[0] = -ballDelta[0] } // Add negative ranges between -1 and 0
     ballDelta[1] = ballDeltaRand;
     if (Math.round(Math.random())) { ballDelta[1] = -ballDelta[1] }
-    console.log(ballDelta);
     return (ballDelta);
   }
 
