@@ -7,7 +7,7 @@
       <NuxtLink :to="userProfile">
         <p>{{shortUsername}}</p>
       </NuxtLink>
-      <Iconify v-if="user.status == 'Playing'" title="Currently playing"
+      <Iconify v-if="isPlaying" title="Currently playing"
       iconName="ri:sword-line" class="playing"></Iconify>
     </div>
     <p v-else-if="$fetchState.error">Oh no, an error occured...</p>
@@ -36,6 +36,9 @@ export default Vue.extend({
   computed: {
     shortUsername(): string {
       return (this.$user.shortName(this.user.username));
+    },
+    isPlaying(): boolean {
+      return (this.$store.state.playingUsers.includes(this.user.userId));
     },
   },
   props: ['userId'],

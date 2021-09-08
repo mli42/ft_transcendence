@@ -3,6 +3,7 @@ export const state = () => ({
   isLogged: false as boolean,
   avatarURL: '' as string,
   connectedUsers: [] as any,
+  playingUsers: [] as any,
 });
 
 export type indexState = ReturnType<typeof state>;
@@ -40,6 +41,9 @@ export const mutations = {
   },
   updateConnectedUsers(state: indexState, connectedUsers: any): void {
     state.connectedUsers = connectedUsers;
+  },
+  updatePlayingUsers(state: indexState, playingUsers: any): void {
+    state.playingUsers = playingUsers;
   },
 };
 
