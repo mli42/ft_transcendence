@@ -167,8 +167,9 @@ export default Vue.extend({
   },
   async destroyed() {
     socket.disconnect();
-    if (p5Instance.remove)
+    if (p5Instance != undefined) {
       p5Instance.remove();
+    }
   },
   methods: {
     isGameDisplayedNeg(): void { // Negative the boolean to display the canvas
