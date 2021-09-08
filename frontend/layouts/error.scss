@@ -9,7 +9,10 @@ div.errMain {
 }
 
 img.funImg {
-  width: 100%;
+  min-width: 265px;
+  width: 70%;
+  max-width: 700px;
+  border-radius: 25px;
 }
 
 h1 {
