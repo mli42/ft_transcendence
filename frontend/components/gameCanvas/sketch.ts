@@ -7,6 +7,23 @@ export { sketchWrap };
 
 let vueInstance: any;
 let game: Game;
+let canvasWidth: number;
+let canvasHeight: number;
+
+function updateCanvasDim(innerWidth: number, innerHeight: number): void {
+  // Updates canvasWidth, canvasHeight
+  const ratio: number = 1.89;
+  const predictHeight: number = innerWidth / ratio;
+  const contentHeight = innerHeight - 64;
+
+  if (contentHeight > predictHeight) {
+    canvasWidth = innerWidth;
+    canvasHeight = predictHeight;
+  } else {
+    canvasHeight = contentHeight;
+    canvasWidth = canvasHeight * ratio;
+  }
+}
 
 async function sketchWrap(vue: Vue) {
   vueInstance = vue;
@@ -54,9 +71,10 @@ async function sketch(s: any): Promise<any> {
    */
   let canvasDom: any = document.getElementById("gameCanvas");
   s.disableFriendlyErrors = true; // Optimize code
+  updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
 
   s.setup = () => {
-    s.createCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
+    s.createCanvas(canvasWidth, canvasHeight);
     if (vueInstance.$data.user.userId != game.creatorId) {  // Subscribe to bar player info
       socket.on("posCreaTC", (pos: number) => {
         pCrea.barY = pos;
@@ -94,8 +112,8 @@ async function sketch(s: any): Promise<any> {
   let modifierUpOppo = () => { pOppo.barY -= 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY) };
   let modifierDownOppo = () => { pOppo.barY += 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY) };
   let ball: Ball = game.ball;
-  let factX: number = canvasDom.offsetWidth / 768;
-  let factY: number = canvasDom.offsetHeight / 432;
+  let factX: number = canvasWidth / 768;
+  let factY: number = canvasHeight / 432;
   let transX = (coord: number) => { return (coord * factX); };
   let transY = (coord: number) => { return (coord * factY); };
   let barWidthFacted: number = transX(8);
@@ -122,11 +140,12 @@ async function sketch(s: any): Promise<any> {
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
   }
   s.windowResized = () => {
+    updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
     barWidthFacted = transX(8);
     ballSizeFacted = transX(16);
-    factX = canvasDom.offsetWidth / 768;
-    factY = canvasDom.offsetHeight / 432;
-    s.resizeCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
+    factX = canvasWidth / 768;
+    factY = canvasHeight / 432;
+    s.resizeCanvas(canvasWidth, canvasHeight);
   }
   s.keyPressed = (event: any) => {
     if (event.key === "ArrowUp") {

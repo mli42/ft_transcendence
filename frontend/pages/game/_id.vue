@@ -17,7 +17,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      uuid: undefined as string,
+      uuid: '' as string,
       isValid: false as boolean,
     };
   },

@@ -1,12 +1,8 @@
 @import '~/assets/Palette.scss';
 
 #gameCanvas {
-  width: 100vw;
-  height: 52.91vw;
-  max-width: 188.97vh;
-  max-height: 100vh;
   position: absolute;
-  margin: auto;
+  // margin: auto;
   left:0;right:0; /* horizontal center */
   top: 0;bottom: 0;
   background-size: 100%;

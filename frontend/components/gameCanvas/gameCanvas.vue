@@ -92,8 +92,7 @@
         </v-btn>
       </div>
     </div>
-      <div v-show="isGameDisplayed" id="gameCanvas"
-        :style="{backgroundImage : `url(http://localhost:3000/api/game/map/${this.game.mapName.replace(' ', '-')}.jpeg)`}">
+    <div v-show="isGameDisplayed" id="gameCanvas" :style="gameCanvasStyle">
     </div>
   </v-app>
   </div>
@@ -374,6 +373,11 @@ export default Vue.extend({
         return (false);
       }
       return (true);
+    },
+    gameCanvasStyle(): object {
+      return {
+        backgroundImage : `url(${this.$axios.defaults.baseURL}/api/game/map/${this.game.mapName.replace(' ', '-')}.jpeg)`,
+      };
     },
   },
   watch: {
