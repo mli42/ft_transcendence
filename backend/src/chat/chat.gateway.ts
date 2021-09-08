@@ -62,7 +62,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         // remove connection from db
         await this.connectedUserService.deleteBySoketId(client.id);
         client.disconnect();
-        if (client.data.user.username) {
+        if (client.data) {
             this.logger.log(`Client diconnect: ${client.id} - ${client.data.user.username}`);
         } else {
             this.logger.log(`Client diconnect: ${client.id}`);
