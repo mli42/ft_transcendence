@@ -19,5 +19,6 @@ import { JoinedChannelService } from './joined-channel.service';
     UserModule,
   ],
   providers: [ChatGateway, ChannelService, ConnectedUserService, MessageService, JoinedChannelService],
+  exports: [ChatGateway],
 })
 export class ChatModule {}

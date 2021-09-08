@@ -3,6 +3,7 @@ import { Logger, UseGuards } from "@nestjs/common";
 import { Game, Player } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { AuthGuard } from "@nestjs/passport";
+import { ChatGateway } from "src/chat/chat.gateway";
 
 let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
 let playingGames: Array<string> = new Array();
@@ -30,6 +31,9 @@ function getIdsFromRooms(rooms: Set<any>): Array<string> {
 @WebSocketGateway( { namespace: "/game", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class gameGateway {
 
+  constructor(
+    private chatGateway: ChatGateway,
+) {}
   /**
    * LIST OF LOG FUNCTIONS
    */
@@ -86,6 +90,7 @@ export class gameGateway {
     playingGames.push(game.id);
     playingUsers.push(game.creatorId);
     playingUsers.push(game.opponentId);
+    this.chatGateway.userInGame(playingUsers);
     game.ball.delta = ballDelta;
   }
 
@@ -142,6 +147,7 @@ export class gameGateway {
     if (game) {
       if (game.creatorId === query.userId) {
         game.players.delete(game.creatorId);
+        playingUsers.splice(playingUsers.indexOf(game.creatorId), 1);
         game.creatorId = "";
         if (game.opponentId != "") { // Do we have an opponent to set as creator?
           game.creatorId = game.opponentId;
@@ -149,8 +155,10 @@ export class gameGateway {
         }
       } else if (game.opponentId === query.userId) {
         game.players.delete(query.userId as string);
+        playingUsers.splice(playingUsers.indexOf(game.opponentId), 1);
         game.opponentId = "";
       }
+      this.chatGateway.userInGame(playingUsers);
       client.to(game.id).emit("playerLeaveTC", query.userId);
       gamesMap.delete(query.userId);
     }

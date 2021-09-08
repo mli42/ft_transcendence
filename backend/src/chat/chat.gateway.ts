@@ -11,6 +11,7 @@ import { MessageService } from './massage.service';
 import { JoinedChannelService } from './joined-channel.service';
 import { MessageI } from './interfaces/message.interface';
 import { JoinedChannelI } from './interfaces/joined-channel.interface';
+import { playingUsers } from 'src/game/game.gateway';
 
 @WebSocketGateway({ namespace: "/chat", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
@@ -46,7 +47,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
                 const channels = await this.channelService.getChannelsForUser(user.userId);
                 await this.connectedUserService.create({socketId: client.id, user});
-                this.userStatus(client);
+                this.userStatus();
 
                 this.logger.log(`Client connected: ${client.id}`);
                 return this.server.to(client.id).emit('channel', channels);
@@ -63,14 +64,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         // remove connection from db
         await this.connectedUserService.deleteBySoketId(client.id);
         client.disconnect();
-        this.userStatus(client);
+        this.userStatus();
         this.logger.log(`Client diconnect: ${client.id}`);
     }
 
     private disconnectClient(client: Socket) {
         client.emit('Error', new UnauthorizedException());
         client.disconnect();
-        this.userStatus(client);
+        this.userStatus();
         this.logger.log(`Client diconnect: ${client.id}`);
     }
 
@@ -170,9 +171,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
 
-    async userStatus(client: Socket) {
+    async userStatus() {
         let userConnected = await this.connectedUserService.userStatus();
         return this.server.emit('userConnected', userConnected);
+    }
+
+    async userInGame(playingUser) {
+        return this.server.emit('userInGame', playingUser);
     }
 
 }

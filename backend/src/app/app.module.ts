@@ -27,7 +27,7 @@ import { ChatModule } from '../chat/chat.module';
     AuthModule,
     AdminModule,
     GameModule,
-    ChatModule
+    ChatModule,
   ],
   providers: [ gameGateway ],
 })
