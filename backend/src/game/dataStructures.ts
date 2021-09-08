@@ -74,7 +74,7 @@ class Game {
     this.type = "matchmaking";
     this.state = "waiting";
     this.score = [0, 0] as Array<number>;
-    this.mapName = "tennis";
+    this.mapName = "retro";
     this.players = new Map();
     this.players.set(creatorId, this.assignPlayer(creatorName));
     this.creatorId = creatorId;

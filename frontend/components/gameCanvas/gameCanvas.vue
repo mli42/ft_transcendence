@@ -93,7 +93,7 @@
       </div>
     </div>
       <div v-show="isGameDisplayed" id="gameCanvas"
-        :style="{backgroundImage : `url(http://localhost:3000/api/game/map/${this.game.mapName.replace(' ', '-')}.jpeg)`}">
+        :style="{backgroundImage : `url(http://localhost:3000/api/game/map/${this.game.mapName.replace(' ', '-')}.png)`}">
     </div>
   </v-app>
   </div>
