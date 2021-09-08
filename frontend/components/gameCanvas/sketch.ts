@@ -3,16 +3,17 @@ import * as p5 from "p5";
 import { Mouse, Game, Player, Ball } from "./dataStructures";
 import Vue from "vue";
 
-export { sketchWrap };
+export { sketchWrap, p5Instance };
 
-let vueInstance: any;
 let game: Game;
+let p5Instance: p5;
+let vueInstance: any;
 
 async function sketchWrap(vue: Vue) {
   vueInstance = vue;
   game = vue.$data.game;
   const { default: P5 } = await import('p5');
-  const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
+  p5Instance = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
 }
 
 async function sketch(s: any): Promise<any> {
@@ -155,10 +156,12 @@ async function sketch(s: any): Promise<any> {
     ball.pos[1] += ball.delta[1] * 4;
     if (ball.pos[1] - (ball.size / 2) <= 0 || ball.pos[1] + (ball.size / 2) >= 432) { // top & bot collision
       ball.delta[1] *= -1;
-    } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) {
+    } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) { // left & right collision
       ball.pos = [768 / 2, 432 / 2];
       ball.delta = [0, 0];
-      socket.emit("pointTS", (ball.pos[0] - (ball.size / 2) < 0)); // If it's true, oppo win a point, if else it's crea that win;
+      if (vueInstance.$data.user.userId === game.creatorId) {
+        socket.emit("pointTS", (ball.pos[0] - (ball.size / 2) < 0)); // If it's true, oppo win a point, if else it's crea that win;
+      }
     }
     s.fill(game.ball.color);
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
@@ -171,6 +174,7 @@ async function sketch(s: any): Promise<any> {
     s.resizeCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
   }
   s.keyPressed = (event: any) => {
+    console.log(game.id);
     if (event.key === "ArrowUp") {
       if (vueInstance.$data.user.userId === game.creatorId) {
         mod = modifierUpCrea;

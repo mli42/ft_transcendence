@@ -105,7 +105,7 @@ import { Game, Player, IcolorPalette, Button} from "./dataStructures";
 import lookup from "socket.io-client";
 import { use } from "vue/types/umd";
 import { socket, socketInit } from "./socket"
-import { sketchWrap } from "./sketch";
+import { sketchWrap, p5Instance } from "./sketch";
 
 export { SOCKET_URL };
 
@@ -167,6 +167,8 @@ export default Vue.extend({
   },
   async destroyed() {
     socket.disconnect();
+    if (p5Instance.remove)
+      p5Instance.remove();
   },
   methods: {
     isGameDisplayedNeg(): void { // Negative the boolean to display the canvas

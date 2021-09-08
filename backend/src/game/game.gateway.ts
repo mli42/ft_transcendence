@@ -265,6 +265,8 @@ export class gameGateway {
   @SubscribeMessage("pointTS")
   pointTS(client: Socket, isCreaLoose: boolean): void {
     const query: any = client.handshake.query;
+    this.logger.log("LOG: pointTS on " + query.gameId + " from " + query.username);
+
     const game: Game = gamesMap.get(query.gameId);
     const randDelta: Array<number> = this.genRandDelta();
 
