@@ -147,8 +147,6 @@ async function sketch(s: any): Promise<any> {
 
   s.draw = () => {
     s.clear();
-    s.textSize(40);
-    s.text(canvasDom.offsetWidth + "x" + canvasDom.offsetHeight, 20, 100);
     mod();
     s.fill(pCrea.color);
     s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen));
@@ -162,7 +160,7 @@ async function sketch(s: any): Promise<any> {
     } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) { // left & right collision
       ball.pos = [768 / 2, 432 / 2];
       ball.delta = [0, 0];
-      ball.speed = 4;
+      ball.speed = 5;
       if (vueInstance.$data.user.userId === game.creatorId) {
         socket.emit("pointTS", (ball.pos[0] - (ball.size / 2) < 0)); // If it's true, oppo win a point, if else it's crea that win;
       }
