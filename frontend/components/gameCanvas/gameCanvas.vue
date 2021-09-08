@@ -92,7 +92,7 @@
         </v-btn>
       </div>
     </div>
-    <div v-show="isGameDisplayed" id="gameCanvas" :style="gameCanvasStyle">
+    <div v-show="isGameDisplayed" id="gameCanvas" :style="gameCanvasStyle" class="flexHVcenter" >
     </div>
   </v-app>
   </div>
