@@ -58,19 +58,21 @@ async function sketch(s: any): Promise<any> {
   let collCreaChecker = function(): void { // Check if the ball collide to the crea paddle
     if (ball.pos[1] >= pCrea.barY - (pCrea.barLen / 2) &&
         ball.pos[1] <= pCrea.barY + (pCrea.barLen / 2)) { // Vertical check
-      if (ball.pos[0] - (ball.size / 2) >= pCrea.barX &&
+      if (ball.pos[0] - (ball.size / 2) >= pCrea.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] - (ball.size / 2) <= pCrea.barX + (BAR_WIDTH / 2)) {
         ball.delta[0] *= -1;
+        ball.color = pCrea.color;
         collBarChecker = collOppoChecker;
       }
     }
   };
   let collOppoChecker = function(): void { // Check if the ball collide to the oppo paddle
     if (ball.pos[1] >= pOppo.barY - (pOppo.barLen / 2) &&
-        ball.pos[1] <= pOppo.barY + (pOppo.barLen / 2)) { // Vertical check
-      if (ball.pos[0] + (ball.size / 2) >= pOppo.barX &&
+    ball.pos[1] <= pOppo.barY + (pOppo.barLen / 2)) { // Vertical check
+      if (ball.pos[0] + (ball.size / 2) >= pOppo.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] + (ball.size / 2) <= pOppo.barX + (BAR_WIDTH / 2)) {
         ball.delta[0] *= -1;
+        ball.color = pOppo.color;
         collBarChecker = collCreaChecker;
       }
     }
@@ -104,6 +106,7 @@ async function sketch(s: any): Promise<any> {
     });
     socket.on("newRoundTC", (delta: Array<number>) => {
       ball.delta = delta;
+      ball.color = "#DCE1E5";
       if (ball.delta[0] > 0) {
         collBarChecker = collOppoChecker;
       } else {
