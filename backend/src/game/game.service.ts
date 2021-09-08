@@ -2,6 +2,8 @@ import { Injectable, Res } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { join } from 'path';
 import * as fs from 'fs';
+import { v4 as uuidv4 } from "uuid";
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class GameService {
@@ -21,5 +23,13 @@ export class GameService {
         let fs = require('fs');
         let files = fs.readdirSync('../upload/map/standard/');
         return files;
+    }
+
+    getUuid(): string {
+        return uuidv4();
+    }
+
+    isUuid(uuid: string): boolean {
+        return isUUID(uuid);
     }
 }

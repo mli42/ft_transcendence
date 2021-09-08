@@ -8,9 +8,28 @@ export { sketchWrap, p5Instance };
 let game: Game;
 let p5Instance: p5;
 let vueInstance: any;
+let backgroundURL: string;
+let canvasWidth: number;
+let canvasHeight: number;
 
-async function sketchWrap(vue: Vue) {
+function updateCanvasDim(innerWidth: number, innerHeight: number): void {
+  // Updates canvasWidth, canvasHeight
+  const ratio: number = 1.89;
+  const predictHeight: number = innerWidth / ratio;
+  const contentHeight = innerHeight - 64;
+
+  if (contentHeight > predictHeight) {
+    canvasWidth = innerWidth;
+    canvasHeight = predictHeight;
+  } else {
+    canvasHeight = contentHeight;
+    canvasWidth = canvasHeight * ratio;
+  }
+}
+
+async function sketchWrap(vue: any) {
   vueInstance = vue;
+  backgroundURL = vue.bgImgURL();
   game = vue.$data.game;
   const { default: P5 } = await import('p5');
   p5Instance = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
@@ -55,11 +74,13 @@ async function sketch(s: any): Promise<any> {
    * SKETCH SETUP
    */
   let canvasDom: any = document.getElementById("gameCanvas");
+  updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
   s.disableFriendlyErrors = true; // Optimize code
+
   let collCreaChecker = function(): void { // Check if the ball collide to the crea paddle
     const halfBar: number = pCrea.barLen / 2;
     const halfBall: number = ball.size / 2;
-    if (ball.pos[1] - halfBall >= pCrea.barY - halfBar && ball.pos[1] - halfBall <= pCrea.barY + halfBar || 
+    if (ball.pos[1] - halfBall >= pCrea.barY - halfBar && ball.pos[1] - halfBall <= pCrea.barY + halfBar ||
         ball.pos[1] + halfBall >= pCrea.barY - halfBar && ball.pos[1] + halfBall <= pCrea.barY + halfBar) { // Vertical check
       if (ball.pos[0] - halfBall >= pCrea.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
@@ -73,7 +94,7 @@ async function sketch(s: any): Promise<any> {
   let collOppoChecker = function(): void { // Check if the ball collide to the oppo paddle
     const halfBar: number = pOppo.barLen / 2;
     const halfBall: number = ball.size / 2;
-    if (ball.pos[1] - halfBall >= pOppo.barY - halfBar && ball.pos[1] - halfBall <= pOppo.barY + halfBar || 
+    if (ball.pos[1] - halfBall >= pOppo.barY - halfBar && ball.pos[1] - halfBall <= pOppo.barY + halfBar ||
         ball.pos[1] + halfBall >= pOppo.barY - halfBar && ball.pos[1] + halfBall <= pOppo.barY + halfBar) { // Vertical check
       if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
@@ -87,7 +108,12 @@ async function sketch(s: any): Promise<any> {
   let collBarChecker: () => void; // Default behavior
 
   s.setup = () => {
-    s.createCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
+    let myCanvas: any = s.createCanvas(canvasWidth, canvasHeight);
+    myCanvas.style('border', '2px dashed white');
+    myCanvas.style('position', 'relative');
+    myCanvas.style('backgroundImage', backgroundURL);
+    myCanvas.style('background-size', '100% 100%');
+
     if (vueInstance.$data.user.userId != game.creatorId) {  // Subscribe to bar player info
       socket.on("posCreaTC", (pos: number) => {
         pCrea.barY = pos;
@@ -144,8 +170,8 @@ async function sketch(s: any): Promise<any> {
   const modifierUpOppo = () => { if (protecUp(pOppo)) { return; } pOppo.barY -= 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY); };
   const modifierDownOppo = () => { if (protecDown(pOppo)) { return; } pOppo.barY += 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY); };
   let ball: Ball = game.ball;
-  let factX: number = canvasDom.offsetWidth / 768;
-  let factY: number = canvasDom.offsetHeight / 432;
+  let factX: number = canvasWidth / 768;
+  let factY: number = canvasHeight / 432;
   let transX = (coord: number) => { return (coord * factX); };
   let transY = (coord: number) => { return (coord * factY); };
   let barWidthFacted: number = transX(BAR_WIDTH);
@@ -175,11 +201,12 @@ async function sketch(s: any): Promise<any> {
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
   }
   s.windowResized = () => {
-    factX = canvasDom.offsetWidth / 768;
-    factY = canvasDom.offsetHeight / 432;
+    updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
     barWidthFacted = transX(BAR_WIDTH);
     ballSizeFacted = transX(16);
-    s.resizeCanvas(canvasDom.offsetWidth, canvasDom.offsetHeight);
+    factX = canvasWidth / 768;
+    factY = canvasHeight / 432;
+    s.resizeCanvas(canvasWidth, canvasHeight);
   }
   s.keyPressed = (event: any) => {
     if (event.key === "ArrowUp") {

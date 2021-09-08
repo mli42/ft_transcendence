@@ -92,8 +92,7 @@
         </v-btn>
       </div>
     </div>
-      <div v-show="isGameDisplayed" id="gameCanvas"
-        :style="{backgroundImage : `url(http://localhost:3000/api/game/map/${this.game.mapName.replace(' ', '-')}.png)`}">
+    <div v-show="isGameDisplayed" id="gameCanvas" class="useWholePage flexHVcenter" >
     </div>
   </v-app>
   </div>
@@ -369,7 +368,10 @@ export default Vue.extend({
         this.isPreGameDisplayed = false;
         sketchWrap(this);
       }
-    }
+    },
+    bgImgURL(): string {
+      return `url(${this.$axios.defaults.baseURL}/api/game/map/${this.game.mapName.replace(' ', '-')}.jpeg)`;
+    },
   },
   computed: {
     isTabsEnabled: function () : boolean {
