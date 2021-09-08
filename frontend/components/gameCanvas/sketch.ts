@@ -136,11 +136,13 @@ async function sketch(s: any): Promise<any> {
    * SKETCH DRAW
    * Draw function is entierly executed each p5 frames.
    */
+  const protecUp = (p: Player): boolean => { if (p.barY - (p.barLen / 2) < 0) { return (true) } else { return (false); } };
+  const protecDown = (p: Player): boolean => { if (p.barY + (p.barLen / 2) > 432) { return (true) } else { return (false); } };
   let mod = () => { };
-  let modifierUpCrea = () => { pCrea.barY -= 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY) };
-  let modifierDownCrea = () => { pCrea.barY += 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY) };
-  let modifierUpOppo = () => { pOppo.barY -= 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY) };
-  let modifierDownOppo = () => { pOppo.barY += 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY) };
+  const modifierUpCrea = () => { if (protecUp(pCrea)) { return; } pCrea.barY -= 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY); };
+  const modifierDownCrea = () => { if (protecDown(pCrea)) { return; } pCrea.barY += 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY); };
+  const modifierUpOppo = () => { if (protecUp(pOppo)) { return; } pOppo.barY -= 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY); };
+  const modifierDownOppo = () => { if (protecDown(pOppo)) { return; } pOppo.barY += 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY); };
   let ball: Ball = game.ball;
   let factX: number = canvasDom.offsetWidth / 768;
   let factY: number = canvasDom.offsetHeight / 432;
