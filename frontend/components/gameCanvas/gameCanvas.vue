@@ -326,10 +326,6 @@ export default Vue.extend({
       this.mainBtn.action = this.btnActionSearchStop;
       this.mainBtn.setHoverSearch();
       this.$mytoast.info("Searching for a player...");
-      if (this.game.players.get(this.user.userId) == undefined) {
-        console.error(`ERR: undefined on search. (userId = ${this.user.userId},
-                      this.game.players.get(this.user.userId) = ${this.game.players.get(this.user.userId)})`);
-      }
       socket.emit("startSearchTS", this.game.players.get(this.user.userId));
     },
     btnActionSearchStop(): void {
@@ -337,10 +333,6 @@ export default Vue.extend({
       this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       this.mainBtn.resetHover(); // Delete actions when the client hover the button
       this.mainBtn.isLoading = false;
-      if (this.game.players.get(this.user.userId) == undefined) {
-        console.error(`ERR: undefined on search. (userId = ${this.user.userId},
-                      this.game.players.get(this.user.userId) = ${this.game.players.get(this.user.userId)})`);
-      }
       socket.emit("stopSearchTS", this.game.players.get(this.user.userId));
     },
     btnActionReady(): void {  // Action to send to the server the information about the current player is ready

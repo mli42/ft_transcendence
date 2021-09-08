@@ -36,7 +36,7 @@ export default async function (context: any) {
     context.$user.socket = io(`ws://${window.location.hostname}:3000/chat`, {
       withCredentials: true,
       query: {
-        gameId: context.from.params.id,
+        gameId: context.params.id,
         userId: user.userId,
         username: user.username,
       },

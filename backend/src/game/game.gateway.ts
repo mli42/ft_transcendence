@@ -100,6 +100,7 @@ export class gameGateway {
     const rooms: Array<string> = getIdsFromRooms(client.rooms);
     this.logger.log("LOG: fetchGameTS on " + gameId + " from " + client.handshake.query.username);
 
+    client.handshake.query.gameId = gameId; // Protection when the WS is from the middleware
     if (rooms.find(element => element === gameId) == undefined) {
       rooms.forEach(function(value: string) {
         client.leave(value);
@@ -160,7 +161,6 @@ export class gameGateway {
       }
       this.chatGateway.userInGame(playingUsers);
       client.to(game.id).emit("playerLeaveTC", query.userId);
-      gamesMap.delete(query.userId);
     }
   }
 

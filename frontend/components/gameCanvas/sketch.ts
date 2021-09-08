@@ -57,24 +57,28 @@ async function sketch(s: any): Promise<any> {
   let canvasDom: any = document.getElementById("gameCanvas");
   s.disableFriendlyErrors = true; // Optimize code
   let collCreaChecker = function(): void { // Check if the ball collide to the crea paddle
-    if (ball.pos[1] >= pCrea.barY - (pCrea.barLen / 2) &&
-        ball.pos[1] <= pCrea.barY + (pCrea.barLen / 2)) { // Vertical check
-      if (ball.pos[0] - (ball.size / 2) >= pCrea.barX - (BAR_WIDTH / 2) &&
-          ball.pos[0] - (ball.size / 2) <= pCrea.barX + (BAR_WIDTH / 2)) {
+    const halfBar: number = pCrea.barLen / 2;
+    const halfBall: number = ball.size / 2;
+    if (ball.pos[1] - halfBall >= pCrea.barY - halfBar && ball.pos[1] - halfBall <= pCrea.barY + halfBar || 
+        ball.pos[1] + halfBall >= pCrea.barY - halfBar && ball.pos[1] + halfBall <= pCrea.barY + halfBar) { // Vertical check
+      if (ball.pos[0] - halfBall >= pCrea.barX - (BAR_WIDTH / 2) &&
+          ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
         ball.delta[0] *= -1;
-        ball.speed *= 1.25;
+        ball.speed *= 1.15;
         ball.color = pCrea.color;
         collBarChecker = collOppoChecker;
       }
     }
   };
   let collOppoChecker = function(): void { // Check if the ball collide to the oppo paddle
-    if (ball.pos[1] >= pOppo.barY - (pOppo.barLen / 2) &&
-    ball.pos[1] <= pOppo.barY + (pOppo.barLen / 2)) { // Vertical check
-      if (ball.pos[0] + (ball.size / 2) >= pOppo.barX - (BAR_WIDTH / 2) &&
-          ball.pos[0] + (ball.size / 2) <= pOppo.barX + (BAR_WIDTH / 2)) {
+    const halfBar: number = pOppo.barLen / 2;
+    const halfBall: number = ball.size / 2;
+    if (ball.pos[1] - halfBall >= pOppo.barY - halfBar && ball.pos[1] - halfBall <= pOppo.barY + halfBar || 
+        ball.pos[1] + halfBall >= pOppo.barY - halfBar && ball.pos[1] + halfBall <= pOppo.barY + halfBar) { // Vertical check
+      if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2) &&
+          ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
         ball.delta[0] *= -1;
-        ball.speed *= 1.25;
+        ball.speed *= 1.15;
         ball.color = pOppo.color;
         collBarChecker = collCreaChecker;
       }
