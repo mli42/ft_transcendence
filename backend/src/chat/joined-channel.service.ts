@@ -22,7 +22,8 @@ export class JoinedChannelService {
     }
 
     async findByChannel(channel: ChannelI): Promise<JoinedChannelI[]> {
-        return this.joinedChannelRepository.find({channel});
+        // return this.joinedChannelRepository.find({channel});
+        return this.joinedChannelRepository.find({where: {channel: channel}, relations: ['user']});
     }
 
     async deleteBySocketId(socketId: string) {

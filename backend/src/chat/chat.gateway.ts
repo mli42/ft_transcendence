@@ -12,10 +12,12 @@ import { MessageI } from './interfaces/message.interface';
 import { JoinedChannelI } from './interfaces/joined-channel.interface';
 import { RoleUserI } from './interfaces/role-user.interface';
 import { RoleUserService } from './role-user.service';
+import { UserService } from 'src/user/user.service';
 
 @WebSocketGateway({ namespace: "/chat", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
     constructor(
+        private readonly userService: UserService,
         private readonly channelService: ChannelService,
         private readonly connectedUserService: ConnectedUserService,
         private readonly messageService: MessageService,
@@ -29,7 +31,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     private logger: Logger = new Logger('ChatGateway');
 
     /********************* CONNECTION ********************** */
-
     // Called once the host module's dependencies have been resolved
     async onModuleInit() {
         await this.connectedUserService.deleteAll();
@@ -59,7 +60,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* DISCONNECTION ****************** */
     @SubscribeMessage('disconnectUser')
     async handleDisconnect(client: Socket) {
-        // remove connection from db
         await this.connectedUserService.deleteBySoketId(client.id);
         client.disconnect();
         if (client.data) {
@@ -128,17 +128,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     // }
 
     /********************* HANDLE MESSAGE *****************/
-
     @SubscribeMessage('newMessage')
     async onAddMessage(client: Socket, message: MessageI) {
+        const userRoleFound = await this.roleUserService.findUserByChannel(message.channel, client.data.user.userId);
+        let date = new Date;
+        if (userRoleFound && (userRoleFound.mute < date || userRoleFound.ban < date)) {
+            return;
+        }
         const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
         const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
-
         const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
         for (const user of joinedUsers) {
-            await this.server.to(user.socketId).emit('messageAdded', createMessage);
+            const userJoinRoleFound = await this.roleUserService.findUserByChannel(message.channel, user.user.userId);
+            let date = new Date;
+            if (!userJoinRoleFound || (userJoinRoleFound.ban < date)) {
+                await this.server.to(user.socketId).emit('messageAdded', createMessage);
+            }
         }
     }
+
     /********************* Autorisation Channel *********************/
     @SubscribeMessage('autorisationChannel')
     async updateAutorisationChannel(client: Socket, data: any) {
@@ -162,7 +170,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         else {
             this.roleUserService.create(data);
         }
+        // emit user ban et channel
     }
+
     @SubscribeMessage('checkRoleChannelMute')
     async checkRoleForChannelMute(client: Socket, channel: ChannelI): Promise<boolean> {
         const channelFound = await this.channelService.getChannel(channel.channelId);
@@ -188,7 +198,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* Auth Private Channel *********************/
-
     // apdate password
 
     @SubscribeMessage('passwordChannel')

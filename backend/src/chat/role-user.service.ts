@@ -59,6 +59,6 @@ export class RoleUserService {
     }
 
     async findUserByChannel(channel: ChannelI, userId: string): Promise<RoleUserI> {
-        return this.roleUserRepository.findOne({where: {channel: channel, userId: userId }});
+        return this.roleUserRepository.findOne({where: { channel: channel, userId: userId }});
     }
 }
