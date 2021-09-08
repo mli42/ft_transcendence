@@ -164,5 +164,11 @@ export class ChannelService {
 	}
 
 
+	// async updateChannelMembers(channelFound: ChannelI, members:string[]) {
+	// 	for (const user of members) {
+    //         const userFound = channelFound.users.find(element => element === user);
+    //     }
+	// }
+
 	// add or remove a user to private channel
 }

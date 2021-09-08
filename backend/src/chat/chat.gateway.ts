@@ -62,7 +62,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         // remove connection from db
         await this.connectedUserService.deleteBySoketId(client.id);
         client.disconnect();
-        this.logger.log(`Client diconnect: ${client.id} - ${client.data.user.username}`);
+        if (client.data.user.username) {
+            this.logger.log(`Client diconnect: ${client.id} - ${client.data.user.username}`);
+        } else {
+            this.logger.log(`Client diconnect: ${client.id}`);
+        }
+        
     }
 
     private disconnectClient(client: Socket) {
@@ -105,6 +110,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             }
         }
     }
+
+    /********************* UPDATE CHANNEL **************** */
+    // @SubscribeMessage('updateChannel')
+    // async updateChannel(client: Socket, data: any) {
+    //     const { isUpdate, password, deletePassword, members, channel } = data;
+    //     const channelFound = await this.channelService.getChannel(channel.channelId);
+    //     if (isUpdate) {
+    //         channelFound.password = password;
+    //     }
+    //     if (deletePassword) {
+    //         channelFound.password = "";
+    //     }
+    //     if (members) {
+    //         await this.channelService.updateChannelMembers(channelFound, members)
+    //     }
+    // }
 
     /********************* HANDLE MESSAGE *****************/
 
