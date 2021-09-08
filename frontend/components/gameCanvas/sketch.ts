@@ -79,9 +79,8 @@ async function sketch(s: any): Promise<any> {
     let myCanvas: any = s.createCanvas(canvasWidth, canvasHeight);
     myCanvas.style('border', '2px dashed white');
     myCanvas.style('position', 'relative');
-    myCanvas.style('margin', 'auto');
     myCanvas.style('backgroundImage', backgroundURL);
-    myCanvas.style('background-size', '100% 100%'); // background-size: 100% 100%;
+    myCanvas.style('background-size', '100% 100%');
 
     if (vueInstance.$data.user.userId != game.creatorId) {  // Subscribe to bar player info
       socket.on("posCreaTC", (pos: number) => {
