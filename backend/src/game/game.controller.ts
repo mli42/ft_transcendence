@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiParam, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Observable, of } from "rxjs";
 import { GameService } from './game.service';
-import { playingGames, gamesMap } from "./game.gateway";
+import { playingGames, gamesMap, playingUsers } from "./game.gateway";
 
 @ApiTags('game')
 @Controller('api/game')
@@ -63,5 +63,14 @@ export class GameController {
   @Get('/playingGames/:gameId')
   getGameClass(@Res({passthrough: true}) res, @Param('gameId') id): any {
     return (gamesMap.get(id));
+  }
+
+  @ApiOperation({summary: 'Get All Playing Users'})
+  @ApiOkResponse({description: 'returns a list of all playing users ids'})
+  /*******/
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/playingUsers')
+  getPlayingUsers(@Res({passthrough: true}) res): string[] {
+    return (playingUsers);
   }
 }

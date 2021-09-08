@@ -7,8 +7,9 @@ import { AuthGuard } from "@nestjs/passport";
 let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
 let playingGames: Array<string> = new Array();
 let searchList: Map<string, {client: Socket, gameId: string, player: Player}> = new Map(); // Relation between playerId and Player class
+let playingUsers: Array<string> = new Array(); // Array of userId that currentlty playing
 
-export { playingGames, gamesMap };
+export { playingGames, gamesMap, playingUsers };
 
 /**
  * Here you will found all message emitable by this server.
@@ -79,6 +80,8 @@ export class gameGateway {
     client.emit("startGameTC", ballDelta);
     game.state = "started";
     playingGames.push(game.id);
+    playingUsers.push(game.creatorId);
+    playingUsers.push(game.opponentId);
     game.ball.delta = ballDelta;
   }
 
