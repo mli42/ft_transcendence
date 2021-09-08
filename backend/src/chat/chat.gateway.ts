@@ -143,26 +143,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
     }
     @SubscribeMessage('checkRoleChannelMute')
-    async checkRoleForChannelMute(client: Socket, channel: ChannelI) {
+    async checkRoleForChannelMute(client: Socket, channel: ChannelI): Promise<boolean> {
         const channelFound = await this.channelService.getChannel(channel.channelId);
         const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.mute > date) {
-            throw new WsException('mute');
+            return true
         } else { 
-            console.log("NOT MUTE!")
+            return false
         }
     }
 
     @SubscribeMessage('checkRoleChannelBan')
-    async checkRoleForChannelBan(client: Socket, channel: ChannelI) {
+    async checkRoleForChannelBan(client: Socket, channel: ChannelI): Promise<boolean> {
         const channelFound = await this.channelService.getChannel(channel.channelId);
         const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.ban > date) {
-            throw new WsException('ban');
+            return true
         } else { 
-            console.log("NOT BAN!")
+            return false
         }
     }
 
