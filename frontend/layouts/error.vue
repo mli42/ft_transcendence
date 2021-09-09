@@ -3,9 +3,9 @@
     <div class="errMain flexAlignCol">
     <h1>{{ errMessage }}</h1>
     <img alt="Sad cat" class="funImg" src="https://images.unsplash.com/photo-1525785967371-87ba44b3e6cf">
-    <p class="homeLink">
-      <NuxtLink to="/">Return to home page</NuxtLink>
-    </p>
+    <NuxtLink to="/">
+      <p class="homeLink">Return to home page</p>
+    </NuxtLink>
     </div>
   </v-app>
 </template>
