@@ -90,6 +90,7 @@ export class gameGateway {
     playingGames.push(game.id);
     playingUsers.push(game.creatorId);
     playingUsers.push(game.opponentId);
+    game.startDate = new Date();
     this.chatGateway.userInGame(playingUsers);
     game.ball.delta = ballDelta;
   }
@@ -290,4 +291,11 @@ export class gameGateway {
     client.to(game.id).emit("newRoundTC", randDelta);
     client.emit("newRoundTC", randDelta);
   }
+
+  @SubscribeMessage("ballSync")
+  ballSync(client: Socket, payload: { posX: number, posY: number }): void {
+    const query: any = client.handshake.query;
+
+    client.to(query.gameId).emit("ballSync", payload);
+  };
 }

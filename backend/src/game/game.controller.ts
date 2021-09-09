@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Res, UseGuards, Header, Query } from '@nestjs/common';
+import { Controller, Get, Param, Res, UseGuards, Header, Query, NotFoundException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiParam, ApiOkResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { Observable, of } from "rxjs";
 import { GameService } from './game.service';
 import { playingGames, gamesMap, playingUsers } from "./game.gateway";
+import { Game } from "./dataStructures";
 
 @ApiTags('game')
 @Controller('api/game')
@@ -62,7 +63,18 @@ export class GameController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/playingGames/:gameId')
   getGameClass(@Param('gameId') id): any {
-    return (gamesMap.get(id));
+    const game: Game | undefined = gamesMap.get(id);
+
+    if (game === undefined) {
+      throw new NotFoundException('No game found');
+    }
+    return ({
+      gameId: game.id,
+      creatorId: game.creatorId,
+      opponent: game.opponentId,
+      score: game.score,
+      startDate: game.startDate,
+    });
   }
 
   @ApiOperation({summary: 'Get UUID'})

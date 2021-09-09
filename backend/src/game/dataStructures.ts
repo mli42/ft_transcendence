@@ -62,8 +62,9 @@ class Game {
   score: Array<number>;
   mapName: string;
   players: Map<string, Player>; // string -> userId
-  creatorId: string;              // The userId of the game creator
-  opponentId: string;             // The userId of the opponenent;
+  startDate: Date;              // Date of the game start
+  creatorId: string;            // The userId of the game creator
+  opponentId: string;           // The userId of the opponenent;
   creationDate: Date;
   opponentIdFound: string;
   enabledPowerUps: Array<string>;
@@ -77,6 +78,7 @@ class Game {
     this.mapName = "retro";
     this.players = new Map();
     this.players.set(creatorId, this.assignPlayer(creatorName));
+    this.startDate = new Date();
     this.creatorId = creatorId;
     this.opponentId = "";
     this.creationDate = new Date();

@@ -125,12 +125,19 @@ async function sketch(s: any): Promise<any> {
       });
     }
     socket.on("ballTC", (payload: {deltaX: number, deltaY: number, posX: number, posY: number}) => {
+      console.log("LOG: ballTC");
       ball.delta[0] = payload.deltaX;
       ball.delta[1] = payload.deltaY;
       ball.pos[0] = payload.posX;
       ball.pos[1] = payload.posY;
     });
+    socket.on("ballSync", (payload: {posX: number, posY: number}) => {
+      console.log("ballSync");
+      ball.pos[0] = payload.posX;
+      ball.pos[1] = payload.posY;
+    });
     socket.on("pointTC", (isCreatorLoose: boolean) => {
+      console.log("LOG: pointTC");
       if (isCreatorLoose) {
         game.score[1]++;
       } else {
@@ -139,6 +146,7 @@ async function sketch(s: any): Promise<any> {
       ball.speed = 5;
     });
     socket.on("newRoundTC", (delta: Array<number>) => {
+      console.log("LOG: newRoundTC");
       ball.delta = delta;
       ball.color = "#DCE1E5";
       if (ball.delta[0] > 0) {
@@ -191,6 +199,9 @@ async function sketch(s: any): Promise<any> {
     collBarChecker();
     ball.pos[0] += ball.delta[0] * ball.speed;
     ball.pos[1] += ball.delta[1] * ball.speed;
+    if (s.frameCount % 25 == 4) { // Sync the ball pos 1 frome on 10
+      socket.emit("ballSync", { posX: ball.pos[0], posY: ball.pos[1] });
+    }
     if (ball.pos[1] - (ball.size / 2) <= 0 || ball.pos[1] + (ball.size / 2) >= 432) { // top & bot collision
       ball.delta[1] *= -1;
     } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) { // left & right collision
