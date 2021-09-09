@@ -370,7 +370,7 @@ export default Vue.extend({
       }
     },
     bgImgURL(): string {
-      return `url(${this.$axios.defaults.baseURL}/api/game/map/${this.game.mapName.replace(' ', '-')}.jpeg)`;
+      return `url(${this.$axios.defaults.baseURL}/api/game/map/${this.game.mapName.replace(' ', '-')}.png)`;
     },
   },
   computed: {
