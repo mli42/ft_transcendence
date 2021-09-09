@@ -92,7 +92,10 @@
         </v-btn>
       </div>
     </div>
-    <div v-show="isGameDisplayed" id="gameCanvas" class="useWholePage flexHVcenter" >
+    <div v-show="isGameDisplayed" >
+      <div id="gameCanvas" class="useWholePage flexHVcenter" >
+        <div id="gameHUD"></div>
+      </div>
     </div>
   </v-app>
   </div>

@@ -11,6 +11,7 @@ let vueInstance: any;
 let backgroundURL: string;
 let canvasWidth: number;
 let canvasHeight: number;
+let canvasHUD: any;
 
 function updateCanvasDim(innerWidth: number, innerHeight: number): void {
   // Updates canvasWidth, canvasHeight
@@ -25,6 +26,8 @@ function updateCanvasDim(innerWidth: number, innerHeight: number): void {
     canvasHeight = contentHeight;
     canvasWidth = canvasHeight * ratio;
   }
+  canvasHUD.style.width = `${canvasWidth}px`;
+  canvasHUD.style.height = `${canvasHeight}px`;
 }
 
 async function sketchWrap(vue: any) {
@@ -74,6 +77,7 @@ async function sketch(s: any): Promise<any> {
    * SKETCH SETUP
    */
   let canvasDom: any = document.getElementById("gameCanvas");
+  canvasHUD = document.getElementById("gameHUD");
   updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
   s.disableFriendlyErrors = true; // Optimize code
 

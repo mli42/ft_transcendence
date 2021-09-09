@@ -7,6 +7,12 @@
   padding-bottom: 64px;
 }
 
+#gameHUD {
+  position: absolute;
+  z-index: 15;
+  border: 3px solid red;
+}
+
 .dot {
   height: 25px;
   width: 25px;
