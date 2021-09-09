@@ -215,7 +215,7 @@ async function sketch(s: any): Promise<any> {
     collBarChecker();
     ball.pos[0] += ball.delta[0] * ball.speed;
     ball.pos[1] += ball.delta[1] * ball.speed;
-    if (isAPlayer && s.frameCount % 25 == 4) { // Sync the ball pos 1 frome on 10
+    if (isAPlayer && s.frameCount % 25 == 4 && ball.pos[0] > 50 && ball.pos[1] < 400) { // Sync the ball pos 1 frome on 10
       socket.emit("ballSync", { posX: ball.pos[0], posY: ball.pos[1] });
     }
     if (ball.pos[1] - (ball.size / 2) <= 0 || ball.pos[1] + (ball.size / 2) >= 432) { // top & bot collision
