@@ -94,7 +94,16 @@
     </div>
     <div v-show="isGameDisplayed" >
       <div id="gameCanvas" class="useWholePage flexHVcenter" >
-        <div id="gameHUD"></div>
+        <div id="gameHUD" class="flexHVcenter">
+
+          <div id="gameInfos" class="flexAlignRow">
+            <p class="txtHUD" :style="[creatorTxtStyle]">{{creatorName}}</p>
+            <p class="txtHUD" :style="[creatorTxtStyle]">{{game.score[0]}}</p>
+            <p class="txtHUD" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
+            <p class="txtHUD" :style="[oppoTxtStyle]">{{opponentName}}</p>
+          </div>
+
+        </div>
       </div>
     </div>
   </v-app>
@@ -382,6 +391,16 @@ export default Vue.extend({
         return (false);
       }
       return (true);
+    },
+    creatorTxtStyle(): object {
+      return {
+        color: this.creatorColor,
+      };
+    },
+    oppoTxtStyle(): object {
+      return {
+        color: this.opponentColor,
+      };
     },
   },
   watch: {
