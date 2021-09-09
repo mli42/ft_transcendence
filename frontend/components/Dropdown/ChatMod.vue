@@ -10,8 +10,8 @@
           <ul v-if="show">
               <li v-for="(item, index) in items" :key="index">
                 <div class="option">
-                  <input type="checkbox" :value="item" class="item" name="category" v-model="result"/>
-                  <label for="item">{{ item.username }}</label>
+                  <input type="radio" :value="item" class="item" name="category" v-model="result"/>
+                  <label for="item">{{ item }}</label>
                 </div>
               </li>
           </ul>
@@ -29,7 +29,7 @@ export default Vue.extend({
   data(): any {
     return {
       show: false as boolean,
-      result: [] as User[],
+      result: 0 as number,
       rotate: false as boolean,
     }
   },
@@ -40,7 +40,10 @@ export default Vue.extend({
   },
   watch:{
     result(){
-      this.$nuxt.$emit('send-userlist', this.result);
+      if (this.action === 'ban')
+        this.$nuxt.$emit('send-banTime', this.result);
+      if (this.action === 'mute')
+        this.$nuxt.$emit('send-muteTime', this.result);
     },
   },
   props: {
@@ -50,6 +53,10 @@ export default Vue.extend({
     },
     items: {
       type: [],
+      required: true,
+    },
+    action:{
+      type: String,
       required: true,
     },
   },

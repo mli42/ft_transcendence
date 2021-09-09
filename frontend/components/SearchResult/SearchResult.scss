@@ -1,0 +1,66 @@
+@import '~/assets/Palette.scss';
+
+.content {
+    width: 320px;
+    height: 82px;
+    padding: 16px;
+    background-color: $pg-dark-blue;
+}
+
+.result {
+    width: 290px;
+    height: 200px;
+    padding: 16px;
+    background-color: $pg-dark-blue;
+    position: relative;
+    border-radius: 0px 0px 10px 10px;
+    overflow: auto;
+}
+
+.search input {
+    width: 250px;
+    height: 40px;
+    background-color: $pg-blue;
+    border-radius: 10px 0 0 10px;
+    color: $pg-white;
+    padding: 16px;
+}
+
+.search div{
+    background-color: $pg-blue;
+    height: 40px;
+    width: 40px;
+    border-radius: 0px 10px 10px 0px;
+    
+}
+
+.search img{
+    width: 20px;
+    height: 20px;
+}
+
+ul {
+    list-style: none;
+}
+
+li{
+    display: flex;
+    margin: 16px;
+    padding: 8px;
+    border-radius: 10px;
+}
+
+li:hover{
+    background-color: $pg-blue;
+}
+
+li p{
+    margin: auto 16px;
+}
+
+
+
+.pp{
+    width: 30px;
+    height: 30px;
+}

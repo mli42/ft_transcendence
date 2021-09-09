@@ -34,13 +34,7 @@ export default async function (context: any) {
 
   if (context.$user.socket === null) {
     context.$user.socket = io(`ws://${window.location.hostname}:3000/chat`, {
-      withCredentials: true,
-      query: {
-        gameId: context.params.id,
-        userId: user.userId,
-        username: user.username,
-      },
-    });
+      withCredentials: true });
     context.$user.socket.on('userConnected', (users: any) => {
       context.store.commit('updateConnectedUsers', users);
     });

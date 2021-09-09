@@ -7,6 +7,7 @@ let socket: Socket;
 
 function socketInit(url: string, gameId: string, vue: any): void {
   socket = io(url, {
+    forceNew: true,
     withCredentials: true,
     query: {
       gameId: gameId,
