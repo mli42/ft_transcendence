@@ -21,5 +21,6 @@ import { RoleUserService } from './role-user.service';
     UserModule,
   ],
   providers: [ChatGateway, ChannelService, ConnectedUserService, MessageService, JoinedChannelService, RoleUserService],
+  exports: [ChatGateway],
 })
 export class ChatModule {}

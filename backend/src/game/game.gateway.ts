@@ -3,8 +3,14 @@ import { Logger, UseGuards } from "@nestjs/common";
 import { Game, Player } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { AuthGuard } from "@nestjs/passport";
+import { ChatGateway } from "src/chat/chat.gateway";
 
-let gamesMap: Map<string, Game> = new Map(); // Relation between games and gameIds
+let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
+let playingGames: Array<string> = new Array();
+let searchList: Map<string, {client: Socket, gameId: string, player: Player}> = new Map(); // Relation between playerId and Player class
+let playingUsers: Array<string> = new Array(); // Array of userId that currentlty playing
+
+export { playingGames, gamesMap, playingUsers };
 
 /**
  * Here you will found all message emitable by this server.
@@ -25,11 +31,67 @@ function getIdsFromRooms(rooms: Set<any>): Array<string> {
 @WebSocketGateway( { namespace: "/game", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class gameGateway {
 
+  constructor(
+    private chatGateway: ChatGateway,
+) {}
+  /**
+   * LIST OF LOG FUNCTIONS
+   */
+
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger("gameGateway");
 
   afterInit(server: Server) {
     this.logger.log("game socket init !");
+  }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    this.logger.log("Client connected: " + client.handshake.query.username);
+  }
+
+  handleDisconnect(client: Socket) {
+    const game: Game = gamesMap.get(client.handshake.query.gameId as string);
+    const query: any = client.handshake.query;
+    this.logger.log(`Client disconnected: ${client.id}`);
+
+    if (game) {
+      if (searchList.has(query.userId)) {
+        searchList.delete(query.userId as string);
+      }
+      if (game.state === "waiting")
+        this.playerLeave(client);
+    }
+  }
+
+  /**
+   * LIST OF PRE-GAME MESSAGE LISTENERS
+   */
+  genRandDelta(): Array<number> {
+    let ballDelta: Array<number> = new Array();
+    let ballDeltaSum: number = 1;
+    let ballDeltaRand: number = Math.random();
+
+    while (ballDeltaRand * 10 < 2 || ballDeltaRand * 10 > 8) {// Ajust to start with a delta more horizontal
+      ballDeltaRand = Math.random();
+    }
+    ballDelta[0] = ballDeltaSum - ballDeltaRand;
+    if (Math.round(Math.random())) { ballDelta[0] = -ballDelta[0] } // Add negative ranges between -1 and 0
+    ballDelta[1] = ballDeltaRand;
+    if (Math.round(Math.random())) { ballDelta[1] = -ballDelta[1] }
+    return (ballDelta);
+  }
+
+  startGame(client: Socket, game: Game): void {
+    let ballDelta: Array<number> = this.genRandDelta();
+
+    client.to(client.handshake.query.gameId).emit("startGameTC", ballDelta);
+    client.emit("startGameTC", ballDelta);
+    game.state = "started";
+    playingGames.push(game.id);
+    playingUsers.push(game.creatorId);
+    playingUsers.push(game.opponentId);
+    this.chatGateway.userInGame(playingUsers);
+    game.ball.delta = ballDelta;
   }
 
   // A client ask to get the entire game class. Or to create it if does not exists
@@ -38,6 +100,7 @@ export class gameGateway {
     const rooms: Array<string> = getIdsFromRooms(client.rooms);
     this.logger.log("LOG: fetchGameTS on " + gameId + " from " + client.handshake.query.username);
 
+    client.handshake.query.gameId = gameId; // Protection when the WS is from the middleware
     if (rooms.find(element => element === gameId) == undefined) {
       rooms.forEach(function(value: string) {
         client.leave(value);
@@ -69,6 +132,9 @@ export class gameGateway {
         game.opponentId = query.userId as string;
       }
       client.to(game.id).emit("playerJoinTC", {playerId: query.userId, player: player});
+      if (game.type === "matchmaking" && game.players.size === 2 && game.state === "waiting") {
+        this.startGame(client, game);
+      }
     }
   }
 
@@ -82,6 +148,7 @@ export class gameGateway {
     if (game) {
       if (game.creatorId === query.userId) {
         game.players.delete(game.creatorId);
+        playingUsers.splice(playingUsers.indexOf(game.creatorId), 1);
         game.creatorId = "";
         if (game.opponentId != "") { // Do we have an opponent to set as creator?
           game.creatorId = game.opponentId;
@@ -89,10 +156,11 @@ export class gameGateway {
         }
       } else if (game.opponentId === query.userId) {
         game.players.delete(query.userId as string);
+        playingUsers.splice(playingUsers.indexOf(game.opponentId), 1);
         game.opponentId = "";
       }
+      this.chatGateway.userInGame(playingUsers);
       client.to(game.id).emit("playerLeaveTC", query.userId);
-      gamesMap.delete(query.userId);
     }
   }
 
@@ -122,14 +190,18 @@ export class gameGateway {
   }
 
   @SubscribeMessage("updateReadyTS")
-  updateReady(client: Socket, payload: {userId: string, isReady: boolean}): void {
-    const gameId: string = client.handshake.query.gameId as string;
-    const game: Game = gamesMap.get(gameId);
-    this.logger.log("LOG: updateReadyTS on " + gameId + " from " + client.handshake.query.username);
+  updateReady(client: Socket, isReady: boolean ): void {
+    const query: any = client.handshake.query;
+    const game: Game = gamesMap.get(query.gameId);
+    this.logger.log("LOG: updateReadyTS on " + query.gameId + " from " + query.username);
 
     if (game) {
-      game.players.get(payload.userId).isReady = payload.isReady;
-      client.to(gameId).emit("updateReadyTC", payload);
+      game.players.get(query.userId).isReady = isReady;
+      client.to(query.gameId).emit("updateReadyTC", {playerId: query.userId, isReady: isReady});
+      if (game.players.get(game.opponentId).isReady && game.players.get(game.creatorId).isReady) {
+        this.startGame(client, game);
+        game.state = "started";
+      }
     }
   }
 
@@ -157,11 +229,65 @@ export class gameGateway {
     }
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log("Client connected: " + client.handshake.query.username);
+  @SubscribeMessage("startSearchTS")
+  startSearch(client: Socket, player: Player): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: startSearchTS on " + query.gameId + " from " + query.username);
+
+    if (searchList.size >= 1) {
+      const playerCreaId: string = searchList.keys().next().value; // Selection of the first player who search for a game
+      const playerCrea: {client: Socket, gameId: string, player: Player} = searchList.values().next().value; // Get data from it
+      gamesMap.get(playerCrea.gameId).opponentIdFound = query.userId;
+      searchList.delete(playerCreaId);
+      playerCrea.client.emit("foundSearchCreaTC", { userId: query.userId, player });
+      client.emit("foundSearchOppoTC", playerCrea.gameId);
+    } else if (searchList.has(query.userId) == false) {
+      searchList.set(query.userId, {client: client, gameId: query.gameId, player: player});
+    }
   }
 
-  handleDisconnect(client: Socket) {
-   this.logger.log(`Client disconnected: ${client.id}`);
+  @SubscribeMessage("stopSearchTS")
+  stopSearch(client: Socket): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: stopSearchTS on " + query.gameId + " from " + query.username);
+
+    searchList.delete(query.userId);
+  }
+
+  /**
+   * GAME LISTENERS
+   */
+  @SubscribeMessage("posCreaTS")
+  posCrea(client: Socket, pos: number): void {
+    const query: any = client.handshake.query;
+
+    client.to(query.gameId).emit("posCreaTC", pos);
+  }
+
+  @SubscribeMessage("posOppoTS")
+  posOppo(client: Socket, pos: number): void {
+    const query: any = client.handshake.query;
+
+    client.to(query.gameId).emit("posOppoTC", pos);
+  }
+
+  @SubscribeMessage("pointTS")
+  pointTS(client: Socket, isCreaLoose: boolean): void {
+    const query: any = client.handshake.query;
+    this.logger.log("LOG: pointTS on " + query.gameId + " from " + query.username);
+
+    const game: Game = gamesMap.get(query.gameId);
+    const randDelta: Array<number> = this.genRandDelta();
+
+    if (!game)
+      return;
+    if (isCreaLoose === true) { // Add one point to opponent
+      game.score[1]++;
+    } else {                    // Add one point to creator
+      game.score[0]++;
+    }
+    client.to(game.id).emit("pointTC", isCreaLoose);
+    client.to(game.id).emit("newRoundTC", randDelta);
+    client.emit("newRoundTC", randDelta);
   }
 }

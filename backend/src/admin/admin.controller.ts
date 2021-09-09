@@ -2,6 +2,7 @@ import { Controller, Get, Req, UnauthorizedException, UseGuards } from '@nestjs/
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/user/entities/user.entity';
+import { AdminGuard } from 'src/user/guards/admin.guard';
 import { UserAuth } from 'src/user/guards/userAuth.guard';
 import { AdminService } from './admin.service';
 
@@ -20,13 +21,9 @@ export class AdminController {
     }
 
     @ApiOperation({description: 'Get All Admin'})
-    @UseGuards(AuthGuard('jwt'), UserAuth)
+    @UseGuards(AuthGuard('jwt'), UserAuth, AdminGuard)
     @Get('/allAdmin')
-    getAllAdmin(@Req() req): Promise<Partial<User[]>> {
-        const user: User = req.user;
-
-        if (user.isAdmin === false)
-			throw new UnauthorizedException('You aren\'t an administrator');
+    getAllAdmin(): Promise<Partial<User[]>> {
         return this.adminService.getAllAdmin();
     }
 }

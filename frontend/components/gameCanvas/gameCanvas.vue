@@ -1,9 +1,7 @@
 <template>
   <div data-app>
   <v-app>
-    <v-btn v-on:click="isGameDisplayedNeg">SHOW/HIDE THE GAME</v-btn>
-    <hr>
-    <div id="gameSettings">
+    <div id="gameSettings" v-if="this.isPreGameDisplayed">
       <h1>User settings</h1>
       <!-- GAME TYPE SELECTION -->
       <div id="type">
@@ -67,30 +65,34 @@
           label
           v-bind:color="this.creatorColor"
         >
-          <v-icon v-if="creatorName" left>mdi-account-circle-outline</v-icon>
+          <v-icon v-if="isCreatorReady" left>mdi-check</v-icon>
+          <v-icon v-else left>mdi-dots-horizontal</v-icon>
           {{ creatorName }}
         </v-chip>
         <v-chip
           label
           v-bind:color="this.opponentColor"
         >
-          <v-icon v-if="opponentName" left>mdi-account-circle-outline</v-icon>
+          <v-icon v-if="isOpponentReady" left>mdi-check</v-icon>
+          <v-icon v-else left>mdi-dots-horizontal</v-icon>
           {{ opponentName }}
         </v-chip>
       </div>
       <!-- MAIN BUTTON -->
-      <div id="mainBtn">
+      <div id="mainBtn" @mouseenter="mainBtn.actionHoverEnter" @mouseleave="mainBtn.actionHoverLeave">
         <v-btn
-          id="mainBtn"
+          id="mainBtnVueT"
           v-bind:color="mainBtn.color"
           v-bind:class="mainBtn.class"
+          v-bind:loading="mainBtn.isLoading"
+          v-if="this.mainBtn.txt"
           @click="mainBtn.action"
         >{{ this.mainBtn.txt }}
-        <v-icon>{{ this.mainBtn.ico}}</v-icon>
+          <v-icon>{{ this.mainBtn.ico}}</v-icon>
         </v-btn>
       </div>
     </div>
-    <div v-show="isGameDisplayed" id="gameCanvas">
+    <div v-show="isGameDisplayed" id="gameCanvas" class="useWholePage flexHVcenter" >
     </div>
   </v-app>
   </div>
@@ -102,7 +104,7 @@ import { Game, Player, IcolorPalette, Button} from "./dataStructures";
 import lookup from "socket.io-client";
 import { use } from "vue/types/umd";
 import { socket, socketInit } from "./socket"
-import { sketch } from "./sketch";
+import { sketchWrap, p5Instance } from "./sketch";
 
 export { SOCKET_URL };
 
@@ -124,14 +126,7 @@ export default Vue.extend({
       game: new Game(), // Must be assignated by the server data
       gameId: this.$route.path.match("[^/]+$")?.toString() as string, // Get the id of the path
       user: this.$store.state.user as any,
-      mapNames: [
-        {text: "earth"},
-        {text: "abstract1"},
-        {text: "abstract2"},
-        {text: "abstract3"},
-        {text: "tennis"},
-        {text: "beach"},
-      ],
+      mapNames: [] as string[],
       playerColorClass: "playerRed",
       playersList: {} as Array<any>,
       powList: [
@@ -141,28 +136,39 @@ export default Vue.extend({
       isPowDisplayed: false as boolean,
       isGameDisplayed: false as boolean,
       isMapsDisplayed: false as boolean,
-      isColorDisplayed: true as boolean,
+      isColorDisplayed: false as boolean,
+      isPreGameDisplayed: false as boolean,
       // model to typeSelection tabs
       tabTypesIndex: 0 as number,
       mainBtn: new Button(),
       tabTypes: ["matchmaking", "private"] as Array<string>,
       creatorColor: "" as string,
       creatorName: "" as string,
+      isCreatorReady: false as boolean,
       opponentColor: "" as string,
       opponentName: "" as string,
+      isOpponentReady: false as boolean,
       barColor: "" as string,
     }
   },
   async mounted() {
+    // Fetch map list
+    this.$axios.get("http://localhost:3000/api/game/mapList").then( response => {
+      response.data.forEach((mapName: any) => {
+        mapName = mapName.substr(0, mapName.lastIndexOf('.')) || mapName;
+        mapName = mapName.replace("-", " ");
+        this.mapNames.push(mapName);
+      });
+    });
     // Connect to the websocket & fetch remote game class
     socketInit(SOCKET_URL, this.gameId, this);
-    socket.emit("fetchGameTS", this.gameId);
-    // Start the sketch
-    const { default: P5 } = await import('p5');
-    const canvas = new P5(sketch, document.getElementById('gameCanvas') as HTMLElement);
+    socket.emit("fetchGameTS", this.gameId); // This function will ask to the server to fetch game class
   },
   async destroyed() {
     socket.disconnect();
+    if (p5Instance != undefined) {
+      p5Instance.remove();
+    }
   },
   methods: {
     isGameDisplayedNeg(): void { // Negative the boolean to display the canvas
@@ -175,6 +181,8 @@ export default Vue.extend({
         if (type === "matchmaking") {
           this.tabTypesIndex = 0;
         } else if (type === "private") {
+          if (this.mainBtn.isLoading === true)
+            this.btnActionSearchStop();
           this.tabTypesIndex = 1;
         }
         if (this.game.opponentId != "") {
@@ -208,7 +216,7 @@ export default Vue.extend({
       } else {
         this.isColorDisplayed = false;
       }
-      if (this.game.creatorId == this.user.userId) {          // If the current client is the creator
+      if (this.game.creatorId == this.user.userId && this.game.players.size == 1) {
         this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       } else {
         if (this.game.players.size === 1) {
@@ -232,18 +240,22 @@ export default Vue.extend({
         this.isPowDisplayed = false;
         this.isMapsDisplayed = false;
       }
-      if (this.game.players.size == 1) { // If the game is not full
-        if (this.game.players.has(this.user.userId) == false) { // If the current user is not the creator
-          this.mainBtn.setFull("JOIN THE GAME", "green", this.btnActionJoin);
-        } else {
-          this.mainBtn.setFull("INVITE A PLAYER", "white", this.btnActionInvite);
-        }
-      } else if (this.game.players.size == 2) {                           // If the game is full
+      if (this.game.players.size == 2) {                           // If the game is full
         if (this.game.players.has(this.user.userId) == false) { // Waiting for players to be ready
           this.mainBtn.setFull("WAITING FOR PLAYERS", "white");
         } else {                                                  // Display a button for player to set as ready
-          this.mainBtn.setFull("READY ?", "green", this.btnActionReady);
+          if (this.game.players.get(this.user.userId)?.isReady === true) {
+            this.isColorDisplayed = false;
+            this.isPowDisplayed = false;
+            this.isMapsDisplayed = false;
+          } else {
+            this.mainBtn.setFull("READY ?", "green", this.btnActionReady);
+          }
         }
+      } else if (this.game.players.has(this.user.userId) == false) { // If the current user is not the creator
+          this.mainBtn.setFull("JOIN THE GAME", "green", this.btnActionJoin);
+      } else {
+          this.mainBtn.setFull("INVITE A PLAYER", "white", this.btnActionInvite);
       }
     },
     updateDisplayedElem(): void {
@@ -258,7 +270,9 @@ export default Vue.extend({
         this.tabTypesIndex = 1;
       }
       this.creatorName = this.game.players.get(this.game.creatorId)?.name || "";
+      this.isCreatorReady = this.game.players.get(this.game.creatorId)?.isReady || false;
       this.opponentName = this.game.players.get(this.game.opponentId)?.name || "";
+      this.isOpponentReady = this.game.players.get(this.game.opponentId)?.isReady || false;
       this.updatePlayersColors();
     },
     updatePlayersColors(): void {
@@ -285,30 +299,78 @@ export default Vue.extend({
       player = this.game.players.get(this.user.userId);
       if (player) {
         player.name = this.user.username;
-        player.color = playerPalette["Blue"];
+        if (this.game.creatorId == this.user.userId) {
+          player.color = playerPalette["Red"]; // default colors
+        } else {
+          player.color = playerPalette["Blue"]; // default colors
+        }
         socket.emit("playerJoinTS", player);
       }
       this.updateDisplayedElem();
     },
     btnActionLeave(): void {  // Action to leave the game as a player
+      console.log("LOG: button action leave");
       this.game.opponentId = "";
       this.game.players.delete(this.user.userId);
       socket.emit("playerLeaveTS", this.user.userId);
     },
     btnActionInvite(): void { // Action to copy the link in the user clipboard
-
+      navigator.clipboard.writeText('http://localhost:3030' + this.$nuxt.$route.fullPath);
+      this.$mytoast.succ("URL paste in your clipboard !");
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
-
+      console.log("LOG: button action search");
+      this.mainBtn.isLoading = true;
+      this.mainBtn.color = "green";
+      this.mainBtn.action = this.btnActionSearchStop;
+      this.mainBtn.setHoverSearch();
+      this.$mytoast.info("Searching for a player...");
+      socket.emit("startSearchTS", this.game.players.get(this.user.userId));
+    },
+    btnActionSearchStop(): void {
+      console.log("LOG: button action search stop");
+      this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
+      this.mainBtn.resetHover(); // Delete actions when the client hover the button
+      this.mainBtn.isLoading = false;
+      socket.emit("stopSearchTS", this.game.players.get(this.user.userId));
     },
     btnActionReady(): void {  // Action to send to the server the information about the current player is ready
-      // const gameId: string = this.gameId;
-      // let player: Player | undefined = this.game.players.get(this.user.userId);
+      console.log("LOG: button action ready");
+      let player: Player | undefined = this.game.players.get(this.user.userId);
 
-      // if (player) {
-      //   player.isReady = !player.isReady;
-      //   socket.emit("updateReadyTS", {gameId: gameId, isReady: player.isReady});
-      // }
+      if (player && player.isReady === false) {
+        player.isReady = true;
+        socket.emit("updateReadyTS", player.isReady);
+        this.updateDisplayedElem();
+        this.mainBtn.isLoading = true;
+        this.mainBtn.setHoverReady();
+        this.mainBtn.action = this.btnActionUnReady;
+      }
+    },
+    btnActionUnReady(): void {  // Action to send to the server the information about the current player is ready
+      console.log("LOG: button action unready");
+      let player: Player | undefined = this.game.players.get(this.user.userId);
+
+      if (player && player.isReady === true) {
+        player.isReady = false;
+        socket.emit("updateReadyTS", player.isReady);
+        this.mainBtn.resetHover();
+        this.mainBtn.color = "green";
+        this.mainBtn.txt = "Ready ?";
+        this.mainBtn.isLoading = false;
+        this.mainBtn.action = this.btnActionReady;
+        this.updateDisplayedElem();
+      }
+    },
+    startGame(): void {
+      if (this.game.state === "started") {
+        this.isGameDisplayed = true;
+        this.isPreGameDisplayed = false;
+        sketchWrap(this);
+      }
+    },
+    bgImgURL(): string {
+      return `url(${this.$axios.defaults.baseURL}/api/game/map/${this.game.mapName.replace(' ', '-')}.png)`;
     },
   },
   computed: {

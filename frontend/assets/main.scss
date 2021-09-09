@@ -59,6 +59,8 @@ canvas {
   flex-direction: column;
 }
 
+// Common Backgrounds
+
 .playerRed {
   background-color: $pc-red;
 }
@@ -81,6 +83,14 @@ canvas {
 
 .playerPink {
   background-color: $pc-pink;
+}
+
+.redBg {
+  background: $pg-red !important;
+}
+
+.greenBg {
+  background: $pg-green !important;
 }
 
 // Scroll bar

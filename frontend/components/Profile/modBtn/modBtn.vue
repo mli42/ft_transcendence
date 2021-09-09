@@ -1,8 +1,8 @@
 <template>
-  <div class="modBtnMain flexHVcenter"
+  <v-btn class="modBtnMain flexHVcenter" fab
     @click="$emit('toggled')">
     <Iconify :iconName="icon"></Iconify>
-  </div>
+  </v-btn>
 </template>
 
 <script lang="ts">

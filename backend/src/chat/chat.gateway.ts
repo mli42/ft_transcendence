@@ -27,7 +27,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @WebSocketServer()
     server: Server;
- 
     private logger: Logger = new Logger('ChatGateway');
 
     /********************* CONNECTION ********************** */
@@ -42,13 +41,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             const user: User = await this.channelService.getUserFromSocket(client);
             if (!user) {
                 return this.disconnectClient(client);
-            } 
+            }
             else {
                 client.data.user = user;
 
                 const channels = await this.channelService.getChannelsForUser(user.userId);
                 await this.connectedUserService.create({socketId: client.id, user});
-                this.logger.log(`Client connected: ${client.id} - ${user.username}`);
+                this.userStatus();
+
+                this.logger.log(`Client connected: ${client.id}`);
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -67,12 +68,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         } else {
             this.logger.log(`Client diconnect: ${client.id}`);
         }
-        
+        this.userStatus();
     }
 
     private disconnectClient(client: Socket) {
         client.emit('Error', new UnauthorizedException());
         client.disconnect();
+        this.userStatus();
         this.logger.log(`Client diconnect: ${client.id}`);
     }
 
@@ -125,7 +127,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     //     if (members) {
     //         await this.channelService.updateChannelMembers(channelFound, members)
     //     }
-    // }
+
 
     /********************* HANDLE MESSAGE *****************/
     @SubscribeMessage('newMessage')
@@ -231,6 +233,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('leaveChannel')
     async handleLeaveChannel(client: Socket) {
         await this.joinedChannelService.deleteBySocketId(client.id);
+    }
+
+
+    async userStatus() {
+        let userConnected = await this.connectedUserService.userStatus();
+        return this.server.emit('userConnected', userConnected);
+    }
+
+    async userInGame(playingUser) {
+        return this.server.emit('userInGame', playingUser);
     }
 
 }

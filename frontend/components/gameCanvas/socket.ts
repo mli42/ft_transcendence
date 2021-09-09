@@ -5,7 +5,7 @@ export { socket, socketInit };
 
 let socket: Socket;
 
-function socketInit(url:string, gameId: string, vue: any): void {
+function socketInit(url: string, gameId: string, vue: any): void {
   socket = io(url, {
     withCredentials: true,
     query: {
@@ -25,9 +25,19 @@ function socketInit(url:string, gameId: string, vue: any): void {
     const deserialPlayers: Map<string, Player> = new Map(JSON.parse(serialPlayers));
     game.players = deserialPlayers;
     vue.$data.game = game;
-    vue.updateDisplayedElem();
+    if (game.opponentIdFound != "" && game.opponentIdFound === vue.$data.user.userId) {
+      vue.btnActionJoin();
+    }
+    if (game.state === "started") {
+      vue.startGame();
+    } else if (game.state === "waiting") {
+      vue.$data.isPreGameDisplayed = true;
+      vue.updateDisplayedElem();
+    } else if (game.state === "ended") {
+      vue.$mytoast.err("The game is finished and this part is not done for now");
+    }
   });
-  socket.on("changePlayerColorTC", (payload: {userId: string, player: Player}) => {
+  socket.on("changePlayerColorTC", (payload: { userId: string, player: Player }) => {
     console.log("LOG: changePlayerTC");
     vue.$data.game.players.set(payload.userId, payload.player);
     vue.updatePlayersColors();
@@ -37,13 +47,13 @@ function socketInit(url:string, gameId: string, vue: any): void {
     let game: Game = vue.$data.game;
 
     game.type = type;
-    if (type == "matchmaking" && game.players.size == 2) {
+    if (game.players.size == 2) {
       game.players.delete(game.opponentId);
       game.opponentId = "";
     }
     vue.updateDisplayedElem();
   });
-  socket.on("playerJoinTC", (payload: {playerId: string, player: Player}) => { // New opponent!
+  socket.on("playerJoinTC", (payload: { playerId: string, player: Player }) => { // New opponent!
     console.log("LOG: playerJoinTC");
     let game: Game = vue.$data.game;
     game.players.set(payload.playerId, payload.player);
@@ -70,13 +80,39 @@ function socketInit(url:string, gameId: string, vue: any): void {
     vue.updateDisplayedElem();
   });
   socket.on("updatePowTC", (enabledPowerUps: Array<string>) => {
-    console.log("LOG: updatePowTS");
+    console.log("LOG: updatePowTC");
     const game: Game = vue.$data.game;
     game.enabledPowerUps = enabledPowerUps;
   });
   socket.on("updateMapTC", (mapName: string) => {
-    console.log("LOG: updateMapTS");
+    console.log("LOG: updateMapTC");
     const game: Game = vue.$data.game;
     game.mapName = mapName;
+  });
+  socket.on("updateReadyTC", (payload: { playerId: string, isReady: boolean }) => {
+    console.log("LOG: updateReadyTC");
+    const game: Game = vue.$data.game;
+    const player: Player | undefined = game.players.get(payload.playerId);
+
+    if (game && player) {
+      player.isReady = payload.isReady;
+      vue.updateDisplayedElem();
+    }
+  });
+  socket.on("foundSearchCreaTC", (payload: { userId: string, player: Player }) => {
+    console.log("LOG: foundSearchCreaTC");
+    vue.$mytoast.succ("A player found !");
+    vue.$data.mainBtn.resetHover();
+    vue.$data.mainBtn.isLoading = false;
+  });
+  socket.on("foundSearchOppoTC", (gameId: string) => {
+    console.log("LOG: foundSearchOppoTC");
+    window.$nuxt.$router.push('/game/' + gameId); // Redirect client
+  });
+  socket.on("startGameTC", (ballDelta: Array<number>) => {
+    console.log("LOG: startGameTC");
+    vue.$data.game.state = "started";
+    vue.$data.game.ball.delta = ballDelta;
+    vue.startGame();
   });
 }

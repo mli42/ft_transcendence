@@ -51,7 +51,7 @@ export default Vue.extend({
     async fetchData() {
       this.users = await this.$axios
         .get(`/api/user/search?username=${this.who}`)
-        .then((res: any) => res.data)
+        .then((res: any) => res.data.sort(this.$user.sortCmp))
         .catch(() => [])
         .finally(() => { this.whoNotFound = this.who; });
       this.$router.push(`/search?who=${this.who}`);

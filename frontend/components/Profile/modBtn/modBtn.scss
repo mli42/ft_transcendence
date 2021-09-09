@@ -1,14 +1,13 @@
 @import '~/assets/Palette.scss';
 
-div.modBtnMain {
+.modBtnMain {
   width: 48px;
   height: 48px;
   border: 5px solid $pg-dark-blue;
-  border-radius: 50%;
   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
 }
 
-div.modBtnMain img {
+.modBtnMain img {
   width: 28px;
   height: 28px;
 }
