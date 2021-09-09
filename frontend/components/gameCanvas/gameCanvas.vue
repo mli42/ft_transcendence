@@ -113,21 +113,21 @@ export { SOCKET_URL };
 
 const SOCKET_URL: string = "ws://localhost:3000/game";
 
-let uiPalette: IcolorPalette = {} as IcolorPalette;
-uiPalette["green"] = "#219653"; uiPalette["white"] = "#DCE1E5";
-uiPalette["red"] = "#B30438";
+const uiPalette: IcolorPalette = {
+  green: "#219653", white: "#DCE1E5", red: "#B30438",
+};
 
-let playerPalette: IcolorPalette = {} as IcolorPalette;
-playerPalette["Red"] = "#FA163F"; playerPalette["Green"] = "#54E346";
-playerPalette["Blue"] = "#3EDBF0"; playerPalette["Yellow"] = "#FFF338";
-playerPalette["Purple"] = "#D62AD0"; playerPalette["Pink"] = "#FB7AFC";
+const playerPalette: IcolorPalette = {
+  Red: "#FA163F", Green: "#54E346", Blue: "#3EDBF0", Yellow: "#FFF338",
+  Purple: "#D62AD0", Pink: "#FB7AFC",
+};
 
 export default Vue.extend({
   name: "gameCanvas" as string,
   data() {
     return {
       game: new Game(), // Must be assignated by the server data
-      gameId: this.$route.path.match("[^/]+$")?.toString() as string, // Get the id of the path
+      gameId: this.$route.params.id as string,
       user: this.$store.state.user as any,
       mapNames: [] as string[],
       playerColorClass: "playerRed",
@@ -406,5 +406,4 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss" src="./gameCanvas.scss">
-
 </style>
