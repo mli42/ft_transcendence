@@ -134,7 +134,7 @@ class Player {
     this.barX = 0;
     this.barY = 432 / 2;
     this.color = "#FA163F";
-    this.barLen = 48; // in px
+    this.barLen = 64; // in px
     this.isReady = false;
     this.barSpeed = 1;
   }
@@ -185,7 +185,6 @@ class Game {
    * These functions move the bar up or down.
    */
   
-
 }
 
 // This class contain all data to represente a powerUp
