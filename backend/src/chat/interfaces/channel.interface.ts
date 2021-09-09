@@ -7,7 +7,7 @@ export interface ChannelI {
 	publicChannel?: boolean;
 	password?: string;
 	adminUsers?: string[];
-	banedUsers?: string[];
-	mutedUsers?: string[];
+	blockUsers?: string[];
+	owner?: string;
 	authPrivateChannelUsers?: string[];
 }

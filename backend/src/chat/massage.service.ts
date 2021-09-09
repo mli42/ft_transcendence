@@ -17,7 +17,6 @@ export class MessageService {
     }
 
     async findMessagesForChannel(channel: ChannelI): Promise<MessageI[]> {
-        //console.log(channel);
         const query = this.messageRepository
         .createQueryBuilder('message')
         .leftJoin('message.channel', 'channel')
@@ -25,7 +24,6 @@ export class MessageService {
         .leftJoinAndSelect('message.user', 'user')
         .orderBy('message.date', 'ASC');
         const messagesFound: MessageI[] = await query.getMany();
-        //console.log(messagesFound)
 		return messagesFound;
     }
 

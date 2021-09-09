@@ -101,25 +101,6 @@ ul {
     position: absolute;
     bottom: 4%;
 }
-.search input {
-    width: 250px;
-    height: 40px;
-    background-color: $pg-blue;
-    border-radius: 10px 0 0 10px;
-}
-
-.search div{
-    background-color: $pg-blue;
-    height: 40px;
-    width: 40px;
-    border-radius: 0px 10px 10px 0px;
-    
-}
-
-.search img{
-    width: 20px;
-    height: 20px;
-}
 
 #createChatRoomBtn{
     width: 280px;
@@ -179,10 +160,6 @@ ul {
     overflow-wrap: anywhere;
 }
 
-.settingBtn{
-
-}
-
 h1{
     font-size: 35px;
     margin: 16px auto;
@@ -191,10 +168,10 @@ h1{
     font-weight: normal;
 }
 
-.DoneBtn{
+.DoneBtn, .BlockBtn{
     width: 256px;
     height: 32px;
-    margin: 16px auto;
+    margin: 8px auto;
     text-transform: none;
     font-size: 18px;
     background-color: $pg-green !important;
@@ -202,6 +179,10 @@ h1{
     border-radius: 5px;
     padding: 7px 32px;
     color: $pg-white;
+}
+
+.BlockBtn{
+    background-color: $pg-red !important;
 }
 
 .SettingInput{
@@ -241,4 +222,14 @@ h1{
     position: absolute;
     top: 10%;
     right: 2%;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    margin: 0;
+}
+
+.checkBoxeModerator{
+    align-content: left;
 }
