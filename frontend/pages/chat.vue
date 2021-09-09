@@ -101,14 +101,16 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import io from 'socket.io-client';
 import {UserStatus, User, Message, Channel} from '~/types/chatTypes';
-import Dropdown from '../components/Dropdown/Dropdown.vue';
-import adminCardVue from '../components/adminCard/adminCard.vue';
+
 export default Vue.extend({
-  components: { Dropdown },
   name: 'chat',
   layout: 'default',
+  head(): object {
+    return {
+      title: 'Chat' as string,
+    };
+  },
   data(): any {
     return {
       bool: true as boolean,
@@ -168,7 +170,7 @@ export default Vue.extend({
         }
         else
         {
-          this.$user.socket.emit('joinChannel', this.channels[index]); 
+          this.$user.socket.emit('joinChannel', this.channels[index]);
           this.currentChannel = this.channels[index];
           this.checkIfMute(this.currentChannel);
         }
@@ -205,7 +207,7 @@ export default Vue.extend({
       mute: this.moderation.muteTime,
       block: this.moderation.blockedUser}
       this.$user.socket.emit('autorisationChannel', arg);
-    }, 
+    },
     sendMsg(): void {
       this.$user.socket.emit('newMessage',
       	{text: this.txt,
