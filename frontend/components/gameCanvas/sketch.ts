@@ -132,9 +132,25 @@ async function sketch(s: any): Promise<any> {
       ball.pos[1] = payload.posY;
     });
     socket.on("ballSync", (payload: {posX: number, posY: number}) => {
-      console.log("ballSync");
+      console.log("LOG: ballSync");
       ball.pos[0] = payload.posX;
       ball.pos[1] = payload.posY;
+    });
+    socket.on("changeBarModTC", (payload: {userId: string, state: number}) => {
+      console.log("LOG: changeBarModTC");
+      if (payload.state === 1) {
+        if (payload.userId === game.creatorId) {
+          game.modBarCrea = modifierUpCrea;
+        } else if (payload.userId === game.opponentId) {
+          game.modBarOppo = modifierUpOppo;
+        }
+      } else if (payload.state === 0) {
+        if (payload.userId === game.creatorId) {
+          game.modBarCrea = modifierDownCrea;
+        } else if (payload.userId === game.opponentId) {
+          game.modBarOppo = modifierDownOppo;
+        }
+      }
     });
     socket.on("pointTC", (isCreatorLoose: boolean) => {
       console.log("LOG: pointTC");
@@ -176,7 +192,6 @@ async function sketch(s: any): Promise<any> {
    */
   const protecUp = (p: Player): boolean => { if (p.barY - (p.barLen / 2) < 0) { return (true) } else { return (false); } };
   const protecDown = (p: Player): boolean => { if (p.barY + (p.barLen / 2) > 432) { return (true) } else { return (false); } };
-  let mod = () => { };
   const modifierUpCrea = () => { if (protecUp(pCrea)) { return; } pCrea.barY -= 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY); };
   const modifierDownCrea = () => { if (protecDown(pCrea)) { return; } pCrea.barY += 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY); };
   const modifierUpOppo = () => { if (protecUp(pOppo)) { return; } pOppo.barY -= 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY); };
@@ -191,7 +206,8 @@ async function sketch(s: any): Promise<any> {
 
   s.draw = () => {
     s.clear();
-    mod();
+    game.modBarCrea();
+    game.modBarOppo();
     s.fill(pCrea.color);
     s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen), 6, 6, 6, 6);
     s.fill(pOppo.color);
@@ -199,7 +215,7 @@ async function sketch(s: any): Promise<any> {
     collBarChecker();
     ball.pos[0] += ball.delta[0] * ball.speed;
     ball.pos[1] += ball.delta[1] * ball.speed;
-    if (s.frameCount % 25 == 4) { // Sync the ball pos 1 frome on 10
+    if (isAPlayer && s.frameCount % 25 == 4) { // Sync the ball pos 1 frome on 10
       socket.emit("ballSync", { posX: ball.pos[0], posY: ball.pos[1] });
     }
     if (ball.pos[1] - (ball.size / 2) <= 0 || ball.pos[1] + (ball.size / 2) >= 432) { // top & bot collision
@@ -226,19 +242,27 @@ async function sketch(s: any): Promise<any> {
   s.keyPressed = (event: any) => {
     if (event.key === "ArrowUp") {
       if (vueInstance.$data.user.userId === game.creatorId) {
-        mod = modifierUpCrea;
+        socket.emit("changeBarModTS", vueInstance.$data.user.userId, 1);
+        game.modBarCrea = modifierUpCrea;
       } else if (isAPlayer === true) {
-        mod = modifierUpOppo;
+        socket.emit("changeBarModTS", vueInstance.$data.user.userId, 1);
+        game.modBarOppo = modifierUpOppo;
       }
     } else if (event.key === "ArrowDown") {
       if (vueInstance.$data.user.userId === game.creatorId) {
-        mod = modifierDownCrea;
+        socket.emit("changeBarModTS", vueInstance.$data.user.userId, 0);
+        game.modBarCrea = modifierDownCrea;
       } else if (isAPlayer === true) {
-        mod = modifierDownOppo;
+        socket.emit("changeBarModTS", vueInstance.$data.user.userId, 0);
+        game.modBarOppo = modifierDownOppo;
       }
     }
   }
   s.keyReleased = (event: any) => {
-    mod = () => { };
+    if (vueInstance.$data.user.userId === game.creatorId) {
+      game.modBarCrea = () => {};
+    } else if (isAPlayer === true) {
+      game.modBarOppo = () => {};
+    }
   }
 }

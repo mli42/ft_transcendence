@@ -26,11 +26,11 @@ class Button {
     this.uiPalette["red"] = "#B30438";
     this.txt = "";
     this.ico = "";
-    this.class = {'v-btn-content': false};
+    this.class = { 'v-btn-content': false };
     this._color = this.uiPalette["white"];
-    this.action = function () {};
-    this.actionHoverEnter = function () {};
-    this.actionHoverLeave = function () {};
+    this.action = function () { };
+    this.actionHoverEnter = function () { };
+    this.actionHoverLeave = function () { };
     this.isLoading = false;
   }
 
@@ -53,16 +53,16 @@ class Button {
     if (action) {
       this.action = action;
     } else {
-      this.action = function () {};
+      this.action = function () { };
     }
   }
 
   public setHoverSearch() {
-    this.actionHoverLeave = () => { 
+    this.actionHoverLeave = () => {
       this.isLoading = true;
       this.color = "green";
     };
-    this.actionHoverEnter = () => { 
+    this.actionHoverEnter = () => {
       this.isLoading = false;
       this.txt = "Stop the research"
       this.color = "red";
@@ -70,11 +70,11 @@ class Button {
   }
 
   public setHoverReady() {
-    this.actionHoverLeave = () => { 
+    this.actionHoverLeave = () => {
       this.isLoading = true;
       this.color = "green";
     };
-    this.actionHoverEnter = () => { 
+    this.actionHoverEnter = () => {
       this.isLoading = false;
       this.txt = "Unready"
       this.color = "red";
@@ -82,8 +82,8 @@ class Button {
   }
 
   public resetHover() {
-    this.actionHoverLeave = () => {};
-    this.actionHoverEnter = () => {};
+    this.actionHoverLeave = () => { };
+    this.actionHoverEnter = () => { };
   }
 }
 
@@ -149,8 +149,10 @@ class Game {
   score: Array<number>;
   mapName: string;
   players: Map<string, Player>; // string -> userId
-  creatorId: string;              // The userId of the game creator
-  opponentId: string;             // The userId of the opponenent;
+  creatorId: string;            // The userId of the game creator
+  opponentId: string;           // The userId of the opponenent;
+  modBarCrea: () => void;         // Bar modifier functions
+  modBarOppo: () => void;
   creationDate: Date;
   opponentIdFound: string;
   enabledPowerUps: Array<string>;
@@ -165,10 +167,25 @@ class Game {
     this.players = new Map();
     this.creatorId = "";
     this.opponentId = "";
+    this.modBarCrea = function () { };
+    this.modBarOppo = function () { };
     this.creationDate = new Date();
     this.opponentIdFound = "";
     this.enabledPowerUps = new Array<string>();
   }
+
+  /**
+   * Function that return true if the bar will go out of the game canvas
+ */
+  readonly protecUp = (p: Player): boolean => { if (p.barY - (p.barLen / 2) < 0) { return (true) } else { return (false); } };
+  readonly protecDown = (p: Player): boolean => { if (p.barY + (p.barLen / 2) > 432) { return (true) } else { return (false); } };
+
+  /**
+   * MODIFIER BAR FUNCTIONS
+   * These functions move the bar up or down.
+   */
+  
+
 }
 
 // This class contain all data to represente a powerUp
@@ -180,6 +197,6 @@ class PowerUp {
   constructor() {
     this.pos = [0, 0];
     this.name = "";
-    this.modifier = () => {};
+    this.modifier = () => { };
   }
 }

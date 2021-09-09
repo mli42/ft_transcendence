@@ -115,7 +115,12 @@ export class gameGateway {
       }
       client.join(gameId);
     }
-    client.emit("fetchGameTC", gamesMap.get(gameId), JSON.stringify(Array.from(gamesMap.get(gameId).players.entries())));
+    client.emit("fetchGameTC", {
+      game: gamesMap.get(gameId),
+      serialPlayers: JSON.stringify(Array.from(gamesMap.get(gameId).players.entries())),
+      modBarCrea: gamesMap.get(gameId).modBarCrea.toString(),
+      modBarOppo: gamesMap.get(gameId).modBarOppo.toString(),
+    });
   }
 
   // A client join the game as player
@@ -270,6 +275,13 @@ export class gameGateway {
     const query: any = client.handshake.query;
 
     client.to(query.gameId).emit("posOppoTC", pos);
+  }
+
+  @SubscribeMessage("changeBarModTS")
+  changeBarMod(client: Socket, payload: {userId: string, state: number}): void {
+    const query: any = client.handshake.query;
+
+    client.to(query.gameId).emit("changeBarModTC", payload);
   }
 
   @SubscribeMessage("pointTS")
