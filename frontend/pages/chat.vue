@@ -302,7 +302,7 @@ export default Vue.extend({
       this.$axios
       .get(`/api/user/partialInfo?userId=${element}`)
       .then((resp: any) => {this.friends.push(resp.data);})
-      .catch(() => console.log('Oh no'));
+      .catch(this.$mytoast.defaultCatch);
     });
   },
   created() {
