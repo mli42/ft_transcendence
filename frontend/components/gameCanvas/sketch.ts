@@ -41,7 +41,7 @@ async function sketch(s: any): Promise<any> {
   let pOppo: Player = new Player(); // Opposent player
   let isAPlayer: boolean = false;   // Is true if the client is a player
   let msgBarTS: string;
-  const BAR_WIDTH: number = 8;
+  const BAR_WIDTH: number = 4;
 
   /**
    * SKETCH INIT
@@ -155,6 +155,10 @@ async function sketch(s: any): Promise<any> {
     }
     s.frameRate(50);
     s.noStroke();
+    s.drawingContext.shadowBlur = 15;
+    s.drawingContext.shadowOffsetX = 0;
+    s.drawingContext.shadowOffsetY = 0;
+    s.drawingContext.shadowColor = "#FFFFFFF0";
     s.rectMode(s.CENTER);
   }
 
@@ -181,9 +185,9 @@ async function sketch(s: any): Promise<any> {
     s.clear();
     mod();
     s.fill(pCrea.color);
-    s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen));
+    s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen), 6, 6, 6, 6);
     s.fill(pOppo.color);
-    s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen));
+    s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen), 6, 6, 6, 6);
     collBarChecker();
     ball.pos[0] += ball.delta[0] * ball.speed;
     ball.pos[1] += ball.delta[1] * ball.speed;
