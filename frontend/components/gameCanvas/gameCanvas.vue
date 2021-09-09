@@ -108,7 +108,7 @@ import { sketchWrap, p5Instance } from "./sketch";
 
 export { SOCKET_URL };
 
-const SOCKET_URL: string = "ws://localhost:3000/game";
+const SOCKET_URL: string = `ws://${window.location.hostname}:3000/game`;
 
 let uiPalette: IcolorPalette = {} as IcolorPalette;
 uiPalette["green"] = "#219653"; uiPalette["white"] = "#DCE1E5";
@@ -153,7 +153,7 @@ export default Vue.extend({
   },
   async mounted() {
     // Fetch map list
-    this.$axios.get("http://localhost:3000/api/game/mapList").then( response => {
+    this.$axios.get("/api/game/mapList").then( response => {
       response.data.forEach((mapName: any) => {
         mapName = mapName.substr(0, mapName.lastIndexOf('.')) || mapName;
         mapName = mapName.replace("-", " ");
@@ -315,7 +315,7 @@ export default Vue.extend({
       socket.emit("playerLeaveTS", this.user.userId);
     },
     btnActionInvite(): void { // Action to copy the link in the user clipboard
-      navigator.clipboard.writeText('http://localhost:3030' + this.$nuxt.$route.fullPath);
+      navigator.clipboard.writeText(window.location.href);
       this.$mytoast.succ("URL paste in your clipboard !");
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
