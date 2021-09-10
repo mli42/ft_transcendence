@@ -64,11 +64,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async handleDisconnect(client: Socket) {
         await this.connectedUserService.deleteBySoketId(client.id);
         client.disconnect();
-        if (client.data) {
-            this.logger.log(`Client diconnect: ${client.id} - ${client.data.user.username}`);
-        } else {
-            this.logger.log(`Client diconnect: ${client.id}`);
-        }
+        this.logger.log(`Client diconnect: ${client.id}`);
         this.userStatus();
     }
 
@@ -117,20 +113,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* UPDATE CHANNEL **************** */
     @SubscribeMessage('updateChannel')
     async updateChannel(client: Socket, info: any) {
-        console.log(info)
-        const { applyPassword, password, deletePassword, members } = info.data;
         const { channel } = info;
-        console.log("CHANNEL")
-		console.log(channel)
         const channelFound = await this.channelService.getChannel(channel.channelId);
-        if (applyPassword) {
-            channelFound.password = password;
-        }
-        if (deletePassword) {
-            channelFound.password = "";
-        }
-        if (members) {
-            await this.channelService.updateChannelMembers(channelFound, members)
+
+        await this.channelService.updateChannelInfo(channelFound, info.data)
+        const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
+        for (const connection of connections) {
+            const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
+            await this.server.to(connection.socketId).emit('channel', channels);
         }
     }
 
@@ -219,7 +209,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('passwordChannel')
     async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
         const { channel, password } = data;
-        if ((await bcrypt.compare(password, channel.password)) === false)
+        if (password && (await bcrypt.compare(password, channel.password)) === false)
             return false;
         await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
         const connections: ConnectedUserI[] = await this.connectedUserService.findAll();

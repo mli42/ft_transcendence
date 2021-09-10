@@ -21,7 +21,7 @@ export class ChannelService {
 	) {}
 
 	async createChannel(channel: ChannelI, creator: User): Promise<ChannelI> {
-		const { channelName, publicChannel, password } = channel;
+		let { channelName, publicChannel, password } = channel;
 		const name = await this.channelRepository.findOne({channelName: channelName});
 		if (name)
 			throw new UnauthorizedException('This channel name already exist');
@@ -29,8 +29,12 @@ export class ChannelService {
 		channel.blockUsers = [];
 		channel.authPrivateChannelUsers = [];
 		channel.owner = creator.userId;
-		const salt = await bcrypt.genSalt();
-		channel.password = await bcrypt.hash(password, salt);
+		if (password) {
+			const salt = await bcrypt.genSalt();
+			channel.password = await bcrypt.hash(password, salt);
+		} else {
+			password = null;
+		}
 		if (publicChannel === false) {
 			const newChannel = await this.addCreatorToChannel(channel, creator);
 			return this.channelRepository.save(newChannel);
@@ -166,16 +170,30 @@ export class ChannelService {
 	}
 
 
-	async updateChannelMembers(channelFound: ChannelI, members:User[]) {
-		const newUsers = [];
-		for (const user of members) {
-			const userFound: User = channelFound.users.find(element => element.userId === user.userId);
-			if (!userFound) {
-				newUsers.push(user);
+	async updateChannelInfo(channelFound: ChannelI, info: any) {
+		const { applyPassword, password, deletePassword, members } = info;
+        if (applyPassword) {
+            if (!password) {
+                channelFound.password = "";
+            } else {
+				const salt = await bcrypt.genSalt();
+				channelFound.password = await bcrypt.hash(password, salt);
+            }
+        }
+        if (deletePassword) {
+            channelFound.password = "";
+        }
+		if (members) {
+			const newUsers = [];
+			for (const user of members) {
+				const userFound: User = channelFound.users.find(element => element.userId === user.userId);
+				if (!userFound) {
+					newUsers.push(user);
+				}
 			}
+			const newMembers = channelFound.users.concat(newUsers);
+			channelFound.users = newMembers;
 		}
-		const newMembers = channelFound.users.concat(newUsers);
-		channelFound.users = newMembers;
 		await this.channelRepository.save(channelFound);
 	}
 
