@@ -19,7 +19,7 @@
           <img class="chanelImg" src="~/assets/img/chatbubble.svg">
           <p> {{ currentChannel.channelName }} </p>
         </div>
-        <div class="settingBtn flexHVcenter" v-if="this.currentChannel.publicChannel ===true && this.currentChannel.owner === this.currentUser.userId">
+        <div class="settingBtn flexHVcenter" v-if="this.currentChannel.publicChannel === false && this.currentChannel.owner === this.currentUser.userId">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
@@ -27,7 +27,11 @@
         <div class="received">
           <ul>
             <li class="newMsg" v-for="(msg, index) in messages" :key="index">
-              <img src="~/assets/img/avatar.jpeg">
+              <div class="msgAvatar">
+                <NuxtLink :to="`/profile/${msg.user.username}`">
+                  <Avatar :user="msg.user"></Avatar>
+                </NuxtLink>
+              </div>
               <div class="msgDiv">
                 <p>{{ msg.user.username }}</p>
                 <div class="msgContent"> {{ msg.text }} </div>
@@ -63,11 +67,15 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
       <h1 id="settingModal">Channel Settings</h1>
-      <ModalInput  name="Change passeword :"  placeHolder="" :isPassword="true" :ispublic="true" v-model.lazy="channelSettings.password"></ModalInput>
       <div class="checkBoxePassword flexHVcenter">
         <input type="checkbox" name="addpassword" v-model="channelSettings.applyPassword">
         <label class="addPassword" for="addpassword">Protect by new password</label>
       </div>
+      <!-- <div class="checkBoxePassword flexHVcenter" v-if="!changeSettings.applyPassword">
+        <input type="checkbox" name="addpassword" v-model="channelSettings.deletePassword">
+        <label class="addPassword" for="addpassword">Delete existing password</label>
+      </div> -->
+      <ModalInput  name="New passeword :"  placeHolder="" :isPassword="true" :ispublic="true" v-model.lazy="channelSettings.password" v-if="channelSettings.applyPassword"></ModalInput>
       <Dropdown toselect="Add members :" :items="friends"></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showSettings = false, changeSettings()">
         <p class="v-btn-content">Apply</p>
@@ -146,7 +154,7 @@ export default Vue.extend({
         password: '' as string,
         applyPassword: false as boolean,
         deletePassword: false as boolean,
-        newMembers: [] as User[],
+        members: [] as User[],
       },
       selectedChannel: 0 as number,
       friends: [] as User[],
@@ -188,7 +196,10 @@ export default Vue.extend({
         }
         this.$user.socket.emit('passwordChannel', arg, (data: any) => {
           if (data === false)
+          {
             this.modalBool.showPrivacy = false;
+            this.$mytoast.err(`Wrong password!`);
+          }
           else
           {
             this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
@@ -281,7 +292,11 @@ export default Vue.extend({
       });
     },
     changeSettings(): void{
-
+      const arg = {
+        channel: this.currentChannel,
+        data: this.channelSettings,
+      };
+      this.$user.socket.emit("updateChannel", arg);
     },
   },
   mounted() {
@@ -314,7 +329,7 @@ export default Vue.extend({
    });
     this.$nuxt.$on('send-userlist', (userList: User[]) => {
       this.newChannel.members = userList;
-      this.channelSettings = userList;
+      this.channelSettings.members = userList;
    });
     this.$nuxt.$on('send-banTime', (time: number) => {
       this.moderation.banTime = time;
