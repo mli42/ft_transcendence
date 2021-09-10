@@ -166,19 +166,17 @@ export class ChannelService {
 	}
 
 
-	async updateChannelMembers(channelFound: ChannelI, members:string[]) {
-		const usersChannelConvert: string[] = Object.keys(channelFound.users);
-
+	async updateChannelMembers(channelFound: ChannelI, members:User[]) {
+		const newUsers = [];
 		for (const user of members) {
-			const userFound = usersChannelConvert.find(element => element === user);
-			if (userFound) {
-				const index = usersChannelConvert.indexOf(userFound);
-				usersChannelConvert.splice(index, 1);
+			const userFound: User = channelFound.users.find(element => element.userId === user.userId);
+			if (!userFound) {
+				newUsers.push(user);
 			}
 		}
-		const newUsersChannels = usersChannelConvert.concat(members);
-		console.log(newUsersChannels)
-		// channelFound.users = 
+		const newMembers = channelFound.users.concat(newUsers);
+		channelFound.users = newMembers;
+		await this.channelRepository.save(channelFound);
 	}
 
 	// add or remove a user to private channel

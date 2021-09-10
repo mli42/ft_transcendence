@@ -116,8 +116,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* UPDATE CHANNEL **************** */
     @SubscribeMessage('updateChannel')
-    async updateChannel(client: Socket, data: any) {
-        const { applyPassword, password, deletePassword, members, channel } = data;
+    async updateChannel(client: Socket, info: any) {
+        console.log(info)
+        const { applyPassword, password, deletePassword, members } = info.data;
+        const { channel } = info;
+        console.log("CHANNEL")
+		console.log(channel)
         const channelFound = await this.channelService.getChannel(channel.channelId);
         if (applyPassword) {
             channelFound.password = password;
@@ -135,7 +139,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async onAddMessage(client: Socket, message: MessageI) {
         const userRoleFound = await this.roleUserService.findUserByChannel(message.channel, client.data.user.userId);
         let date = new Date;
-        if (userRoleFound && (userRoleFound.mute < date || userRoleFound.ban < date)) {
+        if (userRoleFound && (userRoleFound.mute >= date || userRoleFound.ban >= date)) {
             return;
         }
         const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
@@ -144,7 +148,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         for (const user of joinedUsers) {
             const userJoinRoleFound = await this.roleUserService.findUserByChannel(message.channel, user.user.userId);
             let date = new Date;
-            if (!userJoinRoleFound || (userJoinRoleFound.ban < date)) {
+            if (!userJoinRoleFound || userJoinRoleFound.ban < date || userJoinRoleFound.ban === null || userJoinRoleFound.mute >= date) {
                 await this.server.to(user.socketId).emit('messageAdded', createMessage);
             }
         }
@@ -153,7 +157,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* Autorisation Channel *********************/
     @SubscribeMessage('autorisationChannel')
     async updateAutorisationChannel(client: Socket, data: any) {
-
         let { user, channel, admin, block } = data;
         console.log(data)
         if (admin === true) {
