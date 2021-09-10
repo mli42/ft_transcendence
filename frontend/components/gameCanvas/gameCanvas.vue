@@ -1,8 +1,8 @@
 <template>
   <div data-app>
-  <v-app>
-    <div id="gameSettings" v-if="this.isPreGameDisplayed">
-      <h1>User settings</h1>
+  <v-app id="vappMain">
+    <div id="gameSettings" v-if="this.isPreGameDisplayed" class="useWholePage flexHVcenter">
+      <div id="preGame">
       <!-- GAME TYPE SELECTION -->
       <div id="type">
         <v-card>
@@ -90,6 +90,7 @@
         >{{ this.mainBtn.txt }}
           <v-icon>{{ this.mainBtn.ico}}</v-icon>
         </v-btn>
+      </div>
       </div>
     </div>
     <div v-show="isGameDisplayed" >

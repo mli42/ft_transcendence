@@ -1,5 +1,21 @@
 @import '~/assets/Palette.scss';
 
+#vappMain {
+  background: $pg-blue !important;
+}
+
+#gameSettings {
+  position: absolute;
+}
+
+#preGame {
+  width: 784px;
+  height: 580px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  border: 3px solid $pg-dark-blue;
+}
+
 #gameCanvas {
   position: absolute;
   left: 0; right: 0; /* horizontal center */
