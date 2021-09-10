@@ -208,6 +208,7 @@ export default Vue.extend({
       this.password = '';
     },
     sendModeration() {
+
       const arg = {channel: this.currentChannel,
       user: this.currentMemberMod,
       admin: this.moderation.newMod,
@@ -215,10 +216,10 @@ export default Vue.extend({
       mute: this.moderation.muteTime,
       block: this.moderation.blockedUser}
       this.$user.socket.emit('autorisationChannel', arg);
-        this.moderation.newMod = false;
-        this.moderationbanTime = 0;
-        this.moderationmuteTime = 0;
-        this.moderationblockedUser = false;
+      this.moderation.newMod = false;
+      this.moderation.banTime = 0;
+      this.moderation.muteTime = 0;
+      this.moderationblockedUser = false;
     },
     sendMsg(): void {
       this.$user.socket.emit('newMessage',
