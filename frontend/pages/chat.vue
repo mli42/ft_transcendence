@@ -162,14 +162,17 @@ export default Vue.extend({
   methods: {
     async joinChannel(index: number): Promise<void>{
       this.$user.socket.emit('leaveChannel');
+      this.needPassword =
       this.$user.socket.emit("checkRoleChannelBan", this.channels[index], (resp: boolean) => {
         if (resp === true)
         {
           this.$mytoast.err(`no access to "${this.channels[index].channelName}" YOU'VE BEEN BANNED!!!`);
           return;
         }
-        if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
+        if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId)
+          && this.channels[index].password != "" && this.channels[index].owner != this.currentUser.userId)
         {
+          console.log("ICIIII");
           this.modalBool.showPrivacy = true;
           this.selectedChannel = index;
         }
