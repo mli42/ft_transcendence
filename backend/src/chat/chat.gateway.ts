@@ -6,7 +6,7 @@ import { ChannelService } from './channel.service'
 import { ChannelI } from "./interfaces/channel.interface";
 import { ConnectedUserService } from './connected-user.service';
 import { ConnectedUserI } from './interfaces/user-connected.interface';
-import { MessageService } from './massage.service';
+import { MessageService } from './message.service';
 import { JoinedChannelService } from './joined-channel.service';
 import { MessageI } from './interfaces/message.interface';
 import { JoinedChannelI } from './interfaces/joined-channel.interface';
@@ -114,20 +114,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* UPDATE CHANNEL **************** */
-    // @SubscribeMessage('updateChannel')
-    // async updateChannel(client: Socket, data: any) {
-    //     const { isUpdate, password, deletePassword, members, channel } = data;
-    //     const channelFound = await this.channelService.getChannel(channel.channelId);
-    //     if (isUpdate) {
-    //         channelFound.password = password;
-    //     }
-    //     if (deletePassword) {
-    //         channelFound.password = "";
-    //     }
-    //     if (members) {
-    //         await this.channelService.updateChannelMembers(channelFound, members)
-    //     }
-
+    @SubscribeMessage('updateChannel')
+    async updateChannel(client: Socket, data: any) {
+        const { applyPassword, password, deletePassword, members, channel } = data;
+        const channelFound = await this.channelService.getChannel(channel.channelId);
+        if (applyPassword) {
+            channelFound.password = password;
+        }
+        if (deletePassword) {
+            channelFound.password = "";
+        }
+        if (members) {
+            await this.channelService.updateChannelMembers(channelFound, members)
+        }
+    }
 
     /********************* HANDLE MESSAGE *****************/
     @SubscribeMessage('newMessage')
@@ -166,13 +166,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             this.channelService.removeBlockUser(channel, user);
         }
         const roleFound: RoleUserI = await this.roleUserService.findUserByChannel(channel, user.userId);
+        let role: RoleUserI = null;
         if (roleFound) {
-            await this.roleUserService.updateRole(roleFound, data);
+            role = await this.roleUserService.updateRole(roleFound, data);
         }
         else {
-            this.roleUserService.create(data);
+            role = await this.roleUserService.create(data);
         }
-        // emit user ban et channel
+        let date = new Date;
+        const userConnectedFound: ConnectedUserI = await this.connectedUserService.findUser(user);
+        if (userConnectedFound) {
+            if (role.ban > date) {
+                this.server.to(userConnectedFound.socketId).emit('banUserChannel', channel);
+            }
+            if (role.mute > date) {
+                this.server.to(userConnectedFound.socketId).emit('muteUserChannel', channel);
+            }
+        }
     }
 
     @SubscribeMessage('checkRoleChannelMute')

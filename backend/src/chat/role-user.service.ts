@@ -12,7 +12,7 @@ export class RoleUserService {
         private readonly roleUserRepository: Repository<RoleUser>
     ) {}
 
-    async create(data:any) {
+    async create(data:any): Promise<RoleUserI> {
         let { user, channel, ban, mute } = data;
 
         if (ban > 0) {
@@ -29,12 +29,11 @@ export class RoleUserService {
         } else {
             mute = null;
         }
-
-        const role: RoleUserI = {userId: user.userId, ban, mute, channel}
-        await this.roleUserRepository.save(role);
+        const newRole: RoleUserI = await this.roleUserRepository.save({userId: user.userId, ban, mute, channel});
+        return newRole;
     }
 
-    async updateRole(role: RoleUserI, data: any) {
+    async updateRole(role: RoleUserI, data: any): Promise<RoleUserI> {
         let { ban, mute } = data;
         
         if (ban > 0) {
@@ -42,16 +41,17 @@ export class RoleUserService {
             dateBan.setDate(dateBan.getDate() + ban);
             role.ban = dateBan;
         } else {
-            ban = null;
+            role.ban = null;
         }
         if (mute > 0) {
             let dateMute = new Date;
             dateMute.setDate(dateMute.getDate() + mute)
             role.mute = dateMute;
         } else {
-            mute = null;
+            role.mute = null;
         }
-        await this.roleUserRepository.save(role);
+       const newRole: RoleUserI =  await this.roleUserRepository.save(role);
+       return newRole;
     }
 
     async findByUserId(userId: string): Promise<RoleUserI> {
