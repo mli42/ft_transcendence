@@ -5,15 +5,11 @@
       <div id="preGame">
       <!-- GAME TYPE SELECTION -->
       <div id="type">
-        <v-card>
-          <v-tabs
-            id="typeSelection"
-            class="typeSelection"
-            center-active
-            v-model="tabTypesIndex"
-          >
-            <v-tab v-bind:disabled="isTabsEnabled" @click="changeGameType('matchmaking')">Matchmaking</v-tab>
-            <v-tab v-bind:disabled="isTabsEnabled" @click="changeGameType('private')">Private Game</v-tab>
+        <v-card flat>
+          <v-tabs id="typeSelection" class="typeSelection" v-model="tabTypesIndex"
+            fixed-tabs background-color="#003566" color="white">
+            <v-tab :disabled="isTabsEnabled" @click="changeGameType('matchmaking')">Matchmaking</v-tab>
+            <v-tab :disabled="isTabsEnabled" @click="changeGameType('private')">Private Game</v-tab>
           </v-tabs>
         </v-card>
       </div>
