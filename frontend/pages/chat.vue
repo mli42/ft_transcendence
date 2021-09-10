@@ -71,10 +71,6 @@
         <input type="checkbox" name="addpassword" v-model="channelSettings.applyPassword">
         <label class="addPassword" for="addpassword">Protect by new password</label>
       </div>
-      <!-- <div class="checkBoxePassword flexHVcenter" v-if="!changeSettings.applyPassword">
-        <input type="checkbox" name="addpassword" v-model="channelSettings.deletePassword">
-        <label class="addPassword" for="addpassword">Delete existing password</label>
-      </div> -->
       <ModalInput  name="New passeword :"  placeHolder="" :isPassword="true" :ispublic="true" v-model.lazy="channelSettings.password" v-if="channelSettings.applyPassword"></ModalInput>
       <Dropdown toselect="Add members :" :items="friends"></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showSettings = false, changeSettings()">
@@ -158,6 +154,7 @@ export default Vue.extend({
       },
       selectedChannel: 0 as number,
       friends: [] as User[],
+      nonMember: [] as User[],
       password: '' as string,
       currentMemberMod: {} as User,
     }
@@ -218,6 +215,10 @@ export default Vue.extend({
       mute: this.moderation.muteTime,
       block: this.moderation.blockedUser}
       this.$user.socket.emit('autorisationChannel', arg);
+        this.moderation.newMod = false;
+        this.moderationbanTime = 0;
+        this.moderationmuteTime = 0;
+        this.moderationblockedUser = false;
     },
     sendMsg(): void {
       this.$user.socket.emit('newMessage',
@@ -311,6 +312,12 @@ export default Vue.extend({
     });
     this.$user.socket.on("channel", (data: any) => {
       this.channels = data;
+    });
+    this.$user.socket.on('banUserChannel', (data: any) => {
+       this.$mytoast.err(`You've been banned from "${data.channelName}"`);
+    });
+    this.$user.socket.on('muteUserChannel', (data: any) => {
+       this.$mytoast.err(`You've been muted from "${data.channelName}"`);
     });
     this.$user.socket.on('messages', (data: any) => {
         this.messages = data;
