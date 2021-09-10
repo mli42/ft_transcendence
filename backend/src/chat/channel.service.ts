@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../user/user.repository';
 import { Channel } from './entities/channel.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -20,7 +21,7 @@ export class ChannelService {
 	) {}
 
 	async createChannel(channel: ChannelI, creator: User): Promise<ChannelI> {
-		const { channelName, publicChannel } = channel;
+		const { channelName, publicChannel, password } = channel;
 		const name = await this.channelRepository.findOne({channelName: channelName});
 		if (name)
 			throw new UnauthorizedException('This channel name already exist');
@@ -28,6 +29,8 @@ export class ChannelService {
 		channel.blockUsers = [];
 		channel.authPrivateChannelUsers = [];
 		channel.owner = creator.userId;
+		const salt = await bcrypt.genSalt();
+		channel.password = await bcrypt.hash(password, salt);
 		if (publicChannel === false) {
 			const newChannel = await this.addCreatorToChannel(channel, creator);
 			return this.channelRepository.save(newChannel);
@@ -57,7 +60,6 @@ export class ChannelService {
 		.leftJoinAndSelect('channel.users', 'all_users')
 		.orderBy('channel.update_at', 'DESC');
 		const privateChannels: ChannelI[] = await query.getMany();
-		
 		const channels = publicChannels.concat(privateChannels);
 		return channels;
 	}
@@ -74,7 +76,7 @@ export class ChannelService {
 	async getChannel(channelId: string): Promise<ChannelI> {
 		return this.channelRepository.findOne(channelId, {relations: ['users']});
 	}
-	
+
 	async foundChannel(channelId: string): Promise<ChannelI> {
 		return this.channelRepository.findOne(channelId);
 	}

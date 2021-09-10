@@ -21,20 +21,24 @@ function socketInit(url: string, gameId: string, vue: any): void {
   socket.on("disconnect", () => {
     console.log("Disconnected to newsocket game " + gameId);
   });
-  socket.on("fetchGameTC", (game: Game, serialPlayers: string) => {
+  socket.on("fetchGameTC",
+      (payload: {game: Game, serialPlayers: string, modBarCrea: string, modBarOppo: string}) => {
     console.log("LOG: fetchGameTC");
-    const deserialPlayers: Map<string, Player> = new Map(JSON.parse(serialPlayers));
-    game.players = deserialPlayers;
-    vue.$data.game = game;
-    if (game.opponentIdFound != "" && game.opponentIdFound === vue.$data.user.userId) {
+    const deserialPlayers: Map<string, Player> = new Map(JSON.parse(payload.serialPlayers));
+    payload.game.players = deserialPlayers;
+    vue.$data.game = payload.game;
+    vue.$data.game.modBarCrea = eval("(" + payload.modBarCrea + ")");
+    vue.$data.game.modBarOppo = eval("(" + payload.modBarOppo + ")");
+    console.log(vue.$data.game);
+    if (payload.game.opponentIdFound != "" && payload.game.opponentIdFound === vue.$data.user.userId) {
       vue.btnActionJoin();
     }
-    if (game.state === "started") {
+    if (payload.game.state === "started") {
       vue.startGame();
-    } else if (game.state === "waiting") {
+    } else if (payload.game.state === "waiting") {
       vue.$data.isPreGameDisplayed = true;
       vue.updateDisplayedElem();
-    } else if (game.state === "ended") {
+    } else if (payload.game.state === "ended") {
       vue.$mytoast.err("The game is finished and this part is not done for now");
     }
   });

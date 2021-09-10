@@ -65,9 +65,69 @@ class Game {
   startDate: Date;              // Date of the game start
   creatorId: string;            // The userId of the game creator
   opponentId: string;           // The userId of the opponenent;
+  modBarCrea: () => void;         // Bar modifier functions
+  modBarOppo: () => void;
   creationDate: Date;
   opponentIdFound: string;
   enabledPowerUps: Array<string>;
+
+  /**
+ * Function that return true if the bar will go out of the game canvas
+ */
+   readonly protecUp = (p: Player): boolean => { if (p.barY - (p.barLen / 2) < 0) { return (true) } else { return (false); } };
+   readonly protecDown = (p: Player): boolean => { if (p.barY + (p.barLen / 2) > 432) { return (true) } else { return (false); } };
+
+   /**
+    * MODIFIER BAR FUNCTIONS
+    * These functions move the bar up or down.
+    */
+   readonly modifierUpCrea = () => {
+     const temp: Player | undefined = this.players.get(this.creatorId);
+     let player: Player = new Player();
+
+     if (temp != undefined)
+       player = temp;
+     if (this.protecUp(player) === true) {
+       return;
+     }
+     player.barY -= 4 * player.barSpeed;
+   };
+
+   readonly modifierDownCrea = () => {
+     const temp: Player | undefined = this.players.get(this.creatorId);
+     let player: Player = new Player();
+
+     if (temp != undefined)
+       player = temp;
+     if (this.protecDown(player) === true) {
+       return;
+     }
+     player.barY += 4 * player.barSpeed;
+   };
+
+   readonly modifierUpOppo = () => {
+     const temp: Player | undefined = this.players.get(this.opponentId);
+     let player: Player = new Player();
+
+     if (temp != undefined)
+       player = temp;
+     if (this.protecUp(player) === true) {
+       return;
+     }
+     player.barY -= 4 * player.barSpeed;
+   };
+
+   readonly modifierDownOppo = () => {
+     const temp: Player | undefined = this.players.get(this.opponentId);
+     let player: Player = new Player();
+
+     if (temp != undefined)
+       player = temp;
+     if (this.protecDown(player) === true) {
+       return;
+     }
+     player.barY += 4 * player.barSpeed;
+   };
 
   constructor(creatorId: string, creatorName: string, gameId: string) {
     this.id = gameId;
@@ -81,6 +141,8 @@ class Game {
     this.startDate = new Date();
     this.creatorId = creatorId;
     this.opponentId = "";
+    this.modBarCrea = function () { };
+    this.modBarOppo = function () { };
     this.creationDate = new Date();
     this.opponentIdFound = "";
     this.enabledPowerUps = new Array<string>();

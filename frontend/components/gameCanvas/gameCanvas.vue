@@ -92,7 +92,19 @@
         </v-btn>
       </div>
     </div>
-    <div v-show="isGameDisplayed" id="gameCanvas" class="useWholePage flexHVcenter" >
+    <div v-show="isGameDisplayed" >
+      <div id="gameCanvas" class="useWholePage flexHVcenter" >
+        <div id="gameHUD" class="flexHVcenter">
+
+          <div id="gameInfos" class="flexAlignRow">
+            <p class="txtHUD" :style="[creatorTxtStyle]">{{creatorName}}</p>
+            <p class="txtHUD" :style="[creatorTxtStyle]">{{game.score[0]}}</p>
+            <p class="txtHUD" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
+            <p class="txtHUD" :style="[oppoTxtStyle]">{{opponentName}}</p>
+          </div>
+
+        </div>
+      </div>
     </div>
   </v-app>
   </div>
@@ -108,23 +120,23 @@ import { sketchWrap, p5Instance } from "./sketch";
 
 export { SOCKET_URL };
 
-const SOCKET_URL: string = "ws://localhost:3000/game";
+const SOCKET_URL: string = `ws://${window.location.hostname}:3000/game`;
 
-let uiPalette: IcolorPalette = {} as IcolorPalette;
-uiPalette["green"] = "#219653"; uiPalette["white"] = "#DCE1E5";
-uiPalette["red"] = "#B30438";
+const uiPalette: IcolorPalette = {
+  green: "#219653", white: "#DCE1E5", red: "#B30438",
+};
 
-let playerPalette: IcolorPalette = {} as IcolorPalette;
-playerPalette["Red"] = "#FA163F"; playerPalette["Green"] = "#54E346";
-playerPalette["Blue"] = "#3EDBF0"; playerPalette["Yellow"] = "#FFF338";
-playerPalette["Purple"] = "#D62AD0"; playerPalette["Pink"] = "#FB7AFC";
+const playerPalette: IcolorPalette = {
+  Red: "#FA163F", Green: "#54E346", Blue: "#3EDBF0", Yellow: "#FFF338",
+  Purple: "#D62AD0", Pink: "#FB7AFC",
+};
 
 export default Vue.extend({
   name: "gameCanvas" as string,
   data() {
     return {
       game: new Game(), // Must be assignated by the server data
-      gameId: this.$route.path.match("[^/]+$")?.toString() as string, // Get the id of the path
+      gameId: this.$route.params.id as string,
       user: this.$store.state.user as any,
       mapNames: [] as string[],
       playerColorClass: "playerRed",
@@ -153,7 +165,7 @@ export default Vue.extend({
   },
   async mounted() {
     // Fetch map list
-    this.$axios.get("http://localhost:3000/api/game/mapList").then( response => {
+    this.$axios.get("/api/game/mapList").then( response => {
       response.data.forEach((mapName: any) => {
         mapName = mapName.substr(0, mapName.lastIndexOf('.')) || mapName;
         mapName = mapName.replace("-", " ");
@@ -315,7 +327,7 @@ export default Vue.extend({
       socket.emit("playerLeaveTS", this.user.userId);
     },
     btnActionInvite(): void { // Action to copy the link in the user clipboard
-      navigator.clipboard.writeText('http://localhost:3030' + this.$nuxt.$route.fullPath);
+      navigator.clipboard.writeText(window.location.href);
       this.$mytoast.succ("URL paste in your clipboard !");
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
@@ -380,6 +392,16 @@ export default Vue.extend({
       }
       return (true);
     },
+    creatorTxtStyle(): object {
+      return {
+        color: this.creatorColor,
+      };
+    },
+    oppoTxtStyle(): object {
+      return {
+        color: this.opponentColor,
+      };
+    },
   },
   watch: {
     "game": function(): void {
@@ -403,5 +425,4 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss" src="./gameCanvas.scss">
-
 </style>
