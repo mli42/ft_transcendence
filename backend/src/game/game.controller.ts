@@ -71,7 +71,7 @@ export class GameController {
     return ({
       gameId: game.id,
       creatorId: game.creatorId,
-      opponent: game.opponentId,
+      opponentId: game.opponentId,
       score: game.score,
       startDate: game.startDate,
     });
