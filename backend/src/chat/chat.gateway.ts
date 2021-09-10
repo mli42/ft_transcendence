@@ -13,6 +13,7 @@ import { JoinedChannelI } from './interfaces/joined-channel.interface';
 import { RoleUserI } from './interfaces/role-user.interface';
 import { RoleUserService } from './role-user.service';
 import { UserService } from 'src/user/user.service';
+import * as bcrypt from 'bcrypt';
 
 @WebSocketGateway({ namespace: "/chat", cors: { origin: 'http://localhost:3030', credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
@@ -205,7 +206,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('passwordChannel')
     async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
         const { channel, password } = data;
-        if (password != channel.password)
+        if ((await bcrypt.compare(password, channel.password)) === false)
             return false;
         await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
         const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
