@@ -290,7 +290,9 @@ export default Vue.extend({
     });
     this.$user.socket.emit("displayChannel", (data: any) => {
       this.channels = data;
-      this.currentChannel = data[0];
+      if (data?.[0]) {
+        this.joinChannel(0);
+      }
     });
     this.$user.socket.on("channel", (data: any) => {
       this.channels = data;
