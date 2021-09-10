@@ -71,6 +71,10 @@
         <input type="checkbox" name="addpassword" v-model="channelSettings.applyPassword">
         <label class="addPassword" for="addpassword">Protect by new password</label>
       </div>
+      <div class="checkBoxePassword flexHVcenter">
+        <input type="checkbox" name="addpassword" v-model="channelSettings.deletePassword">
+        <label class="addPassword" for="addpassword">Delete current password</label>
+      </div>
       <ModalInput  name="New passeword :"  placeHolder="" :isPassword="true" :ispublic="true" v-model.lazy="channelSettings.password" v-if="channelSettings.applyPassword"></ModalInput>
       <Dropdown toselect="Add members :" :items="friends"></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showSettings = false, changeSettings()">
@@ -162,7 +166,6 @@ export default Vue.extend({
   methods: {
     async joinChannel(index: number): Promise<void>{
       this.$user.socket.emit('leaveChannel');
-      this.needPassword =
       this.$user.socket.emit("checkRoleChannelBan", this.channels[index], (resp: boolean) => {
         if (resp === true)
         {
@@ -172,7 +175,6 @@ export default Vue.extend({
         if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId)
           && this.channels[index].password != "" && this.channels[index].owner != this.currentUser.userId)
         {
-          console.log("ICIIII");
           this.modalBool.showPrivacy = true;
           this.selectedChannel = index;
         }
@@ -279,7 +281,19 @@ export default Vue.extend({
         return false;
     },
     joinUserChannel(user: User): void{
-      console.log("je veux parler a mon copain ", user.username);
+      let name1 = this.currentUser.userId + user.userId;
+      let name2 = user.userId + this.currentUser.userId;
+      let channel: Channel = this.channels.find((el: Channel) => {el.channelName === name1 || el.channelName === name1 });
+      if(channel)
+      {
+        this.$user.socket.emit('joinChannel', channel);
+        this.currentChannel = channel;
+      }
+      else
+      {
+        this.$user.socket.emit('createChannel', {channelName: name1,
+        users: user});
+      }
     },
     getModStatus(): void{
       this.moderation.newMod = this.isModerator();
