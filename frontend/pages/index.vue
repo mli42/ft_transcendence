@@ -1,7 +1,7 @@
 <template>
   <div id="HomePage" class="flexAlignCol">
     <div class="homeTop flexAlignRow">
-      <img src="~/assets/img/logo500.png" alt="Deluxe Pong Logo">
+      <img src="~/assets/img/logo500.png" alt="Deluxe Pong Logo" class="cantSelect">
       <hr class="topHR" />
       <div class="topContent">
         <h1>Your Home</h1>

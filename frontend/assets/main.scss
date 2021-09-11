@@ -27,6 +27,13 @@ h1, h2, h3, h4, h5, h6, p, span {
   color: $pg-dark-blue;
 }
 
+.cantSelect {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
 .flexHVcenter {
   display: flex;
   justify-content: center;
@@ -63,26 +70,32 @@ canvas {
 
 .playerRed {
   background-color: $pc-red;
+  box-shadow: 0px 0px 30px 5px $pc-red;
 }
 
 .playerGreen {
   background-color: $pc-green;
+  box-shadow: 0px 0px 30px 5px $pc-green;
 }
 
 .playerBlue {
   background-color: $pc-blue;
+  box-shadow: 0px 0px 30px 5px $pc-blue;
 }
 
 .playerYellow {
   background-color: $pc-yellow;
+  box-shadow: 0px 0px 30px 5px $pc-yellow;
 }
 
 .playerPurple {
   background-color: $pc-purple;
+  box-shadow: 0px 0px 30px 5px $pc-purple;
 }
 
 .playerPink {
   background-color: $pc-pink;
+  box-shadow: 0px 0px 30px 5px $pc-pink;
 }
 
 .redBg {
