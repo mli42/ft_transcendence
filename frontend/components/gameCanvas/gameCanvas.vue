@@ -55,16 +55,17 @@
       </div>
       <div>
       <!-- LIST OF THE CURRENT PLAYERS IN THE GAME  -->
-      <div id="playersList">
-        <v-chip label :color="this.creatorColor" >
+      <div id="playersList" class="flexAlignRow">
+        <v-chip label class="playerPlaying" >
           <v-icon v-if="isCreatorReady" left>mdi-check</v-icon>
           <v-icon v-else left>mdi-dots-horizontal</v-icon>
-          {{ creatorName }}
+          <p :style="creatorTxtStyle">{{ creatorName }}</p>
         </v-chip>
-        <v-chip label :color="this.opponentColor" >
+        <span id="VS">VS</span>
+        <v-chip label class="playerPlaying" >
           <v-icon v-if="isOpponentReady" left>mdi-check</v-icon>
           <v-icon v-else left>mdi-dots-horizontal</v-icon>
-          {{ opponentName }}
+          <p :style="oppoTxtStyle">{{ opponentName }}</p>
         </v-chip>
       </div>
       <br />

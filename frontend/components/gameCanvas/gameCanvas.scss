@@ -63,6 +63,7 @@
   height: 32px;
   margin-right: 32px;
   display: inline-block;
+  border-radius: 10px;
 }
 
 #powCombo {
@@ -75,4 +76,27 @@
   line-height: 18px;
   color: $pg-blue;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+#playersList {
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.playerPlaying {
+  width: 232px;
+  height: 48px;
+  background: $pg-blue !important;
+  border: 3px solid $pg-dark-blue;
+}
+
+.playerPlaying p {
+  margin: auto;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+span#VS {
+  font-size: 36px;
+  line-height: 36px;
 }
