@@ -27,6 +27,13 @@ h1, h2, h3, h4, h5, h6, p, span {
   color: $pg-dark-blue;
 }
 
+.cantSelect {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
 .flexHVcenter {
   display: flex;
   justify-content: center;

@@ -93,7 +93,7 @@
       <div id="gameCanvas" class="useWholePage flexHVcenter" >
         <div id="gameHUD" class="flexHVcenter">
 
-          <div id="gameInfos" class="flexAlignRow">
+          <div id="gameInfos" class="flexAlignRow cantSelect">
             <p class="txtHUD" :style="[creatorTxtStyle]">{{creatorName}}</p>
             <p class="txtHUD" :style="[creatorTxtStyle]">{{game.score[0]}}</p>
             <p class="txtHUD" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
