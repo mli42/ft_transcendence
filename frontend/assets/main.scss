@@ -70,26 +70,32 @@ canvas {
 
 .playerRed {
   background-color: $pc-red;
+  box-shadow: 0px 0px 30px 5px $pc-red;
 }
 
 .playerGreen {
   background-color: $pc-green;
+  box-shadow: 0px 0px 30px 5px $pc-green;
 }
 
 .playerBlue {
   background-color: $pc-blue;
+  box-shadow: 0px 0px 30px 5px $pc-blue;
 }
 
 .playerYellow {
   background-color: $pc-yellow;
+  box-shadow: 0px 0px 30px 5px $pc-yellow;
 }
 
 .playerPurple {
   background-color: $pc-purple;
+  box-shadow: 0px 0px 30px 5px $pc-purple;
 }
 
 .playerPink {
   background-color: $pc-pink;
+  box-shadow: 0px 0px 30px 5px $pc-pink;
 }
 
 .redBg {

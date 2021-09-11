@@ -15,16 +15,17 @@
       </div>
       <div class="innerSettings flexAlignCol">
       <!-- COLOR SELECTION -->
-      <div id="color" v-if="this.isColorDisplayed">
-        <label>Choose your color: </label> <br>
+      <div id="color" v-if="this.isColorDisplayed" class="flexAlignRow">
+        <span>
+        <p>Choose your color: </p>
         <button class="dot playerRed" @click="changePlayerColor('Red')"></button>
         <button class="dot playerGreen" @click="changePlayerColor('Green')"></button>
         <button class="dot playerBlue" @click="changePlayerColor('Blue')"></button>
         <button class="dot playerYellow" @click="changePlayerColor('Yellow')"></button>
         <button class="dot playerPurple" @click="changePlayerColor('Purple')"></button>
         <button class="dot playerPink" @click="changePlayerColor('Pink')"></button>
-        <v-sheet v-bind:color="barColor"></v-sheet>
-        <span class="playerBar" v-bind:class="playerColorClass"></span>
+        </span>
+        <span class="playerBar" :class="playerColorClass" ></span>
       </div>
       <!-- POW SELECTION -->
       <div id="pow" v-if="this.isPowDisplayed">
@@ -52,27 +53,21 @@
           filled
         ></v-select>
       </div>
+      <div>
       <!-- LIST OF THE CURRENT PLAYERS IN THE GAME  -->
       <div id="playersList">
-        <p>Players in the room</p>
-
-        <v-chip
-          label
-          v-bind:color="this.creatorColor"
-        >
+        <v-chip label :color="this.creatorColor" >
           <v-icon v-if="isCreatorReady" left>mdi-check</v-icon>
           <v-icon v-else left>mdi-dots-horizontal</v-icon>
           {{ creatorName }}
         </v-chip>
-        <v-chip
-          label
-          v-bind:color="this.opponentColor"
-        >
+        <v-chip label :color="this.opponentColor" >
           <v-icon v-if="isOpponentReady" left>mdi-check</v-icon>
           <v-icon v-else left>mdi-dots-horizontal</v-icon>
           {{ opponentName }}
         </v-chip>
       </div>
+      <br />
       <!-- MAIN BUTTON -->
       <div id="mainBtn" @mouseenter="mainBtn.actionHoverEnter" @mouseleave="mainBtn.actionHoverLeave">
         <v-btn
@@ -86,6 +81,7 @@
           <v-icon>{{ this.mainBtn.ico}}</v-icon>
         </v-btn>
       </div>
+      </div> <!-- Div containing list of players + mainBtn End -->
       </div> <!-- InnerSettingsEnd -->
       </div> <!-- #preGame End -->
     </div> <!-- #gameSettings End -->
