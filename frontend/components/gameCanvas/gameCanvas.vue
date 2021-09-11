@@ -8,8 +8,8 @@
         <v-card flat>
           <v-tabs id="typeSelection" class="typeSelection" v-model="tabTypesIndex"
             fixed-tabs background-color="#003566" color="white">
-            <v-tab :disabled="isTabsEnabled" @click="changeGameType('matchmaking')">Matchmaking</v-tab>
-            <v-tab :disabled="isTabsEnabled" @click="changeGameType('private')">Private Game</v-tab>
+            <v-tab :disabled="isTabsEnabled" class="tabType" @click="changeGameType('matchmaking')">Matchmaking</v-tab>
+            <v-tab :disabled="isTabsEnabled" class="tabType" @click="changeGameType('private')">Private Game</v-tab>
           </v-tabs>
         </v-card>
       </div>
@@ -71,14 +71,10 @@
       <br />
       <!-- MAIN BUTTON -->
       <div id="mainBtn" @mouseenter="mainBtn.actionHoverEnter" @mouseleave="mainBtn.actionHoverLeave">
-        <v-btn
-          id="mainBtnVueT"
-          v-bind:color="mainBtn.color"
-          v-bind:class="mainBtn.class"
-          v-bind:loading="mainBtn.isLoading"
-          v-if="this.mainBtn.txt"
-          @click="mainBtn.action"
-        >{{ this.mainBtn.txt }}
+        <v-btn id="mainBtnVueT" v-if="this.mainBtn.txt"
+          :color="mainBtn.color" :class="mainBtn.class"
+          :loading="mainBtn.isLoading" @click="mainBtn.action" >
+          {{ this.mainBtn.txt }}
           <v-icon>{{ this.mainBtn.ico}}</v-icon>
         </v-btn>
       </div>
