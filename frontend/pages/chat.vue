@@ -4,7 +4,7 @@
       <SearchResult :friends="friends" :joinUserChannel="joinUserChannel"></SearchResult>
       <ul class="listChannel">
         <li v-for="(item, index) in channels" :key="index">
-          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannel.channelName"></UserCard>
+          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannelName"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter">
@@ -60,7 +60,7 @@
         <label for="private">Public</label>
       </div>
       <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
-      <Dropdown v-if="!newChannel.public" toselect="Choose members :" :items="friends" ></Dropdown>
+      <Dropdown v-if="!newChannel.public" toselect="Choose friends :" :items="friends" ></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()" >
         <p class="v-btn-content">Create</p>
       </v-btn>
@@ -105,11 +105,10 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {UserStatus, User, Message, Channel} from '~/types/chatTypes';
+import {UserStatus, User, Message, Channel, newChannel} from '~/types/chatTypes';
 
 export default Vue.extend({
   name: 'chat',
-  layout: 'default',
   head(): object {
     return {
       title: 'Chat' as string,
@@ -132,13 +131,7 @@ export default Vue.extend({
         showSearch: false as boolean,
         showMembersMod: false as boolean,
       },
-      newChannel:{
-        name: '' as string,
-        public: true as boolean,
-        password: '' as string,
-        members: [] as User[],
-        admin: [] as User[],
-      },
+      newChannel: new newChannel() as newChannel,
       moderation:{
         newMod: false as boolean,
         banTime: 0 as number,
@@ -159,10 +152,18 @@ export default Vue.extend({
       currentMemberMod: {} as User,
     }
   },
+  computed: {
+    currentChannelName(): string | undefined {
+      return this.currentChannel?.channelName;
+    },
+  },
   methods: {
     async joinChannel(index: number): Promise<void>{
+      if (index < 0 || index >= this.channels.length) {
+        console.error('joinChannel: index out of range');
+        return ;
+      }
       this.$user.socket.emit('leaveChannel');
-      this.needPassword =
       this.$user.socket.emit("checkRoleChannelBan", this.channels[index], (resp: boolean) => {
         if (resp === true)
         {
@@ -172,7 +173,6 @@ export default Vue.extend({
         if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId)
           && this.channels[index].password != "" && this.channels[index].owner != this.currentUser.userId)
         {
-          console.log("ICIIII");
           this.modalBool.showPrivacy = true;
           this.selectedChannel = index;
         }
@@ -253,6 +253,7 @@ export default Vue.extend({
         publicChannel: this.newChannel.public,
         password: this.newChannel.password});
       }
+      this.newChannel = new newChannel(); // Run on succes only!
       this.hideModal();
     },
     hideModal(): void {
@@ -303,19 +304,29 @@ export default Vue.extend({
       };
       this.$user.socket.emit("updateChannel", arg);
     },
+    updateChannels(newChannels: Channel[] | any = [], onMount: boolean = false): void {
+      if ((newChannels instanceof Array) == false) {
+        console.error('Assigning non array type to channels');
+        return ;
+      }
+      this.channels = newChannels;
+      const newChannelIndex = this.channels.length - 1; // Not viable atm
+      if (onMount === true) {
+        this.joinChannel(0);
+      } else if (this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
+        this.joinChannel(newChannelIndex);
+      }
+    },
   },
   mounted() {
     this.$user.socket.on("messageAdded", (data: any) => {
       this.recvMsg(data);
     });
     this.$user.socket.emit("displayChannel", (data: any) => {
-      this.channels = data;
-      if (data?.[0]) {
-        this.joinChannel(0);
-      }
+      this.updateChannels(data, true);
     });
     this.$user.socket.on("channel", (data: any) => {
-      this.channels = data;
+      this.updateChannels(data);
     });
     this.$user.socket.on('banUserChannel', (data: any) => {
        this.$mytoast.err(`You've been banned from "${data.channelName}"`);
