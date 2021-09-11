@@ -1,102 +1,86 @@
 <template>
   <div data-app>
-  <v-app>
-    <div id="gameSettings" v-if="this.isPreGameDisplayed">
-      <h1>User settings</h1>
+  <v-app id="vappMain">
+    <div id="gameSettings" v-if="this.isPreGameDisplayed" class="useWholePage flexHVcenter">
+      <div id="preGame">
       <!-- GAME TYPE SELECTION -->
       <div id="type">
-        <v-card>
-          <v-tabs
-            id="typeSelection"
-            class="typeSelection"
-            center-active
-            v-model="tabTypesIndex"
-          >
-            <v-tab v-bind:disabled="isTabsEnabled" @click="changeGameType('matchmaking')">Matchmaking</v-tab>
-            <v-tab v-bind:disabled="isTabsEnabled" @click="changeGameType('private')">Private Game</v-tab>
+        <v-card flat>
+          <v-tabs id="typeSelection" class="typeSelection" v-model="tabTypesIndex"
+            fixed-tabs background-color="#003566" color="white">
+            <v-tab :disabled="isTabsEnabled" class="tabType" @click="changeGameType('matchmaking')">Matchmaking</v-tab>
+            <v-tab :disabled="isTabsEnabled" class="tabType" @click="changeGameType('private')">Private Game</v-tab>
           </v-tabs>
         </v-card>
       </div>
+      <div class="innerSettings flexAlignCol">
       <!-- COLOR SELECTION -->
-      <div id="color" v-if="this.isColorDisplayed">
-        <label>Choose your color: </label>
-        <br>
+      <div id="color" v-if="this.isColorDisplayed" class="flexAlignRow">
+        <span>
+        <p>Choose your color: </p>
         <button class="dot playerRed" @click="changePlayerColor('Red')"></button>
         <button class="dot playerGreen" @click="changePlayerColor('Green')"></button>
         <button class="dot playerBlue" @click="changePlayerColor('Blue')"></button>
         <button class="dot playerYellow" @click="changePlayerColor('Yellow')"></button>
         <button class="dot playerPurple" @click="changePlayerColor('Purple')"></button>
         <button class="dot playerPink" @click="changePlayerColor('Pink')"></button>
-        <v-sheet v-bind:color="barColor"></v-sheet>
-        <span class="playerBar" v-bind:class="playerColorClass"></span>
+        </span>
+        <span class="playerBar" :class="playerColorClass" ></span>
       </div>
-      <br>
-      <!-- POW SELECTION -->
-      <div id="pow" v-if="this.isPowDisplayed">
-        <v-combobox
-          multiple
-          outlined
-          small-chips
-          label="Choose power-ups you want to enable"
-          v-model="game.enabledPowerUps"
-          hint="⚠ You can't edit this list"
-          :items="powList"
-          @change="updatePow"
-          id="powCombo"
-        ></v-combobox>
-      </div>
-      <!-- MAP SELECTION -->
-      <div id="map" v-if="this.isMapsDisplayed">
-        <label for="mapSelect">Choose a map</label>
-        <v-select
-          id="mapSelect"
-          v-model="game.mapName"
-          item-value="text"
-          :items="mapNames"
-          @change="updateMap"
-          filled
-        ></v-select>
-      </div>
+      <div id="privateSettings" v-if="this.isMapsDisplayed || this.isPowDisplayed" class="flexAlignRow">
+        <div id="privateSelection" class="flexAlignCol">
+          <!-- MAP SELECTION -->
+          <div id="map" v-if="this.isMapsDisplayed">
+            <label for="mapSelect">Choose a map</label>
+            <v-select id="mapSelect" filled dense
+              v-model="game.mapName" @change="updateMap"
+              item-value="text" :items="mapNames"
+            ></v-select>
+          </div>
+          <!-- POW SELECTION -->
+          <div id="pow" v-if="this.isPowDisplayed">
+            <v-combobox id="powCombo" multiple outlined small-chips
+              label="Choose power-ups" hint="⚠ You can't edit this list"
+              :items="powList" v-model="game.enabledPowerUps" @change="updatePow"
+            ></v-combobox>
+          </div>
+        </div> <!-- Private Selection End -->
+        <img id="mapPreview" :src="mapPreviewURL" alt="map preview" title="Map Preview">
+      </div> <!-- Private Settings End -->
+      <div>
       <!-- LIST OF THE CURRENT PLAYERS IN THE GAME  -->
-      <div id="playersList">
-        <p>Players in the room</p>
-
-        <v-chip
-          label
-          v-bind:color="this.creatorColor"
-        >
+      <div id="playersList" class="flexAlignRow">
+        <v-chip label class="playerPlaying" >
           <v-icon v-if="isCreatorReady" left>mdi-check</v-icon>
           <v-icon v-else left>mdi-dots-horizontal</v-icon>
-          {{ creatorName }}
+          <p :style="creatorTxtStyle">{{ creatorName }}</p>
         </v-chip>
-        <v-chip
-          label
-          v-bind:color="this.opponentColor"
-        >
+        <span id="VS">VS</span>
+        <v-chip label class="playerPlaying" >
           <v-icon v-if="isOpponentReady" left>mdi-check</v-icon>
           <v-icon v-else left>mdi-dots-horizontal</v-icon>
-          {{ opponentName }}
+          <p :style="oppoTxtStyle">{{ opponentName }}</p>
         </v-chip>
       </div>
+      <br />
       <!-- MAIN BUTTON -->
       <div id="mainBtn" @mouseenter="mainBtn.actionHoverEnter" @mouseleave="mainBtn.actionHoverLeave">
-        <v-btn
-          id="mainBtnVueT"
-          v-bind:color="mainBtn.color"
-          v-bind:class="mainBtn.class"
-          v-bind:loading="mainBtn.isLoading"
-          v-if="this.mainBtn.txt"
-          @click="mainBtn.action"
-        >{{ this.mainBtn.txt }}
+        <v-btn id="mainBtnVueT" v-if="this.mainBtn.txt"
+          :color="mainBtn.color" :class="mainBtn.class"
+          :loading="mainBtn.isLoading" @click="mainBtn.action" >
+          {{ this.mainBtn.txt }}
           <v-icon>{{ this.mainBtn.ico}}</v-icon>
         </v-btn>
       </div>
-    </div>
+      </div> <!-- Div containing list of players + mainBtn End -->
+      </div> <!-- InnerSettingsEnd -->
+      </div> <!-- #preGame End -->
+    </div> <!-- #gameSettings End -->
     <div v-show="isGameDisplayed" >
       <div id="gameCanvas" class="useWholePage flexHVcenter" >
         <div id="gameHUD" class="flexHVcenter">
 
-          <div id="gameInfos" class="flexAlignRow">
+          <div id="gameInfos" class="flexAlignRow cantSelect">
             <p class="txtHUD" :style="[creatorTxtStyle]">{{creatorName}}</p>
             <p class="txtHUD" :style="[creatorTxtStyle]">{{game.score[0]}}</p>
             <p class="txtHUD" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
@@ -401,6 +385,9 @@ export default Vue.extend({
       return {
         color: this.opponentColor,
       };
+    },
+    mapPreviewURL(): string {
+      return `${this.$axios.defaults.baseURL}/api/game/smallMap/${this.game.mapName.replace(' ', '-')}.png`;
     },
   },
   watch: {
