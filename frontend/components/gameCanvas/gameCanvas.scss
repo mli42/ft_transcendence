@@ -28,7 +28,7 @@
   height: calc(100% - 48px); // 100% - typeSelector
 }
 
-#color {
+#color, #privateSettings {
   justify-content: space-between;
   align-items: center;
 }
@@ -82,6 +82,21 @@
   line-height: 18px;
   color: $pg-blue;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+#privateSettings, #privateSelection {
+  height: 100%;
+}
+
+#privateSelection {
+  justify-content: space-evenly;
+  width: 320px;
+}
+
+#mapPreview {
+  width: 305px;
+  height: 159px;
+  border-radius: 10px;
 }
 
 #playersList {

@@ -27,32 +27,26 @@
         </span>
         <span class="playerBar" :class="playerColorClass" ></span>
       </div>
-      <!-- POW SELECTION -->
-      <div id="pow" v-if="this.isPowDisplayed">
-        <v-combobox
-          multiple
-          outlined
-          small-chips
-          label="Choose power-ups you want to enable"
-          v-model="game.enabledPowerUps"
-          hint="⚠ You can't edit this list"
-          :items="powList"
-          @change="updatePow"
-          id="powCombo"
-        ></v-combobox>
-      </div>
-      <!-- MAP SELECTION -->
-      <div id="map" v-if="this.isMapsDisplayed">
-        <label for="mapSelect">Choose a map</label>
-        <v-select
-          id="mapSelect"
-          v-model="game.mapName"
-          item-value="text"
-          :items="mapNames"
-          @change="updateMap"
-          filled
-        ></v-select>
-      </div>
+      <div id="privateSettings" v-if="this.isMapsDisplayed || this.isPowDisplayed" class="flexAlignRow">
+        <div id="privateSelection" class="flexAlignCol">
+          <!-- MAP SELECTION -->
+          <div id="map" v-if="this.isMapsDisplayed">
+            <label for="mapSelect">Choose a map</label>
+            <v-select id="mapSelect" filled dense
+              v-model="game.mapName" @change="updateMap"
+              item-value="text" :items="mapNames"
+            ></v-select>
+          </div>
+          <!-- POW SELECTION -->
+          <div id="pow" v-if="this.isPowDisplayed">
+            <v-combobox id="powCombo" multiple outlined small-chips
+              label="Choose power-ups" hint="⚠ You can't edit this list"
+              :items="powList" v-model="game.enabledPowerUps" @change="updatePow"
+            ></v-combobox>
+          </div>
+        </div> <!-- Private Selection End -->
+        <img id="mapPreview" :src="mapPreviewURL" alt="map preview" title="Map Preview">
+      </div> <!-- Private Settings End -->
       <div>
       <!-- LIST OF THE CURRENT PLAYERS IN THE GAME  -->
       <div id="playersList" class="flexAlignRow">
@@ -391,6 +385,9 @@ export default Vue.extend({
       return {
         color: this.opponentColor,
       };
+    },
+    mapPreviewURL(): string {
+      return `${this.$axios.defaults.baseURL}/api/game/smallMap/${this.game.mapName.replace(' ', '-')}.png`;
     },
   },
   watch: {
