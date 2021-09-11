@@ -13,10 +13,10 @@
           </v-tabs>
         </v-card>
       </div>
+      <div class="innerSettings flexAlignCol">
       <!-- COLOR SELECTION -->
       <div id="color" v-if="this.isColorDisplayed">
-        <label>Choose your color: </label>
-        <br>
+        <label>Choose your color: </label> <br>
         <button class="dot playerRed" @click="changePlayerColor('Red')"></button>
         <button class="dot playerGreen" @click="changePlayerColor('Green')"></button>
         <button class="dot playerBlue" @click="changePlayerColor('Blue')"></button>
@@ -26,7 +26,6 @@
         <v-sheet v-bind:color="barColor"></v-sheet>
         <span class="playerBar" v-bind:class="playerColorClass"></span>
       </div>
-      <br>
       <!-- POW SELECTION -->
       <div id="pow" v-if="this.isPowDisplayed">
         <v-combobox
@@ -87,8 +86,9 @@
           <v-icon>{{ this.mainBtn.ico}}</v-icon>
         </v-btn>
       </div>
-      </div>
-    </div>
+      </div> <!-- InnerSettingsEnd -->
+      </div> <!-- #preGame End -->
+    </div> <!-- #gameSettings End -->
     <div v-show="isGameDisplayed" >
       <div id="gameCanvas" class="useWholePage flexHVcenter" >
         <div id="gameHUD" class="flexHVcenter">

@@ -14,7 +14,12 @@
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
   border: 3px solid $pg-dark-blue;
-  padding: 0 32px 32px 32px;
+}
+
+.innerSettings {
+  justify-content: space-between;
+  padding: 32px;
+  height: calc(100% - 48px); // 100% - typeSelector
 }
 
 #gameCanvas {
