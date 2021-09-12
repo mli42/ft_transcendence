@@ -6,17 +6,19 @@
       <!-- Creator Infos -->
       <div class="flexAlignRow">
         <NuxtLink :to="`/profile/${creaUser.username}`" class="avatar"> <Avatar :user="creaUser" :showStatus=false></Avatar> </NuxtLink>
-        <div class="usertxt flexHVcenter flexAlignCol">
+        <div class="userTxt flexHVcenter flexAlignCol">
           <p>{{creaUser.username}}</p>
           <p>elo</p>
         </div>
       </div>
 
+      <p class="flexHVcenter">{{gameInfos.score[0]}}</p>
       <Iconify iconName="ri:sword-line" class="battleIcon"></Iconify>
+      <p class="flexHVcenter">{{gameInfos.score[1]}}</p>
 
       <!-- Opponent Infos -->
       <div class="flexAlignRow">
-        <div class="usertxt flexHVcenter flexAlignCol">
+      <div class="userTxt flexHVcenter flexAlignCol">
           <p>{{oppoUser.username}}</p>
           <p>elo</p>
         </div>

@@ -21,7 +21,7 @@
       <hr class="topHR" style="visibility: hidden;" />
 
       <!-- Current Games -->
-      <overflowContainer width="726px" heightMax="458px" label="Current games">
+      <overflowContainer width="726px" heightMax="358px" label="Current games">
         <gameCardSpectate v-for="(gameId, index) in currentGames" :key="index"
         :gameId="gameId" />
       </overflowContainer>
