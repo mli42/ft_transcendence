@@ -9,7 +9,7 @@ export interface IUser {
     username: string,
     status: UserStatus,
 };
-  
+
 export class User implements IUser{
     userId = '';
     username = '';
@@ -46,6 +46,14 @@ export class JoinedChannel implements IJoinedChannel {
 	socketId = '';
 	user =  new User;
 	channel = new Channel;
+};
+
+export class newChannel {
+  name: string = '';
+  public: boolean = true;
+  password: string = '';
+  members: User[] = [];
+  admin: User[] = [];
 };
 
 export interface IMessage {

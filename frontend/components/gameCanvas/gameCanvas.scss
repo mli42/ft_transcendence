@@ -1,5 +1,38 @@
 @import '~/assets/Palette.scss';
 
+#vappMain {
+  background: $pg-blue !important;
+}
+
+#gameSettings {
+  position: absolute;
+  bottom: 64px;
+}
+
+#preGame {
+  width: 784px;
+  height: 580px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  border: 3px solid $pg-dark-blue;
+}
+
+.tabType {
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.innerSettings {
+  justify-content: space-between;
+  padding: 32px;
+  height: calc(100% - 48px); // 100% - typeSelector
+}
+
+#color, #privateSettings {
+  justify-content: space-between;
+  align-items: center;
+}
+
 #gameCanvas {
   position: absolute;
   left: 0; right: 0; /* horizontal center */
@@ -27,13 +60,16 @@
 .dot {
   height: 25px;
   width: 25px;
+  margin-right: 20px;
   border-radius: 50%;
 }
 
 .playerBar {
   width: 160px;
   height: 32px;
+  margin-right: 32px;
   display: inline-block;
+  border-radius: 10px;
 }
 
 #powCombo {
@@ -46,4 +82,46 @@
   line-height: 18px;
   color: $pg-blue;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+#privateSettings, #privateSelection {
+  height: 100%;
+}
+
+#privateSelection {
+  justify-content: space-evenly;
+  width: 320px;
+}
+
+#mapPreview {
+  width: 305px;
+  height: 159px;
+  border-radius: 10px;
+}
+
+#playersList {
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.playerPlaying {
+  width: 232px;
+  height: 48px;
+  background: $pg-blue !important;
+  border: 3px solid $pg-dark-blue;
+}
+
+.playerPlaying p {
+  margin: auto;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+span#VS {
+  font-size: 36px;
+  line-height: 36px;
+}
+
+#mainBtn {
+  text-align: center;
 }

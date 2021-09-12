@@ -1,5 +1,5 @@
 <template>
-  <div id="banner">
+  <div id="banner" class="cantSelect">
     <nav>
       <div class="align-content">
         <!-- Buttons Home/Play/Chat/Search -->
