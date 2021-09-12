@@ -25,8 +25,9 @@
     </div>
 
     <!-- Timer -->
-    <div class="timer">
-      <p>Timer</p>
+    <div class="timer flexAlignRow">
+      <p>{{this.since}}</p>
+      <Iconify iconName="jam:chronometer" />
     </div>
 
     <!-- Spectate Button -->
@@ -48,6 +49,8 @@ export default Vue.extend({
       gameInfos: new gameInfos() as gameInfos,
       creaUser: new partialInfos() as partialInfos,
       oppoUser: new partialInfos() as partialInfos,
+      dateInteval: 0 as number,
+      since: '' as string,
     };
   },
   async fetch() {
@@ -69,6 +72,30 @@ export default Vue.extend({
       .then((res: any) => { this.oppoUser = res.data })
       .catch(this.$mytoast.defaultCatch);
     }
+
+    // Update timer
+    const nowDate: any = new Date();
+    const beginDate: any = new Date(this.gameInfos.startDate);
+    let deltaDate: Date = new Date(nowDate - beginDate);
+    deltaDate.setHours(deltaDate.getHours() - 1);
+
+    this.updateSince(deltaDate);
+    this.dateInteval = setInterval(() => {
+      deltaDate.setSeconds(deltaDate.getSeconds() + 1);
+      this.updateSince(deltaDate);
+    }, 1000);
+  },
+  destroyed() {
+    clearInterval(this.dateInteval);
+  },
+  methods: {
+    updateSince(date: Date): void {
+      const hrs: string = `${date.getHours()}`.padStart(2, '0');
+      const min: string = `${date.getMinutes()}`.padStart(2, '0');
+      const sec: string = `${date.getSeconds()}`.padStart(2, '0');
+      this.since = (hrs !== '00') ? `${hrs}:` : '';
+      this.since += `${min}:${sec}`;
+    },
   },
   props: ['gameId'],
 });
