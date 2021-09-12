@@ -24,6 +24,7 @@
       <overflowContainer width="726px" heightMax="358px" label="Current games">
         <gameCardSpectate v-for="(gameId, index) in currentGames" :key="index"
         :gameId="gameId" />
+        <p v-if="currentGames.length == 0">No game at the moment...</p>
       </overflowContainer>
     </div>
   </div>

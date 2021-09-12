@@ -41,8 +41,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { gameInfos, } from '~/types/game.ts';
-import { partialInfos, } from '~/types/user.ts';
+import { gameInfos, } from '~/types/game';
+import { partialInfos, } from '~/types/user';
 
 export default Vue.extend({
   name: 'Spectate',
@@ -51,7 +51,7 @@ export default Vue.extend({
       gameInfos: new gameInfos() as gameInfos,
       creaUser: new partialInfos() as partialInfos,
       oppoUser: new partialInfos() as partialInfos,
-      dateInteval: 0 as number,
+      dateInteval: 0 as any, // setInterval return
       since: '' as string,
     };
   },
