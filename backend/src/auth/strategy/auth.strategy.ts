@@ -10,7 +10,7 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
 		super({
 			clientID: process.env.UID,
 			clientSecret: process.env.SECRET,
-			callbackURL: "http://localhost:3000/api/auth/redirect",
+			callbackURL: process.env.IP_REDIRECT,
 			scope: ['public']
 		});
 	}
@@ -22,7 +22,7 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
 			email: profile['emails'][0]['value'],
 			password: username,
 			login42: username
-		} 
+		}
 		return this.authService.validateUser(user);
 	}
 }

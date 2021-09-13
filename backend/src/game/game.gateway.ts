@@ -28,7 +28,7 @@ function getIdsFromRooms(rooms: Set<any>): Array<string> {
   return (result);
 }
 
-@WebSocketGateway( { namespace: "/game", cors: { origin: 'http://localhost:3030', credentials: true }})
+@WebSocketGateway( { namespace: "/game", cors: { origin: process.env.IP_BACKEND, credentials: true }})
 export class gameGateway {
 
   constructor(

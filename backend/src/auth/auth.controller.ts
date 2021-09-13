@@ -31,7 +31,7 @@ export class AuthController {
 		const payload: JwtPayload = { username, auth };
 		const accessToken: string = await this.jwtService.sign(payload);
 		res.cookie('jwt', accessToken, {httpOnly: true});
-		res.redirect("http://localhost:3030");
+		res.redirect(process.env.IP_BACKEND);
 	}
 
 	// two factor authentication
