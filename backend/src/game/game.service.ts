@@ -4,9 +4,16 @@ import { join } from 'path';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from "uuid";
 import { isUUID } from 'class-validator';
+import { Game } from './dataStructures';
+import { GameRepository } from './game.repository';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class GameService {
+    constructor(
+		@InjectRepository(GameRepository)
+        private gameRepository: GameRepository,
+     ) {}
 
     getMap(@Res() res, name: string): Observable<object> {
         return of(res.sendFile(join(process.cwd(), '../upload/map/standard/' + name)));
@@ -31,5 +38,9 @@ export class GameService {
 
     isUuid(uuid: string): boolean {
         return isUUID(uuid);
+    }
+
+    dbGameHistory(game) {
+        this.gameRepository.createGameHistory(game);
     }
 }

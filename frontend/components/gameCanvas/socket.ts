@@ -29,7 +29,6 @@ function socketInit(url: string, gameId: string, vue: any): void {
     vue.$data.game = payload.game;
     vue.$data.game.modBarCrea = eval("(" + payload.modBarCrea + ")");
     vue.$data.game.modBarOppo = eval("(" + payload.modBarOppo + ")");
-    console.log(vue.$data.game);
     if (payload.game.opponentIdFound != "" && payload.game.opponentIdFound === vue.$data.user.userId) {
       vue.btnActionJoin();
     }
@@ -114,10 +113,9 @@ function socketInit(url: string, gameId: string, vue: any): void {
     console.log("LOG: foundSearchOppoTC");
     window.$nuxt.$router.push('/game/' + gameId); // Redirect client
   });
-  socket.on("startGameTC", (ballDelta: Array<number>) => {
+  socket.on("startGameTC", () => {
     console.log("LOG: startGameTC");
     vue.$data.game.state = "started";
-    vue.$data.game.ball.delta = ballDelta;
     vue.startGame();
   });
 }

@@ -21,7 +21,10 @@
       <hr class="topHR" style="visibility: hidden;" />
 
       <!-- Current Games -->
-      <overflowContainer width="726px" heightMax="458px" label="Current games">
+      <overflowContainer width="726px" heightMax="358px" label="Current games">
+        <gameCardSpectate v-for="(gameId, index) in currentGames" :key="index"
+        :gameId="gameId" />
+        <p v-if="currentGames.length == 0">No game at the moment...</p>
       </overflowContainer>
     </div>
   </div>
@@ -39,17 +42,19 @@ export default Vue.extend({
   },
   data() {
     return {
+      currentGames: [] as any,
     };
   },
-  methods: {
+  async fetch() {
+    await this.$axios.get('/api/game/playingGames')
+    .then((res: any) => { this.currentGames = res.data; })
+    .catch(this.$mytoast.defaultCatch);
   },
   computed: {
     user(): any {
       return this.$store.state.user;
     },
   },
-  mounted() {
-  }
 });
 </script>
 
