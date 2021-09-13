@@ -91,17 +91,17 @@
             <div class="finalGreen"></div> <div class="finalRed"></div>
             <div id="endGameInfos" class="flexAlignCol">
               <div class="endUpInfos">
-                <h2>{{endGame.winner.username}}</h2>
+                <h2 class="endGameMainInfo">{{endGame.winner.username}}</h2>
               </div>
 
               <div class="endMidInfos flexAlignRow">
-                <p>{{endGame.winner.score}}</p>
-                <p>VS</p>
-                <p>{{endGame.loser.score}}</p>
+                <h3 class="endGameMainInfo">{{endGame.winner.score}}</h3>
+                <p class="endGameMainInfo">VS</p>
+                <h3 class="endGameMainInfo">{{endGame.loser.score}}</h3>
               </div>
 
               <div class="endBotInfos">
-                <h2>{{endGame.loser.username}}</h2>
+                <h2 class="endGameMainInfo">{{endGame.loser.username}}</h2>
               </div>
             </div> <!-- EndGameInfos End -->
           </div> <!-- Final Card End -->

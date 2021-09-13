@@ -163,7 +163,8 @@ span#VS {
   background: rgba(170, 50, 90, 0.75);
 }
 
-.endUpInfos {
+.endUpInfos h2, .endBotInfos h2, .endMidInfos p {
+  margin: 0;
 }
 
 .endMidInfos {
