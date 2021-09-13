@@ -10,6 +10,7 @@ let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and ga
 let playingGames: Array<string> = new Array();
 let searchList: Map<string, {client: Socket, gameId: string, player: Player}> = new Map(); // Relation between playerId and Player class
 let playingUsers: Array<string> = new Array(); // Array of userId that currentlty playing
+let roomsMap: Map<string, Array<string>> = new Map();
 
 export { playingGames, gamesMap, playingUsers };
 
@@ -59,8 +60,13 @@ export class gameGateway {
       if (searchList.has(query.userId)) {
         searchList.delete(query.userId as string);
       }
-      if (game.state === "waiting")
+      if (game.state === "waiting") {
         this.playerLeave(client);
+        roomsMap.get(game.id).splice(roomsMap.get(game.id).lastIndexOf(query.userId));
+        if (roomsMap.get(game.id).length === 0) {
+          gamesMap.delete(game.id);
+        }
+      }
     }
   }
 
@@ -98,7 +104,9 @@ export class gameGateway {
           client.handshake.query.username as string,
           gameId
         ));
+        roomsMap.set(gameId, new Array());
       }
+      roomsMap.get(gameId).push(client.handshake.query.userId as string);
       client.join(gameId);
     }
     client.emit("fetchGameTC", {
