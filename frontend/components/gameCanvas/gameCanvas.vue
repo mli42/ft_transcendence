@@ -2,7 +2,7 @@
   <div data-app>
   <v-app id="vappMain">
     <div id="gameSettings" v-if="this.isPreGameDisplayed" class="useWholePage flexHVcenter">
-      <div id="preGame">
+      <div id="preGame" :style="[preGameHeight]" >
       <!-- GAME TYPE SELECTION -->
       <div id="type">
         <v-card flat>
@@ -81,10 +81,10 @@
         <div id="gameHUD" class="flexHVcenter">
 
           <div id="gameInfos" class="flexAlignRow cantSelect">
-            <p class="txtHUD" :style="[creatorTxtStyle]">{{creatorName}}</p>
-            <p class="txtHUD" :style="[creatorTxtStyle]">{{game.score[0]}}</p>
-            <p class="txtHUD" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
-            <p class="txtHUD" :style="[oppoTxtStyle]">{{opponentName}}</p>
+            <p class="txtHUD txtHUDName" :style="[creatorTxtStyle]" style="text-align: end;" >{{creatorName}}</p>
+            <p class="txtHUD txtHUDScore" :style="[creatorTxtStyle]" style="text-align: end;" >{{game.score[0]}}</p>
+            <p class="txtHUD txtHUDScore" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
+            <p class="txtHUD txtHUDName" :style="[oppoTxtStyle]">{{opponentName}}</p>
           </div>
 
         </div>
@@ -375,6 +375,11 @@ export default Vue.extend({
         return (false);
       }
       return (true);
+    },
+    preGameHeight(): object {
+      return {
+        height: this.game.type == 'private' ? '580px' : '340px',
+      };
     },
     creatorTxtStyle(): object {
       return {

@@ -11,7 +11,6 @@
 
 #preGame {
   width: 784px;
-  height: 580px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
   border: 3px solid $pg-dark-blue;
@@ -56,6 +55,9 @@
   font-weight: bold;
   text-shadow: 0px 0px 30px $pg-dark-blue;
 }
+
+.txtHUDName { width: 25%; }
+.txtHUDScore { width: 2%; }
 
 .dot {
   height: 25px;
