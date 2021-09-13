@@ -28,17 +28,21 @@ export class ChannelService {
 		channel.adminUsers = [];
 		channel.blockUsers = [];
 		channel.authPrivateChannelUsers = [];
-		// channel.users = [];
 		channel.owner = creator.userId;
-		if (password) {
-			const salt = await bcrypt.genSalt();
-			channel.password = await bcrypt.hash(password, salt);
-		} else {
+		if (!password) {
 			password = null;
 		}
 		if (publicChannel === false) {
 			channel.users.push(creator);
-			channel.authPrivateChannelUsers.push(creator.userId)
+			if (password) {
+				const salt = await bcrypt.genSalt();
+				channel.password = await bcrypt.hash(password, salt);
+				channel.authPrivateChannelUsers.push(creator.userId)
+			} else {
+				for (const user of channel.users) {
+					channel.authPrivateChannelUsers.push(user.userId)
+				}
+			}
 		}
 		return this.channelRepository.save(channel);
 	}
