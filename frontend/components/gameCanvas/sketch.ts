@@ -107,6 +107,18 @@ async function sketch(s: any): Promise<any> {
       game.score = score;
       updateHUDtxt();
     });
+    socket.on("changeSettingsTC", (settings: any) => {
+      console.log("LOG: changeSettingsTC");
+      if (settings.pCrea != undefined)
+        pCrea = settings.pCrea;
+      if (settings.pOppo != undefined)
+        pOppo = settings.pOppo;
+      if (settings.ball != undefined)
+        game.ball = settings.ball;
+    });
+    socket.on("endGameTC", () => {
+      console.log("C la fin !");
+    });
     s.frameRate(50);
     s.noStroke();
     s.drawingContext.shadowBlur = 15;

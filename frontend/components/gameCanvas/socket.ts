@@ -29,7 +29,6 @@ function socketInit(url: string, gameId: string, vue: any): void {
     vue.$data.game = payload.game;
     vue.$data.game.modBarCrea = eval("(" + payload.modBarCrea + ")");
     vue.$data.game.modBarOppo = eval("(" + payload.modBarOppo + ")");
-    console.log(vue.$data.game);
     if (payload.game.opponentIdFound != "" && payload.game.opponentIdFound === vue.$data.user.userId) {
       vue.btnActionJoin();
     }

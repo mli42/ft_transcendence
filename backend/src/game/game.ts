@@ -49,6 +49,8 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
         ball.delta[0] *= -1;
         ball.speed *= 1.15;
         ball.color = pCrea.color;
+        client.to(game.id).emit("changeSettingsTC", {ball: ball});
+        client.emit("changeSettingsTC", {ball: ball});
         collBarChecker = collOppoChecker;
       }
     }
@@ -64,6 +66,8 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
         ball.delta[0] *= -1;
         ball.speed *= 1.15;
         ball.color = pOppo.color;
+        client.to(game.id).emit("changeSettingsTC", {ball: ball});
+        client.emit("changeSettingsTC", {ball: ball});
         collBarChecker = collCreaChecker;
       }
     }
