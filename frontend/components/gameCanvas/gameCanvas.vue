@@ -80,7 +80,7 @@
       <div id="gameCanvas" class="useWholePage flexHVcenter" >
         <div id="gameHUD" class="flexHVcenter">
 
-          <div v-if="gameEnded == false" id="gameInfos" class="flexAlignRow cantSelect">
+          <div v-if="endGame.isFinished == false" id="gameInfos" class="flexAlignRow cantSelect">
             <p class="txtHUD txtHUDName" :style="[creatorTxtStyle]" style="text-align: end;" >{{creatorName}}</p>
             <p class="txtHUD txtHUDScore" :style="[creatorTxtStyle]" style="text-align: end;" >{{game.score[0]}}</p>
             <p class="txtHUD txtHUDScore" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
@@ -89,7 +89,22 @@
           <div v-else id="finalCard">
             <!-- Background Green/Red -->
             <div class="finalGreen"></div> <div class="finalRed"></div>
-          </div>
+            <div id="endGameInfos" class="flexAlignCol">
+              <div class="endUpInfos">
+                <h2>{{endGame.winner.username}}</h2>
+              </div>
+
+              <div class="endMidInfos flexAlignRow">
+                <p>{{endGame.winner.score}}</p>
+                <p>VS</p>
+                <p>{{endGame.loser.score}}</p>
+              </div>
+
+              <div class="endBotInfos">
+                <h2>{{endGame.loser.username}}</h2>
+              </div>
+            </div> <!-- EndGameInfos End -->
+          </div> <!-- Final Card End -->
 
         </div>
       </div>
@@ -149,7 +164,17 @@ export default Vue.extend({
       opponentName: "" as string,
       isOpponentReady: false as boolean,
       barColor: "" as string,
-      gameEnded: false as boolean,
+      endGame: {
+        isFinished: false as boolean,
+        winner: {
+          username: '' as string,
+          score: 0 as number,
+        },
+        loser: {
+          username: '' as string,
+          score: 0 as number,
+        },
+      } as object,
     }
   },
   async mounted() {
@@ -165,7 +190,18 @@ export default Vue.extend({
     socketInit(SOCKET_URL, this.gameId, this);
     socket.emit("fetchGameTS", this.gameId); // This function will ask to the server to fetch game class
     socket.on("endGameTC", () => {
-      this.gameEnded = true;
+      this.endGame.isFinished = true;
+      if (this.game.score[0] > this.game.score[1]) {
+        this.endGame.winner.username = this.creatorName;
+        this.endGame.winner.score = this.game.score[0];
+        this.endGame.loser.username = this.opponentName;
+        this.endGame.loser.score = this.game.score[1];
+      } else {
+        this.endGame.loser.username = this.creatorName;
+        this.endGame.loser.score = this.game.score[0];
+        this.endGame.winner.username = this.opponentName;
+        this.endGame.winner.score = this.game.score[1];
+      }
     });
   },
   async destroyed() {
