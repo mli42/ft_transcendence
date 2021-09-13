@@ -27,10 +27,8 @@
         <div class="received">
           <ul>
             <li class="newMsg" v-for="(msg, index) in messages" :key="index">
-              <div class="msgAvatar">
-                <NuxtLink :to="`/profile/${msg.user.username}`">
-                  <Avatar :user="msg.user"></Avatar>
-                </NuxtLink>
+              <div class="msgAvatar" @click="currentMemberMod = msg.user, modalBool.showMembersMod = true ">
+                  <Avatar :user="msg.user" ></Avatar>
               </div>
               <div class="msgDiv">
                 <p>{{ msg.user.username }}</p>
@@ -56,7 +54,7 @@
       <div class="visibility">
         <input type="radio" name="private" @click="newChannel.public = false">
         <label for="private">Private</label>
-        <input type="radio" name="private" @click="newChannel.public = true">
+        <input type="radio" name="private" @click="newChannel.public = true" :checked="newChannel.public">
         <label for="private">Public</label>
       </div>
       <div class="checkBoxePassword" v-if="!newChannel.public">
@@ -94,18 +92,20 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showMembersMod">
       <h1>{{ currentMemberMod.username }}</h1>
-      <div class="avatar"><Avatar :user="currentMemberMod"></Avatar></div>
+      <div class="avatar">
+        <NuxtLink :to="`/profile/${currentMemberMod.username}`"><Avatar :user="currentMemberMod"></Avatar></NuxtLink>
+      </div>
       <div class="checkBoxeModerator flexHVcenter" v-if="this.currentChannel.owner === this.currentUser.userId && this.currentChannel.publicChannel === false">
         <input type="checkbox" name="addmoderator" v-model="moderation.newMod">
         <label class="addPassword" for="addmoderator">Moderator</label>
       </div>
       <DropdownChatMod toselect="Ban for (days):" :items="moderation.timer" action="ban" v-if="isAdmin() === true"></DropdownChatMod>
       <DropdownChatMod  toselect="Mute for (days):" :items="moderation.timer" action="mute"  v-if="isAdmin() === true"></DropdownChatMod>
+      <v-btn class="DoneBtn" @click="modalBool.showMembersMod = false, sendModeration()" v-if="isAdmin() === true">
+        <p class="v-btn-content">Apply</p>
+      </v-btn>
       <v-btn class="BlockBtn" @click="moderation.blockedUser = true, modalBool.showMembersMod = false, blockUser(currentMemberMod)">
         <p class="v-btn-content">Block this user</p>
-      </v-btn>
-      <v-btn class="DoneBtn" @click="modalBool.showMembersMod = false, sendModeration()">
-        <p class="v-btn-content">Apply</p>
       </v-btn>
     </SettingModal>
   </div>
@@ -156,7 +156,6 @@ export default Vue.extend({
       },
       selectedChannel: 0 as number,
       friends: [] as User[],
-      nonMember: [] as User[],
       password: '' as string,
       currentMemberMod: {} as User,
     }
@@ -180,7 +179,6 @@ export default Vue.extend({
           return;
         }
         if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
-          // && this.channels[index].password != "" && this.channels[index].owner != this.currentUser.userId)
         {
           this.modalBool.showPrivacy = true;
           this.selectedChannel = index;
@@ -223,7 +221,6 @@ export default Vue.extend({
       this.password = '';
     },
     sendModeration() {
-
       const arg = {channel: this.currentChannel,
       user: this.currentMemberMod,
       admin: this.moderation.newMod,
@@ -256,14 +253,18 @@ export default Vue.extend({
       if (this.newChannel.public === true)
       {
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
-        publicChannel: this.newChannel.public});
+        publicChannel: this.newChannel.public},  (data: boolean) => {
+          if (data === false)
+            this.$mytoast.err(`This channel name already exist`);});
       }
       else if (this.newChannel.public === false)
       {
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
         users: this.newChannel.members,
         publicChannel: this.newChannel.public,
-        password: this.newChannel.password});
+        password: this.newChannel.password}, (data: boolean) => {
+          if (data === false)
+            this.$mytoast.err(`This channel name already exist`);});
       }
       this.newChannel = new newChannel(); // Run on succes only!
       this.protectByPassword = false;
@@ -331,18 +332,15 @@ export default Vue.extend({
       this.$user.socket.emit("updateChannel", arg);
     },
     updateChannels(newChannels: Channel[] | any = [], onMount: boolean = false): void {
-      // if ((newChannels instanceof Array) == false) {
-      //   console.error('Assigning non array type to channels');
-      //   return ;
-      // }
+      if ((newChannels instanceof Array) == false) {
+        console.error('Assigning non array type to channels');
+        return ;
+      }
       this.channels = newChannels;
-      // const newChannelIndex = this.channels.length - 1; // Not viable atm
-      // if (onMount === true) {
-      //   this.joinChannel(0);
-      // } 
-      // else if (this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
-      //   this.joinChannel(newChannelIndex);
-      // }
+      const newChannelIndex = this.channels.length - 1; // Not viable atm
+      if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
+        this.joinChannel(newChannelIndex);
+      }
     },
     blockUser(user: User): void {
 
