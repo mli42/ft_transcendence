@@ -59,7 +59,11 @@
         <input type="radio" name="private" @click="newChannel.public = true" checked>
         <label for="private">Public</label>
       </div>
-      <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public"></ModalInput>
+      <div class="checkBoxePassword" v-if="!newChannel.public">
+        <input type="checkbox" name="addpassword" v-model="protectByPassword">
+        <label class="addPassword" for="addpassword">Protect by password</label>
+      </div>
+      <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public && protectByPassword"></ModalInput>
       <Dropdown v-if="!newChannel.public" toselect="Choose friends :" :items="friends" ></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()" >
         <p class="v-btn-content">Create</p>
@@ -67,13 +71,13 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
       <h1 id="settingModal">Channel Settings</h1>
-      <div class="checkBoxePassword flexHVcenter">
+      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.deletePassword">
         <input type="checkbox" name="addpassword" v-model="channelSettings.applyPassword">
         <label class="addPassword" for="addpassword">Protect by new password</label>
       </div>
-      <div class="checkBoxePassword flexHVcenter">
+      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.applyPassword">
         <input type="checkbox" name="addpassword" v-model="channelSettings.deletePassword">
-        <label class="addPassword" for="addpassword">Delete current password</label>
+        <label class="addPassword" for="addpassword">Disable current password</label>
       </div>
       <ModalInput  name="New passeword :"  placeHolder="" :isPassword="true" :ispublic="true" v-model.lazy="channelSettings.password" v-if="channelSettings.applyPassword"></ModalInput>
       <Dropdown toselect="Add members :" :items="friends"></Dropdown>
@@ -83,7 +87,7 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
       <h1 id="settingModal">Join Channel</h1>
-      <ModalInput  name="Channel password :" v-model.lazy="password"  placeHolder="" :isPassword="true" :ispublic="true"></ModalInput>
+      <ModalInput  name="Channel password :" v-model.lazy="password"  placeHolder="" :isPassword="true" :ispublic="true"  @keyup.enter.native="modalBool.showPrivacy = false, sendPassword()"></ModalInput>
       <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false, sendPassword()">
         <p class="v-btn-content" >Join</p>
       </v-btn>
@@ -97,7 +101,7 @@
       </div>
       <DropdownChatMod toselect="Ban for (days):" :items="moderation.timer" action="ban" v-if="isAdmin() === true"></DropdownChatMod>
       <DropdownChatMod  toselect="Mute for (days):" :items="moderation.timer" action="mute"  v-if="isAdmin() === true"></DropdownChatMod>
-      <v-btn class="BlockBtn" @click="moderation.blockedUser = true">
+      <v-btn class="BlockBtn" @click="moderation.blockedUser = true, modalBool.showMembersMod = false, blockUser(currentMemberMod)">
         <p class="v-btn-content">Block this user</p>
       </v-btn>
       <v-btn class="DoneBtn" @click="modalBool.showMembersMod = false, sendModeration()">
@@ -136,6 +140,7 @@ export default Vue.extend({
         showMembersMod: false as boolean,
       },
       newChannel: new newChannel() as newChannel,
+      protectByPassword: false as Boolean,
       moderation:{
         newMod: false as boolean,
         banTime: 0 as number,
@@ -192,6 +197,7 @@ export default Vue.extend({
     sendPassword() {
       const arg = {channel: this.channels[this.selectedChannel],
       password: this.password};
+      console.log("channels at first", this.channels);
       this.$user.socket.emit("checkRoleChannelBan", this.channels[this.selectedChannel], (resp: boolean) => {
         if (resp === true)
         {
@@ -206,8 +212,10 @@ export default Vue.extend({
           }
           else
           {
+            console.log("channels then", this.channels);
             this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
             this.currentChannel = this.channels[this.selectedChannel];
+            this.selectedChannel = 0;
             this.checkIfMute(this.currentChannel);
           }
         });
@@ -258,6 +266,7 @@ export default Vue.extend({
         password: this.newChannel.password});
       }
       this.newChannel = new newChannel(); // Run on succes only!
+      this.protectByPassword = false;
       this.hideModal();
     },
     hideModal(): void {
@@ -266,6 +275,7 @@ export default Vue.extend({
       this.modalBool.showPrivacy = false;
       this.modalBool.showMembersMod= false;
       this.newChannel.public = true;
+      this.protectByPassword = false
     },
     isAdmin(): Boolean{
       if(this.currentChannel.publicChannel === true || this.currentChannel.channelName === "")
@@ -321,18 +331,21 @@ export default Vue.extend({
       this.$user.socket.emit("updateChannel", arg);
     },
     updateChannels(newChannels: Channel[] | any = [], onMount: boolean = false): void {
-      if ((newChannels instanceof Array) == false) {
-        console.error('Assigning non array type to channels');
-        return ;
-      }
+      // if ((newChannels instanceof Array) == false) {
+      //   console.error('Assigning non array type to channels');
+      //   return ;
+      // }
       this.channels = newChannels;
-      const newChannelIndex = this.channels.length - 1; // Not viable atm
-      if (onMount === true) {
-        this.joinChannel(0);
-      } 
-      else if (this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
-        this.joinChannel(newChannelIndex);
-      }
+      // const newChannelIndex = this.channels.length - 1; // Not viable atm
+      // if (onMount === true) {
+      //   this.joinChannel(0);
+      // } 
+      // else if (this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
+      //   this.joinChannel(newChannelIndex);
+      // }
+    },
+    blockUser(user: User): void {
+
     },
   },
   mounted() {

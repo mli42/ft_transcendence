@@ -11,6 +11,7 @@
               </div>
                 <p>{{user.username}}</p>
             </li>
+            <p v-if="result.length === 0">No result found</p>
         </ul>
     </div>
 </template>
