@@ -27,7 +27,7 @@
         <div class="received">
           <ul>
             <li class="newMsg" v-for="(msg, index) in messages" :key="index">
-              <div class="msgAvatar" @click="currentMemberMod = msg.user, modalBool.showMembersMod = true ">
+              <div class="msgAvatar" @click="currentMemberMod = msg.user, modalBool.showPersonnalSettings = true ">
                   <Avatar :user="msg.user" ></Avatar>
               </div>
               <div class="msgDiv">
@@ -90,7 +90,7 @@
         <p class="v-btn-content" >Join</p>
       </v-btn>
     </SettingModal>
-    <SettingModal :hideModal="hideModal" v-if="modalBool.showMembersMod">
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showMembersMod && (isAdmin() === true || (this.currentChannel.owner === this.currentUser.userId && this.currentChannel.publicChannel === false))">
       <h1>{{ currentMemberMod.username }}</h1>
       <div class="avatar">
         <NuxtLink :to="`/profile/${currentMemberMod.username}`"><Avatar :user="currentMemberMod"></Avatar></NuxtLink>
@@ -99,12 +99,21 @@
         <input type="checkbox" name="addmoderator" v-model="moderation.newMod">
         <label class="addPassword" for="addmoderator">Moderator</label>
       </div>
-      <DropdownChatMod toselect="Ban for (days):" :items="moderation.timer" action="ban" v-if="isAdmin() === true"></DropdownChatMod>
-      <DropdownChatMod  toselect="Mute for (days):" :items="moderation.timer" action="mute"  v-if="isAdmin() === true"></DropdownChatMod>
-      <v-btn class="DoneBtn" @click="modalBool.showMembersMod = false, sendModeration()" v-if="isAdmin() === true">
+      <DropdownChatMod toselect="Ban for (days):" :items="moderation.timer" action="ban"></DropdownChatMod>
+      <DropdownChatMod  toselect="Mute for (days):" :items="moderation.timer" action="mute"></DropdownChatMod>
+      <v-btn class="DoneBtn" @click="modalBool.showMembersMod = false, sendModeration()">
         <p class="v-btn-content">Apply</p>
       </v-btn>
-      <v-btn class="BlockBtn" @click="moderation.blockedUser = true, modalBool.showMembersMod = false, blockUser(currentMemberMod)">
+    </SettingModal>
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showPersonnalSettings && currentUser.userId != currentMemberMod.userId">
+      <h1>{{ currentMemberMod.username }}</h1>
+      <div class="avatar">
+        <NuxtLink :to="`/profile/${currentMemberMod.username}`"><Avatar :user="currentMemberMod"></Avatar></NuxtLink>
+      </div>
+      <v-btn class="DoneBtn" @click="modalBool.showPersonnalSettings = false">
+        <p class="v-btn-content">Defi to a Game</p>
+      </v-btn>
+      <v-btn class="BlockBtn" @click="moderation.blockedUser = true, modalBool.showPersonnalSettings= false, blockUser(currentMemberMod)">
         <p class="v-btn-content">Block this user</p>
       </v-btn>
     </SettingModal>
@@ -138,6 +147,7 @@ export default Vue.extend({
         showPrivacy: false as boolean,
         showSearch: false as boolean,
         showMembersMod: false as boolean,
+        showPersonnalSettings: false as boolean,
       },
       newChannel: new newChannel() as newChannel,
       protectByPassword: false as Boolean,
@@ -277,6 +287,7 @@ export default Vue.extend({
       this.modalBool.showMembersMod= false;
       this.newChannel.public = true;
       this.protectByPassword = false
+      this.modalBool.showPersonnalSettings = false;
     },
     isAdmin(): Boolean{
       if(this.currentChannel.publicChannel === true || this.currentChannel.channelName === "")
