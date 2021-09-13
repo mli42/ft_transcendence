@@ -241,4 +241,8 @@ export class UserService {
 			throw new InternalServerErrorException();
 		}
 	}
+
+	updateBlockUser(block: boolean, user: User, userToBlock: User) {
+		this.usersRepository.updateBlockUser(block, user, userToBlock);
+	}
 }

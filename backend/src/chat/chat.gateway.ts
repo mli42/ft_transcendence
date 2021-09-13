@@ -142,36 +142,36 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 await this.server.to(user.socketId).emit('messageAdded', createMessage);
         }
     }
+    /********************* Block user *********************/
+    @SubscribeMessage('blockUser')
+    async blockOrDefiUser(client: Socket, data: any) {
+        let { user, block } = data;
+        this.userService.updateBlockUser(block, client.data.user, user);
+        // emit message ?
+    }
 
     /********************* Autorisation Channel *********************/
     @SubscribeMessage('autorisationChannel')
     async updateAutorisationChannel(client: Socket, data: any) {
-        let { user, channel, admin, block } = data;
-        if (admin === true) {
-            this.channelService.addAdminUser(channel, user);
-        } else {
-            this.channelService.removeAdminUser(channel, user);
-        }
-        if (block === true) {
-            this.channelService.addBlockUser(client.data.user, user);
-        } else {
-            this.channelService.removeBlockUser(channel, user);
-        }
-        const roleFound: RoleUserI = await this.roleUserService.findUserByChannel(channel, user.userId);
+        let { user, channel, admin } = data;
+        const channelFound = await this.channelService.getChannel(channel.channelId);
+
+        this.channelService.updateAdminUser(admin, channelFound, user);
+
+        const roleFound: RoleUserI = await this.roleUserService.findUserByChannel(channelFound, user.userId);
         let role: RoleUserI = null;
         if (roleFound) {
             role = await this.roleUserService.updateRole(roleFound, data);
-        }
-        else {
+        } else {
             role = await this.roleUserService.create(data);
         }
         let date = new Date;
         const userConnectedFound: ConnectedUserI = await this.connectedUserService.findUser(user);
         if (userConnectedFound) {
             if (role.ban > date)
-                this.server.to(userConnectedFound.socketId).emit('banUserChannel', channel);
+                this.server.to(userConnectedFound.socketId).emit('banUserChannel', channelFound);
             if (role.mute > date)
-                this.server.to(userConnectedFound.socketId).emit('muteUserChannel', channel);
+                this.server.to(userConnectedFound.socketId).emit('muteUserChannel', channelFound);
         }
     }
 

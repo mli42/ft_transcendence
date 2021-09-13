@@ -111,57 +111,31 @@ export class ChannelService {
 		return true;
 	}
 
-
-
-	async isAdminUser(channel: ChannelI, user: User): Promise<boolean> {
+	async updateAdminUser(admin: boolean, channel: ChannelI, user: User) {
 		const userFound = channel.adminUsers.find(element => element === user.userId)
-		if (userFound)
-			return true;
-		return false;
-	}
-
-	async addAdminUser(channel: ChannelI, user: User) {
-		if (await this.isAdminUser(channel, user) === true)
-			return;
-		channel.adminUsers.push(user.userId);
-		try {
-			await this.channelRepository.save(channel);
-		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException('add an user admin');
+		if (admin === true && !userFound) {
+			channel.adminUsers.push(user.userId);
+			try {
+				await this.channelRepository.save(channel);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('add an user admin');
+			}
+		}
+		if (admin === false && userFound) {
+			const index = channel.adminUsers.indexOf(user.userId);
+			channel.adminUsers.splice(index, 1);
+			try {
+				await this.channelRepository.save(channel);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('remove an user admin');
+			}
 		}
 	}
 
-	async removeAdminUser(channel: ChannelI, user: User) {
-		if (await this.isAdminUser(channel, user) === false)
-			return;
-		const index = channel.adminUsers.indexOf(user.userId);
-		channel.adminUsers.splice(index, 1);
-	}
-
-
-
-	async addBlockUser(user: User, userToBlock: User) {
-
-	}
-
-	async removeBlockUser(channel: ChannelI, user: User) {
-	
-	}
-
-
 	async updateChannelInfo(channelFound: ChannelI, info: any) {
 		const { applyPassword, password, deletePassword, members } = info;
-        if (applyPassword) {
-            if (!password) {
-                channelFound.password = "";
-            } else {
-				const salt = await bcrypt.genSalt();
-				channelFound.password = await bcrypt.hash(password, salt);
-            }
-        }
-        if (deletePassword)
-            channelFound.password = "";
 		if (members) {
 			const newUsers = [];
 			for (const user of members) {
@@ -172,8 +146,17 @@ export class ChannelService {
 			const newMembers = channelFound.users.concat(newUsers);
 			channelFound.users = newMembers;
 		}
+		if (applyPassword && !password || deletePassword) {
+			channelFound.password = "";
+			channelFound.authPrivateChannelUsers = [];
+			for (const user of channelFound.users) {
+				channelFound.authPrivateChannelUsers.push(user.userId)
+			}
+        }
+		if (applyPassword && password) {
+			const salt = await bcrypt.genSalt();
+			channelFound.password = await bcrypt.hash(password, salt);
+		}
 		await this.channelRepository.save(channelFound);
 	}
-
-	// add or remove a user to private channel
 }
