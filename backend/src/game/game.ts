@@ -113,6 +113,8 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
   }
   playingGames.splice(playingGames.lastIndexOf(game.id));
   game.state = "ended";
+  client.to(game.id).emit("endGameTC"); // Update point on front
+  client.emit("endGameTC");
   while (game.state != "closed") {
     await sleep(10);
     if (game.modBarCrea === 1) { modifierUpCrea(); } else if (game.modBarCrea === -1) { modifierDownCrea(); }
