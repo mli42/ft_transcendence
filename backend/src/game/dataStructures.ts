@@ -27,7 +27,7 @@ class Ball {
   constructor() {
     this.pos = [768 / 2, 432 / 2];
     this.size = 16;
-    this.speed = 5;
+    this.speed = 2;
     this.color = "#DCE1E5";
     this.delta = [0, 0];
   }
@@ -65,8 +65,8 @@ class Game {
   startDate: Date;              // Date of the game start
   creatorId: string;            // The userId of the game creator
   opponentId: string;           // The userId of the opponenent;
-  modBarCrea: () => void;         // Bar modifier functions
-  modBarOppo: () => void;
+  modBarCrea: number;         // Bar modifier functions
+  modBarOppo: number;
   creationDate: Date;
   opponentIdFound: string;
   enabledPowerUps: Array<string>;
@@ -141,8 +141,8 @@ class Game {
     this.startDate = new Date();
     this.creatorId = creatorId;
     this.opponentId = "";
-    this.modBarCrea = function () { };
-    this.modBarOppo = function () { };
+    this.modBarCrea = 0;
+    this.modBarOppo = 0;
     this.creationDate = new Date();
     this.opponentIdFound = "";
     this.enabledPowerUps = new Array<string>();

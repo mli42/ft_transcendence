@@ -1,9 +1,10 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Logger, UseGuards } from "@nestjs/common";
-import { Game, Player } from "./dataStructures";
+import { Game, Player, Ball } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { AuthGuard } from "@nestjs/passport";
 import { ChatGateway } from "src/chat/chat.gateway";
+import { gameInstance } from "./game";
 
 let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
 let playingGames: Array<string> = new Array();
@@ -66,33 +67,18 @@ export class gameGateway {
   /**
    * LIST OF PRE-GAME MESSAGE LISTENERS
    */
-  genRandDelta(): Array<number> {
-    let ballDelta: Array<number> = new Array();
-    let ballDeltaSum: number = 1;
-    let ballDeltaRand: number = Math.random();
-
-    while (ballDeltaRand * 10 < 2 || ballDeltaRand * 10 > 8) {// Ajust to start with a delta more horizontal
-      ballDeltaRand = Math.random();
-    }
-    ballDelta[0] = ballDeltaSum - ballDeltaRand;
-    if (Math.round(Math.random())) { ballDelta[0] = -ballDelta[0] } // Add negative ranges between -1 and 0
-    ballDelta[1] = ballDeltaRand;
-    if (Math.round(Math.random())) { ballDelta[1] = -ballDelta[1] }
-    return (ballDelta);
-  }
 
   startGame(client: Socket, game: Game): void {
-    let ballDelta: Array<number> = this.genRandDelta();
 
-    client.to(client.handshake.query.gameId).emit("startGameTC", ballDelta);
-    client.emit("startGameTC", ballDelta);
     game.state = "started";
+    client.to(client.handshake.query.gameId).emit("startGameTC");
+    client.emit("startGameTC");
     playingGames.push(game.id);
     playingUsers.push(game.creatorId);
     playingUsers.push(game.opponentId);
     game.startDate = new Date();
     this.chatGateway.userInGame(playingUsers);
-    game.ball.delta = ballDelta;
+    gameInstance(client, game);
   }
 
   // A client ask to get the entire game class. Or to create it if does not exists
@@ -263,51 +249,19 @@ export class gameGateway {
   /**
    * GAME LISTENERS
    */
-  @SubscribeMessage("posCreaTS")
-  posCrea(client: Socket, pos: number): void {
-    const query: any = client.handshake.query;
-
-    client.to(query.gameId).emit("posCreaTC", pos);
-  }
-
-  @SubscribeMessage("posOppoTS")
-  posOppo(client: Socket, pos: number): void {
-    const query: any = client.handshake.query;
-
-    client.to(query.gameId).emit("posOppoTC", pos);
-  }
 
   @SubscribeMessage("changeBarModTS")
   changeBarMod(client: Socket, payload: {userId: string, state: number}): void {
     const query: any = client.handshake.query;
-
-    client.to(query.gameId).emit("changeBarModTC", payload);
-  }
-
-  @SubscribeMessage("pointTS")
-  pointTS(client: Socket, isCreaLoose: boolean): void {
-    const query: any = client.handshake.query;
-    this.logger.log("LOG: pointTS on " + query.gameId + " from " + query.username);
-
     const game: Game = gamesMap.get(query.gameId);
-    const randDelta: Array<number> = this.genRandDelta();
+    // this.logger.log("LOG: changeBarModTS on " + query.gameId + " from " + query.username + " : " + payload.state);
 
-    if (!game)
-      return;
-    if (isCreaLoose === true) { // Add one point to opponent
-      game.score[1]++;
-    } else {                    // Add one point to creator
-      game.score[0]++;
+    if (game) {
+      if (payload.userId === game.creatorId) {
+        game.modBarCrea = payload.state;
+      } else if (payload.userId === game.opponentId) {
+        game.modBarOppo = payload.state;
+      }
     }
-    client.to(game.id).emit("pointTC", isCreaLoose);
-    client.to(game.id).emit("newRoundTC", randDelta);
-    client.emit("newRoundTC", randDelta);
   }
-
-  @SubscribeMessage("ballSync")
-  ballSync(client: Socket, payload: { posX: number, posY: number }): void {
-    const query: any = client.handshake.query;
-
-    client.to(query.gameId).emit("ballSync", payload);
-  };
 }
