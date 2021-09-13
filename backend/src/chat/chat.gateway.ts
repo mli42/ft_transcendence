@@ -31,7 +31,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     private logger: Logger = new Logger('ChatGateway');
 
     /********************* CONNECTION ********************** */
-    // Called once the host module's dependencies have been resolved
     async onModuleInit() {
         await this.connectedUserService.deleteAll();
         await this.joinedChannelService.deleteAll();
@@ -42,8 +41,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             const user: User = await this.channelService.getUserFromSocket(client);
             if (!user) {
                 return this.disconnectClient(client);
-            }
-            else {
+            } else {
                 client.data.user = user;
 
                 const channels = await this.channelService.getChannelsForUser(user.userId);
@@ -128,18 +126,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async onAddMessage(client: Socket, message: MessageI) {
         const userRoleFound = await this.roleUserService.findUserByChannel(message.channel, client.data.user.userId);
         let date = new Date;
-        if (userRoleFound && (userRoleFound.mute >= date || userRoleFound.ban >= date)) {
+        if (userRoleFound && (userRoleFound.mute >= date || userRoleFound.ban >= date))
             return;
-        }
         const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
         const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
         const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
         for (const user of joinedUsers) {
             const userJoinRoleFound = await this.roleUserService.findUserByChannel(message.channel, user.user.userId);
             let date = new Date;
-            if (!userJoinRoleFound || userJoinRoleFound.ban < date || userJoinRoleFound.ban === null || userJoinRoleFound.mute >= date) {
+            if (!userJoinRoleFound || userJoinRoleFound.ban < date || userJoinRoleFound.ban === null || userJoinRoleFound.mute >= date)
                 await this.server.to(user.socketId).emit('messageAdded', createMessage);
-            }
         }
     }
 
@@ -168,12 +164,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         let date = new Date;
         const userConnectedFound: ConnectedUserI = await this.connectedUserService.findUser(user);
         if (userConnectedFound) {
-            if (role.ban > date) {
+            if (role.ban > date)
                 this.server.to(userConnectedFound.socketId).emit('banUserChannel', channel);
-            }
-            if (role.mute > date) {
+            if (role.mute > date)
                 this.server.to(userConnectedFound.socketId).emit('muteUserChannel', channel);
-            }
         }
     }
 

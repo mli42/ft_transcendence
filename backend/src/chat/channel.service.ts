@@ -28,9 +28,8 @@ export class ChannelService {
 		channel.adminUsers = [];
 		channel.authPrivateChannelUsers = [];
 		channel.owner = creator.userId;
-		if (!password) {
+		if (!password)
 			password = null;
-		}
 		if (publicChannel === false) {
 			channel.users.push(creator);
 			if (password) {
@@ -67,10 +66,9 @@ export class ChannelService {
 			let d1 = new Date(date1.date);
 			let d2 = new Date(date2.date);
 			if (d1 > d2) return 1;
-			else if (d1 < d2)  return -1;
+			else if (d1 < d2) return -1;
 			else return 0;
 		  });
-
 		return channels;
 	}
 
@@ -95,16 +93,14 @@ export class ChannelService {
 		if(channel.authPrivateChannelUsers.length === 0)
 			return false;
 		const userFound = channel.authPrivateChannelUsers.find(element => element === user.userId)
-		if (userFound) {
+		if (userFound)
 			return true;
-		}
 		return false;
 	}
 
 	async addAuthUserPrivateChannel(channel: ChannelI, user: User): Promise<boolean>  {
-		if (await this.isAuthPrivateChannel(channel, user) === true) {
+		if (await this.isAuthPrivateChannel(channel, user) === true)
 			return true;
-		}
 		channel.authPrivateChannelUsers.push(user.userId);
 		try {
 			await this.channelRepository.save(channel);
@@ -119,16 +115,14 @@ export class ChannelService {
 
 	async isAdminUser(channel: ChannelI, user: User): Promise<boolean> {
 		const userFound = channel.adminUsers.find(element => element === user.userId)
-		if (userFound) {
+		if (userFound)
 			return true;
-		}
 		return false;
 	}
 
 	async addAdminUser(channel: ChannelI, user: User) {
-		if (await this.isAdminUser(channel, user) === true) {
+		if (await this.isAdminUser(channel, user) === true)
 			return;
-		}
 		channel.adminUsers.push(user.userId);
 		try {
 			await this.channelRepository.save(channel);
@@ -166,16 +160,14 @@ export class ChannelService {
 				channelFound.password = await bcrypt.hash(password, salt);
             }
         }
-        if (deletePassword) {
+        if (deletePassword)
             channelFound.password = "";
-        }
 		if (members) {
 			const newUsers = [];
 			for (const user of members) {
 				const userFound: User = channelFound.users.find(element => element.userId === user.userId);
-				if (!userFound) {
+				if (!userFound)
 					newUsers.push(user);
-				}
 			}
 			const newMembers = channelFound.users.concat(newUsers);
 			channelFound.users = newMembers;
