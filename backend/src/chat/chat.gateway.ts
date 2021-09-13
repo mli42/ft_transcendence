@@ -79,7 +79,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI) {
         const { publicChannel } = channel;
-
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
         this.emitUpdateChannel(createChannel, publicChannel);
 
@@ -148,7 +147,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('autorisationChannel')
     async updateAutorisationChannel(client: Socket, data: any) {
         let { user, channel, admin, block } = data;
-        console.log(data)
         if (admin === true) {
             this.channelService.addAdminUser(channel, user);
         } else {
@@ -223,6 +221,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* Join Channel *********************/
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
+        
         const channelFound = await this.channelService.getChannel(channel.channelId);
         if (channelFound.publicChannel === false && await this.channelService.isAuthPrivateChannel(channelFound, client.data.user) == false){
             console.log("FAUX")

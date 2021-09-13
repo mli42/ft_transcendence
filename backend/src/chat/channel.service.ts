@@ -28,6 +28,7 @@ export class ChannelService {
 		channel.adminUsers = [];
 		channel.blockUsers = [];
 		channel.authPrivateChannelUsers = [];
+		// channel.users = [];
 		channel.owner = creator.userId;
 		if (password) {
 			const salt = await bcrypt.genSalt();
@@ -36,19 +37,12 @@ export class ChannelService {
 			password = null;
 		}
 		if (publicChannel === false) {
-			const newChannel = await this.addCreatorToChannel(channel, creator);
-			return this.channelRepository.save(newChannel);
+			channel.users.push(creator);
+			channel.authPrivateChannelUsers.push(creator.userId)
 		}
 		return this.channelRepository.save(channel);
 	}
 
-	async addCreatorToChannel(channel: ChannelI, creator: User): Promise<ChannelI> {
-		if (!Array.isArray(channel.users)) {
-			channel.users = [];
-		}
-		channel.users.push(creator);
-		return channel;
-	}
 
 	async getChannelsForUser(userId: string): Promise <ChannelI[]> {
 		let query = this.channelRepository
