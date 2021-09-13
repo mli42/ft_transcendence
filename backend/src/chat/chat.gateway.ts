@@ -14,7 +14,7 @@ import { RoleUserI } from './interfaces/role-user.interface';
 import { RoleUserService } from './role-user.service';
 import { UserService } from 'src/user/user.service';
 
-@WebSocketGateway({ namespace: "/chat", cors: { origin: 'http://localhost:3030', credentials: true }})
+@WebSocketGateway({ namespace: "/chat", cors: { origin: process.env.IP_FRONTEND, credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
     constructor(
         private readonly userService: UserService,
