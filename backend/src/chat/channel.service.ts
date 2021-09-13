@@ -24,7 +24,7 @@ export class ChannelService {
 		let { channelName, publicChannel, password } = channel;
 		const name = await this.channelRepository.findOne({channelName: channelName});
 		if (name)
-			throw new UnauthorizedException('This channel name already exist');
+			return null;
 		channel.adminUsers = [];
 		channel.authPrivateChannelUsers = [];
 		channel.owner = creator.userId;

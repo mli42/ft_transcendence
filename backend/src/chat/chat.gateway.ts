@@ -75,11 +75,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
-    async onCreateChannel(client: Socket, channel: ChannelI) {
+    async onCreateChannel(client: Socket, channel: ChannelI): Promise<boolean> {
         const { publicChannel } = channel;
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
-        this.emitUpdateChannel(createChannel, publicChannel);
-
+        if (!createChannel) {
+            return false;
+        } else {
+            this.emitUpdateChannel(createChannel, publicChannel);
+            return true;
+        }
     }
 
     @SubscribeMessage('displayChannel')
