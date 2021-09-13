@@ -127,3 +127,30 @@ span#VS {
 #mainBtn {
   text-align: center;
 }
+
+#finalCard {
+  height: 75%;
+  width: 75%;
+}
+
+.finalGreen, .finalRed {
+  height: 100%;
+  width: 100%;
+}
+
+#finalCard, .finalGreen, .finalRed {
+  position: absolute;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+}
+
+.finalGreen {
+  clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%);
+  background: rgba(70, 160, 110, 0.75);
+}
+
+.finalRed {
+  clip-path: polygon(100% 0, 60% 0, 40% 100%, 100% 100%);
+  background: rgba(170, 50, 90, 0.75);
+}
