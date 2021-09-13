@@ -12,15 +12,24 @@ let backgroundURL: string;
 let canvasWidth: number;
 let canvasHeight: number;
 let canvasHUD: any;
-let HUDtxt: any;
 
 function updateHUDtxt(): void {
-  const margin: number = canvasHeight / 50;
-  const font_size: number = margin + 10;
+  if (vueInstance.endGame.isFinished == false) {
+    const margin: number = canvasHeight / 50;
+    const font_size: number = margin + 10;
+    let HUDtxt: any = document.getElementsByClassName("txtHUD");
 
-  for (let element of HUDtxt) {
-    element.style.margin = `${margin}px`;
-    element.style['font-size'] = `${font_size}px`;
+    for (let element of HUDtxt) {
+      element.style.margin = `${margin}px`;
+      element.style['font-size'] = `${font_size}px`;
+    }
+  } else {
+    const font_size: number = canvasHeight / 10;
+    let endGameMainInfos: any = document.getElementsByClassName("endGameMainInfo");
+
+    for (let element of endGameMainInfos) {
+      element.style['font-size'] = `${font_size}px`;
+    }
   }
 }
 
@@ -85,7 +94,6 @@ async function sketch(s: any): Promise<any> {
    */
   let canvasDom: any = document.getElementById("gameCanvas");
   canvasHUD = document.getElementById("gameHUD");
-  HUDtxt = document.getElementsByClassName("txtHUD");
   updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
   s.disableFriendlyErrors = true; // Optimize code
 

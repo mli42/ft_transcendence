@@ -118,7 +118,4 @@ function socketInit(url: string, gameId: string, vue: any): void {
     vue.$data.game.state = "started";
     vue.startGame();
   });
-  socket.on("endGameTC", () => {
-    console.log("C la fin !");
-  });
 }
