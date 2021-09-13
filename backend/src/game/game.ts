@@ -14,7 +14,7 @@ function genRandDelta(): Array<number> {
   let ballDeltaSum: number = 1;
   let ballDeltaRand: number = Math.random();
 
-  while (ballDeltaRand * 10 < 4 || ballDeltaRand * 10 > 7) {// Ajust to start with a delta more horizontal
+  while (ballDeltaRand * 10 < 1 || ballDeltaRand * 10 > 5) {// Ajust to start with a delta more horizontal
     ballDeltaRand = Math.random();
   }
   ballDelta[0] = ballDeltaSum - ballDeltaRand;

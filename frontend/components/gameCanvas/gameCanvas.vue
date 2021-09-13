@@ -207,11 +207,7 @@ export default Vue.extend({
       }
     },
     displayMatchmaking(): void {
-      if (this.game.players.has(this.user.userId) === true) { // If the current client is a player
-        this.isColorDisplayed = true;
-      } else {
-        this.isColorDisplayed = false;
-      }
+      this.isColorDisplayed = false;
       if (this.game.creatorId == this.user.userId && this.game.players.size == 1) {
         this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       } else {
