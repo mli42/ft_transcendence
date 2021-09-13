@@ -95,9 +95,9 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
       ball.delta[1] *= -1;
     } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) { // left & right collision
       if (ball.pos[0] - (ball.size / 2) <= 0) { // left collision
-        game.score[0]++;
-      } else {                                  // right collision
         game.score[1]++;
+      } else {                                  // right collision
+        game.score[0]++;
       }
       ball.pos = [768 / 2, 432 / 2];
       ball.delta = genRandDelta();
