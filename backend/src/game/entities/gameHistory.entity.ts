@@ -6,30 +6,24 @@ export class GameHistory {
     @PrimaryGeneratedColumn("uuid")
     gameId: string;
 
-    @Column()
-    score: string;
+    @Column("simple-array")
+    score: string[];
 
-    @Column()
+    @Column("text", {default: ""})
     playerOne: string;
 
-    @Column()
-    playerOneElo: number;
-
-    @Column()
+    @Column("text", {default: ""})
     playerTwo: string;
-
-    @Column()
-    playerTwoElo: number;
 
     @Column('date', { default: () => '((CURRENT_DATE))' })
     date: Date;
 
-    @Column('time', {name: 'elapsed_time'})
-    gameDuration: Date;
+    @Column('int',  {default: 0})
+    gameDuration: number;
 
-    @Column()
+    @Column("text", {default: ""})
     playerWin: string;
 
-    @Column()
+    @Column("text", {default: ""})
     playerLoose: string;
 }

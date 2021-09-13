@@ -114,7 +114,7 @@ class Ball {
   constructor() {
     this.pos = [768 / 2, 432 / 2];
     this.size = 16;
-    this.speed = 5;
+    this.speed = 3;
     this.color = "#DCE1E5";
     this.delta = [0, 0];
   }
@@ -184,7 +184,6 @@ class Game {
    * MODIFIER BAR FUNCTIONS
    * These functions move the bar up or down.
    */
-  
 }
 
 // This class contain all data to represente a powerUp

@@ -107,7 +107,7 @@ export class UserService {
 		return {
 			userId: user.userId,
 			username: user.username,
-			status: user.status,
+			elo: user.elo,
 			profile_picture: user.profile_picture,
 		}
 	}
