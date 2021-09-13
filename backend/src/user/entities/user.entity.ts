@@ -71,4 +71,7 @@ export class User {
 
   @Column("boolean", {default: false})
   isAdmin: boolean;
+
+  @Column("simple-array", {default: []})
+  blockedUsers: string[];
 }
