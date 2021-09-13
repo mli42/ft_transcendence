@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <div class="search flexHVcenter">
-          <input  type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false">
+          <input  type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false" autocomplete="off">
           <div class="loop flexHVcenter" @click="showResult = true, fetchData()"><img src="~/assets/img/loop.png"></div>
         </div>
         <ul v-if="showResult" class="result" @click.self="showResult = false">
@@ -39,6 +39,11 @@ export default Vue.extend({
           this.result.push(el)});
     },
   },
+  mounted(){
+     this.$nuxt.$on('hide-search', (data: any) => {
+       this.showResult = false;
+     });
+  } 
 });
 </script>
 
