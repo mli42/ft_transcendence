@@ -26,7 +26,6 @@ export class ChannelService {
 		if (name)
 			throw new UnauthorizedException('This channel name already exist');
 		channel.adminUsers = [];
-		channel.blockUsers = [];
 		channel.authPrivateChannelUsers = [];
 		channel.owner = creator.userId;
 		if (!password) {
@@ -63,6 +62,15 @@ export class ChannelService {
 		.orderBy('channel.date', 'ASC');
 		const privateChannels: ChannelI[] = await query.getMany();
 		const channels = publicChannels.concat(privateChannels);
+
+		channels.sort(function(date1,date2) {
+			let d1 = new Date(date1.date);
+			let d2 = new Date(date2.date);
+			if (d1 > d2) return 1;
+			else if (d1 < d2)  return -1;
+			else return 0;
+		  });
+
 		return channels;
 	}
 
