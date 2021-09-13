@@ -11,4 +11,4 @@ ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3030
 
 # Dependencies from package.json and start the server
-ENTRYPOINT npm install && npm run dev
+ENTRYPOINT npm install && npm run build && npm run start

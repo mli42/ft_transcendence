@@ -7,6 +7,6 @@ RUN npm i -g @nestjs/cli
 
 EXPOSE 3000
 
-ENTRYPOINT npm install && npm run start:dev
+ENTRYPOINT npm install && npm run start:prod
 
 # command: docker attach backend_app
