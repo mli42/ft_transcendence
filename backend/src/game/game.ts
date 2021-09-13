@@ -1,3 +1,4 @@
+import { playingGames } from "./game.gateway";
 import { Game, Player, Ball } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 
@@ -110,6 +111,7 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
     client.to(game.id).emit("b", {posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY} );
     client.emit("b", {posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY} );
   }
+  playingGames.splice(playingGames.lastIndexOf(game.id));
   game.state = "ended";
   while (game.state != "closed") {
     await sleep(10);
