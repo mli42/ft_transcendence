@@ -1,6 +1,7 @@
 import { playingGames } from "./game.gateway";
 import { Game, Player, Ball } from "./dataStructures";
 import { Socket, Server } from "socket.io";
+import { GameService } from "./game.service";
 
 export { gameInstance }
 
@@ -23,7 +24,7 @@ function genRandDelta(): Array<number> {
   return (ballDelta);
 }
 
-async function gameInstance(client: Socket, game: Game): Promise<any> {
+async function gameInstance(client: Socket, game: Game, gameService: GameService): Promise<any> {
   let ball: Ball = game.ball;
   let pCrea: Player = game.players.get(game.creatorId);
   let pOppo: Player = game.players.get(game.opponentId);
@@ -113,6 +114,7 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
   }
   playingGames.splice(playingGames.lastIndexOf(game.id));
   game.state = "ended";
+  gameService.dbGameHistory(game);
   client.to(game.id).emit("endGameTC"); // Update point on front
   client.emit("endGameTC");
   while (game.state != "closed") {

@@ -5,6 +5,7 @@ import { Socket, Server } from "socket.io";
 import { AuthGuard } from "@nestjs/passport";
 import { ChatGateway } from "src/chat/chat.gateway";
 import { gameInstance } from "./game";
+import { GameService } from "./game.service";
 
 let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
 let playingGames: Array<string> = new Array();
@@ -35,7 +36,8 @@ export class gameGateway {
 
   constructor(
     private chatGateway: ChatGateway,
-) {}
+    private gameService: GameService,
+  ) {}
   /**
    * LIST OF LOG FUNCTIONS
    */
@@ -84,7 +86,7 @@ export class gameGateway {
     playingUsers.push(game.opponentId);
     game.startDate = new Date();
     this.chatGateway.userInGame(playingUsers);
-    gameInstance(client, game);
+    gameInstance(client, game, this.gameService);
   }
 
   // A client ask to get the entire game class. Or to create it if does not exists

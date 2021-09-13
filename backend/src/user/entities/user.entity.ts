@@ -62,7 +62,7 @@ export class User {
 
   @OneToMany(() => Message, message => message.user)
   messages: Message[];
-  
+
   @Column("boolean", {default: false})
   twoFactorAuth: boolean;
 
