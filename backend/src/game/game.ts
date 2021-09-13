@@ -48,7 +48,7 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
       if (ball.pos[0] - halfBall >= pCrea.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
         ball.delta[0] *= -1;
-        ball.speed *= 1.15;
+        ball.speed += 1;
         ball.color = pCrea.color;
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
@@ -65,7 +65,7 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
       if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
         ball.delta[0] *= -1;
-        ball.speed *= 1.15;
+        ball.speed += 1;
         ball.color = pOppo.color;
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
@@ -102,7 +102,7 @@ async function gameInstance(client: Socket, game: Game): Promise<any> {
       }
       ball.pos = [768 / 2, 432 / 2];
       ball.delta = genRandDelta();
-      ball.speed = 2;
+      ball.speed = 3;
       if (ball.delta[0] > 0) { collBarChecker = collOppoChecker; } else { collBarChecker = collCreaChecker; }
       client.to(game.id).emit("pointTC", game.score); // Update point on front
       client.emit("pointTC", game.score);
