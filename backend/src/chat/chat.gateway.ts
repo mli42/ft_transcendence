@@ -152,11 +152,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         } else {
             this.channelService.removeAdminUser(channel, user);
         }
-        if (block === true) {
-            this.channelService.addBlockUser(channel, user);
-        } else {
-            this.channelService.removeBlockUser(channel, user);
-        }
+        // if (block === true) {
+        //     this.channelService.addBlockUser(client.data.user, user);
+        // } else {
+        //     this.channelService.removeBlockUser(channel, user);
+        // }
         const roleFound: RoleUserI = await this.roleUserService.findUserByChannel(channel, user.userId);
         let role: RoleUserI = null;
         if (roleFound) {
@@ -202,8 +202,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* Auth Private Channel *********************/
-    // apdate password
-
     @SubscribeMessage('passwordChannel')
     async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
         const { channel, password } = data;

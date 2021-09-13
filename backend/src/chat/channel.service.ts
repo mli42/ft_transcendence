@@ -60,7 +60,7 @@ export class ChannelService {
 		.where('users.userId = :userId', {userId})
 		.andWhere('channel.publicChannel = false')
 		.leftJoinAndSelect('channel.users', 'all_users')
-		.orderBy('channel.update_at', 'DESC');
+		.orderBy('channel.date', 'ASC');
 		const privateChannels: ChannelI[] = await query.getMany();
 		const channels = publicChannels.concat(privateChannels);
 		return channels;
@@ -139,32 +139,12 @@ export class ChannelService {
 
 
 
-	async isBlockUser(channel: ChannelI, user: User): Promise<boolean> {
-		const userFound = channel.blockUsers.find(element => element === user.userId)
-		if (userFound) {
-			return true;
-		}
-		return false;
-	}
+	async addBlockUser(user: User, userToBlock: User) {
 
-	async addBlockUser(channel: ChannelI, user: User) {
-		if (await this.isBlockUser(channel, user) === true) {
-			return;
-		}
-		channel.blockUsers.push(user.userId);
-		try {
-			await this.channelRepository.save(channel);
-		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException('add an blocked user');
-		}
 	}
 
 	async removeBlockUser(channel: ChannelI, user: User) {
-		if (await this.isBlockUser(channel, user) === false)
-			return;
-		const index = channel.blockUsers.indexOf(user.userId);
-		channel.blockUsers.splice(index, 1);
+	
 	}
 
 
