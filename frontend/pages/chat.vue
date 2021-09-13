@@ -1,19 +1,19 @@
 <template>
-  <div class="content flexHVcenter">
+  <div class="content flexHVcenter" @click.self="hideSearch()">
     <div class="connected">
       <SearchResult :friends="friends" :joinUserChannel="joinUserChannel"></SearchResult>
-      <ul class="listChannel">
+      <ul class="listChannel" @click="hideSearch()">
         <li v-for="(item, index) in channels" :key="index">
           <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannelName"></UserCard>
         </li>
       </ul>
-      <div class="creatChatRoom flexHVcenter">
+      <div class="creatChatRoom flexHVcenter" @click="hideSearch()">
         <v-btn id="createChatRoomBtn" @click="modalBool.showCreate = true">
           <p class="BtnTxt">Create a channel</p>
         </v-btn>
       </div>
     </div>
-    <div class="chatChamp boxHVcenter" v-if="userBanned === false">
+    <div class="chatChamp boxHVcenter" v-if="userBanned === false" @click="hideSearch()">
       <div class="chatRoomName" v-if="currentChannel != undefined">
         <div class="flexAlignRow">
           <img class="chanelImg" src="~/assets/img/chatbubble.svg">
@@ -40,7 +40,7 @@
           </ul>
         </div>
         <div class="chatfield" v-if="currentChannel != undefined && userMuted === false">
-          <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt" @keyup.enter="sendMsg">
+          <input  type="text" name="myinput" id="myinput" placeholder="message" v-model="txt" @keyup.enter="sendMsg" autocomplete="off">
             <div class="sendBtn flexHVcenter" @click.prevent="sendMsg">
               <Iconify class="imgIcone" iconName="carbon-send-alt"></Iconify>
             </div>
@@ -56,7 +56,7 @@
       <div class="visibility">
         <input type="radio" name="private" @click="newChannel.public = false">
         <label for="private">Private</label>
-        <input type="radio" name="private" @click="newChannel.public = true" checked>
+        <input type="radio" name="private" @click="newChannel.public = true">
         <label for="private">Public</label>
       </div>
       <div class="checkBoxePassword" v-if="!newChannel.public">
@@ -347,6 +347,9 @@ export default Vue.extend({
     blockUser(user: User): void {
 
     },
+    hideSearch(): void{
+      this.$nuxt.$emit('hide-search');
+    }
   },
   mounted() {
     this.$user.socket.on("messageAdded", (data: any) => {
