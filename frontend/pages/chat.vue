@@ -174,8 +174,8 @@ export default Vue.extend({
           this.$mytoast.err(`no access to "${this.channels[index].channelName}" YOU'VE BEEN BANNED!!!`);
           return;
         }
-        if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId)
-          && this.channels[index].password != "" && this.channels[index].owner != this.currentUser.userId)
+        if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
+          // && this.channels[index].password != "" && this.channels[index].owner != this.currentUser.userId)
         {
           this.modalBool.showPrivacy = true;
           this.selectedChannel = index;
@@ -329,7 +329,8 @@ export default Vue.extend({
       const newChannelIndex = this.channels.length - 1; // Not viable atm
       if (onMount === true) {
         this.joinChannel(0);
-      } else if (this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
+      } 
+      else if (this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
         this.joinChannel(newChannelIndex);
       }
     },
