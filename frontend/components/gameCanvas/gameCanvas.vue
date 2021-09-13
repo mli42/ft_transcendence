@@ -174,7 +174,7 @@ export default Vue.extend({
           username: '' as string,
           score: 0 as number,
         },
-      } as object,
+      } as any,
     }
   },
   async mounted() {
