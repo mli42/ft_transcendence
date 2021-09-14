@@ -25,10 +25,15 @@ function updateHUDtxt(): void {
     }
   } else {
     const font_size: number = canvasHeight / 10;
+    const small_font_size: number = (canvasHUD / 50) + 10;
     let endGameMainInfos: any = document.getElementsByClassName("endGameMainInfo");
+    let eloHUD: any = document.getElementsByClassName("eloHUD");
 
     for (let element of endGameMainInfos) {
       element.style['font-size'] = `${font_size}px`;
+    }
+    for (let element of eloHUD) {
+      element.style['font-size'] = `${small_font_size}px`;
     }
   }
 }
@@ -127,6 +132,9 @@ async function sketch(s: any): Promise<any> {
     socket.on("newPowTC", (pow: PowerUp, powType: string) => {
       pow.type = powType;
       game.powerUps.push(pow);
+    });
+    socket.on("endGameTC", () => {
+      setTimeout(() => { updateHUDtxt(); }, 5);
     });
     s.frameRate(50);
     s.noStroke();

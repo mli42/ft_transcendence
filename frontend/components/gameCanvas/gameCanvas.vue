@@ -91,7 +91,8 @@
             <div class="finalGreen"></div> <div class="finalRed"></div>
             <div id="endGameInfos" class="flexAlignCol">
               <div class="endUpInfos">
-                <h2 class="endGameMainInfo">{{endGame.winner.username}}</h2>
+                <p class="endGameMainInfo">{{endGame.winner.username}}</p>
+                <p class="eloHUD">elo {{endGame.winner.elo}} + 5</p>
               </div>
 
               <div class="endMidInfos flexAlignRow">
@@ -101,7 +102,8 @@
               </div>
 
               <div class="endBotInfos">
-                <h2 class="endGameMainInfo">{{endGame.loser.username}}</h2>
+                <p class="eloHUD">elo {{endGame.loser.elo}} - 5</p> <br />
+                <p class="endGameMainInfo">{{endGame.loser.username}}</p>
               </div>
             </div> <!-- EndGameInfos End -->
           </div> <!-- Final Card End -->
@@ -169,10 +171,12 @@ export default Vue.extend({
         winner: {
           username: '' as string,
           score: 0 as number,
+          elo: '...' as string,
         },
         loser: {
           username: '' as string,
           score: 0 as number,
+          elo: '...' as string,
         },
       } as any,
     }
