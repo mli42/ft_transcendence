@@ -47,4 +47,7 @@ export class Channel {
 
 	@Column("simple-array", {default: []})
 	authPrivateChannelUsers: string[];
+
+	@Column('boolean', {default: false})
+	directMessage: boolean;
 }

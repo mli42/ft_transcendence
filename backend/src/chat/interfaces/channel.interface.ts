@@ -10,4 +10,5 @@ export interface ChannelI {
 	adminUsers?: string[];
 	owner?: string;
 	authPrivateChannelUsers?: string[];
+	directMessage: boolean;
 }
