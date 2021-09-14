@@ -4,6 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany, OneToMany }
 import { JoinedChannel } from '../../chat/entities/joined-channel.entity';
 import { ConnectedUser } from '../../chat/entities/connected-user.entity';
 import { Message } from '../../chat/entities/message.entity';
+import { GameHistory } from 'src/game/entities/gameHistory.entity';
 
 @Entity()
 export class User {
@@ -45,8 +46,8 @@ export class User {
   @Column("simple-array")
   friends: string[];
 
-  // @Column()
-  // match_history: string;
+  @ManyToMany(() => GameHistory, gameHistory => gameHistory.users)
+  game_history: GameHistory[];
 
   @Column("text", {default: ""})
   login42: string;

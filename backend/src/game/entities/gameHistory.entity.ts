@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { User } from "src/user/entities/user.entity";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity()
 export class GameHistory {
@@ -26,4 +27,8 @@ export class GameHistory {
 
     @Column("text", {default: ""})
     playerLoose: string;
+
+    @ManyToMany(() => User)
+	@JoinTable()
+	users: User[];
 }

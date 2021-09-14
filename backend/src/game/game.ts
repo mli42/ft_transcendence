@@ -2,6 +2,7 @@ import { playingGames } from "./game.gateway";
 import { Game, Player, Ball } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { GameService } from "./game.service";
+import { User } from "src/user/entities/user.entity";
 
 export { gameInstance }
 
@@ -30,6 +31,12 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   let pOppo: Player = game.players.get(game.opponentId);
   let collBarChecker: () => void; // Default behavior
   const BAR_WIDTH: number = 4;
+  const it = game.players.keys();
+  const userOne: User = await gameService.getUser(it.next().value);
+  const userTwo: User = await gameService.getUser(it.next().value);
+
+  console.log(userOne);
+  console.log(userTwo);
 
   pCrea.barX = 16 + BAR_WIDTH; // Padding + bar width
   pOppo.barX = 768 - (16 + BAR_WIDTH); // Screen width - (bar width + padding)
@@ -117,7 +124,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   }
   playingGames.splice(playingGames.lastIndexOf(game.id));
   game.state = "ended";
-  gameService.saveGameHistory(game);
+  gameService.saveGameHistory(game, userOne, userTwo);
   client.to(game.id).emit("endGameTC"); // Update point on front
   client.emit("endGameTC");
   while (game.state != "closed") {

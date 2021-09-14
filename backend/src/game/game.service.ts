@@ -7,12 +7,15 @@ import { isUUID } from 'class-validator';
 import { Game } from './dataStructures';
 import { GameRepository } from './game.repository';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UsersRepository } from 'src/user/user.repository';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class GameService {
     constructor(
 		@InjectRepository(GameRepository)
         private gameRepository: GameRepository,
+        private userRepository: UsersRepository
      ) {}
 
     getMap(@Res() res, name: string): Observable<object> {
@@ -40,7 +43,12 @@ export class GameService {
         return isUUID(uuid);
     }
 
-    saveGameHistory(game) {
-        this.gameRepository.createGameHistory(game);
+    saveGameHistory(game: Game, userOne: User, userTwo: User) {
+        this.gameRepository.createGameHistory(game, userOne, userTwo);
+    }
+
+    async getUser(id: string) : Promise<User> {
+        const user: User = await this.userRepository.findOne({userId: id});
+		return user;
     }
 }
