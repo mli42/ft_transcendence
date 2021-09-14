@@ -45,7 +45,7 @@
             </div>
         </div>
       </div>
-      <div class="control" v-if="currentChannel != undefined">
+      <div class="control" v-if="currentChannel != undefined && currentChannel.directMessage === false">
         <ChatMember :channelUsers="currentChannel.users" :public="currentChannel.publicChannel" :getModStatus="getModStatus"></ChatMember>
       </div>
     </div>
@@ -310,8 +310,10 @@ export default Vue.extend({
         return false;
     },
     joinUserChannel(user: User): void{
-      let name1 = this.currentUser.userId + user.userId;
-      let name2 = user.userId + this.currentUser.userId;
+      let name1: string = this.currentUser.userId + user.userId;
+      let name2: string = user.userId + this.currentUser.userId;
+      let users: User[] = [];
+      users.push(user);
       let channel: Channel = this.channels.find((el: Channel) => el.channelName === name1 || el.channelName === name1);
       if(channel)
       {
@@ -321,7 +323,7 @@ export default Vue.extend({
       else
       {
         this.$user.socket.emit('createChannel', {channelName: name1,
-        users: user,
+        users: users,
         publicChannel: false,
         directMessage: true});
       }
