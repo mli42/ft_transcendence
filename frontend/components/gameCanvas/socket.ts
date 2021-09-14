@@ -108,6 +108,8 @@ function socketInit(url: string, gameId: string, vue: any): void {
     vue.$mytoast.succ("A player found !");
     vue.$data.mainBtn.resetHover();
     vue.$data.mainBtn.isLoading = false;
+    vue.$data.game.players.set(payload.userId, payload.player);
+    vue.$data.game.opponentId = payload.userId;
   });
   socket.on("foundSearchOppoTC", (gameId: string) => {
     console.log("LOG: foundSearchOppoTC");

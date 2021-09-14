@@ -241,7 +241,9 @@ export class gameGateway {
       const playerCrea: {client: Socket, gameId: string, player: Player} = searchList.values().next().value; // Get data from it
       gamesMap.get(playerCrea.gameId).opponentIdFound = query.userId;
       searchList.delete(playerCreaId);
-      playerCrea.client.emit("foundSearchCreaTC", { userId: query.userId, player });
+      playerCrea.client.emit("foundSearchCreaTC", { userId: query.userId, player: player });
+      gamesMap.get(playerCrea.gameId).players.set(query.userId, player);
+      gamesMap.get(playerCrea.gameId).opponentId = query.userId;
       client.emit("foundSearchOppoTC", playerCrea.gameId);
     } else if (searchList.has(query.userId) == false) {
       searchList.set(query.userId, {client: client, gameId: query.gameId, player: player});

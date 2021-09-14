@@ -331,17 +331,19 @@ export default Vue.extend({
       } else {
         this.game.opponentId = this.user.userId;
       }
-      this.game.players.set(this.user.userId, new Player());
+      if (this.game.players.has(this.user.userId) === false) {
+        this.game.players.set(this.user.userId, new Player());
+      }
       player = this.game.players.get(this.user.userId);
-      if (player) {
+      if (player && player.name === "") {
         player.name = this.user.username;
         if (this.game.creatorId == this.user.userId) {
           player.color = playerPalette["Red"]; // default colors
         } else {
           player.color = playerPalette["Blue"]; // default colors
         }
-        socket.emit("playerJoinTS", player);
       }
+      socket.emit("playerJoinTS", player);
       this.updateDisplayedElem();
     },
     btnActionLeave(): void {  // Action to leave the game as a player
