@@ -1,6 +1,6 @@
 import { socket } from "./socket";
 import * as p5 from "p5";
-import { Mouse, Game, Player, Ball } from "./dataStructures";
+import { Game, Player, Ball, PowerUp } from "./dataStructures";
 import Vue from "vue";
 
 export { sketchWrap, p5Instance };
@@ -124,6 +124,10 @@ async function sketch(s: any): Promise<any> {
       if (settings.ball != undefined)
         game.ball = settings.ball;
     });
+    socket.on("newPowTC", (pow: PowerUp, powType: string) => {
+      pow.type = powType;
+      game.powerUps.push(pow);
+    });
     s.frameRate(50);
     s.noStroke();
     s.drawingContext.shadowBlur = 15;
@@ -153,6 +157,10 @@ async function sketch(s: any): Promise<any> {
     s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen), 6, 6, 6, 6);
     s.fill(game.ball.color);
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
+    for (let elem of game.powerUps) {
+      s.fill(elem.color);
+      s.ellipse(transX(elem.pos[0]), transY(elem.pos[1]), ballSizeFacted);
+    }
   }
   s.windowResized = () => {
     updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
