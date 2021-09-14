@@ -2,6 +2,8 @@ import colors from 'vuetify/es5/util/colors'
 import path from 'path'
 import fs from 'fs'
 
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
@@ -107,4 +109,11 @@ export default {
     },
     port: 3030, //default 3000
   },
+
+  // proxy: {
+  //   '/api/': {
+  //     target: '',
+  //     secure: false,
+  //   },
+  // },
 }

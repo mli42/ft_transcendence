@@ -1,4 +1,5 @@
 // Inject in Vue, context and store.
+import https from 'https';
 
 function shortName(username: string, max_length: number = 10): string {
   if (username.length <= max_length)
@@ -29,6 +30,8 @@ export default (context: any, inject: Function) => {
   const loc: any = window.location;
   const socket: any = null;
 
+  // https.globalAgent.options.rejectUnauthorized = false;
+  // context.$axios.defaults.httpsAgent = new https.Agent({ rejectUnauthorized: false });
   context.$axios.defaults.baseURL = loc.protocol + '//' + loc.hostname + ':' + port;
   const avatarBaseURL: string = `${context.$axios.defaults.baseURL}/api/user/avatar`;
 
