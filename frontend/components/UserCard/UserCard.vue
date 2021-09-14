@@ -1,7 +1,7 @@
 <template>
   <div :class="{ red : channel.channelName === channelName }" @click="joinChannel(index)">
-    <img v-if="!channel.directMessage" src="~/assets/img/chatbubble.svg">
     <Avatar v-if="channel.directMessage" :user="whoIsIt()" ></Avatar>
+    <img v-else src="~/assets/img/chatbubble.svg">
     <p>{{ channel.channelName }}</p>
     <img v-if="!channel.publicChannel" class="lock" src="~/assets/img/padlock.svg">
   </div>
@@ -21,8 +21,11 @@ export default Vue.extend({
   },
   methods: {
     whoIsIt(): User{
-      let find: User = this.channel.users.find((el: User) => el.userId != this.currentUser.userId)
-      return find
+      let find: User|any = this.channel.users.find((el: User) => el.userId != this.currentUser.userId)
+      if (find)
+        return find;
+      else
+        return this.currentUser;
     },
   },
   computed: {

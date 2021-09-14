@@ -16,7 +16,8 @@
     <div class="chatChamp boxHVcenter" v-if="userBanned === false" @click="hideSearch()">
       <div class="chatRoomName" v-if="currentChannel != undefined">
         <div class="flexAlignRow">
-          <img class="chanelImg" src="~/assets/img/chatbubble.svg">
+          <Avatar v-if="currentChannel.directMessage" :user="whoIsIt(currentChannel)" ></Avatar>
+          <img v-else class="chanelImg" src="~/assets/img/chatbubble.svg">
           <p> {{ currentChannel.channelName }} </p>
         </div>
         <div class="settingBtn flexHVcenter" v-if="this.currentChannel.publicChannel === false && this.currentChannel.owner === this.currentUser.userId">
@@ -377,6 +378,13 @@ export default Vue.extend({
     },
     hideSearch(): void{
       this.$nuxt.$emit('hide-search');
+    },
+    whoIsIt(channel: Channel): User{
+      let find: User|any = channel.users.find((el: User) => el.userId != this.currentUser.userId)
+      if (find)
+        return find;
+      else
+        return this.currentUser;
     },
   },
   mounted() {
