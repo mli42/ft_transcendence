@@ -322,6 +322,7 @@ export default Vue.extend({
       {
         this.$user.socket.emit('createChannel', {channelName: name1,
         users: user,
+        publicChannel: false,
         directMessage: true});
       }
     },
