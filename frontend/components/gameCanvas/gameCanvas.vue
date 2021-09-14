@@ -255,7 +255,7 @@ export default Vue.extend({
       }
     },
     displayMatchmaking(): void {
-      this.isColorDisplayed = false;
+      this.isColorDisplayed = (this.game.players.has(this.user.userId) === true); // If the current client is a player
       if (this.game.creatorId == this.user.userId && this.game.players.size == 1) {
         this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       } else {
@@ -362,6 +362,7 @@ export default Vue.extend({
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
       console.log("LOG: button action search");
+      this.isColorDisplayed = false;
       this.mainBtn.isLoading = true;
       this.mainBtn.color = "green";
       this.mainBtn.action = this.btnActionSearchStop;
@@ -371,6 +372,7 @@ export default Vue.extend({
     },
     btnActionSearchStop(): void {
       console.log("LOG: button action search stop");
+      this.isColorDisplayed = true;
       this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       this.mainBtn.resetHover(); // Delete actions when the client hover the button
       this.mainBtn.isLoading = false;
