@@ -3,13 +3,13 @@ import { Channel } from './channel.entity';
 
 @Entity()
 export class RoleUser {
-	
+
 	@PrimaryGeneratedColumn("uuid")
 	roleUserId: string;
 
 	@Column()
 	userId: string;
-    
+
 	@Column({nullable: true, type: 'timestamptz'})
 	ban: Date;
 

@@ -117,7 +117,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   }
   playingGames.splice(playingGames.lastIndexOf(game.id));
   game.state = "ended";
-  gameService.dbGameHistory(game);
+  gameService.saveGameHistory(game);
   client.to(game.id).emit("endGameTC"); // Update point on front
   client.emit("endGameTC");
   while (game.state != "closed") {

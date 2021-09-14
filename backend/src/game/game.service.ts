@@ -40,7 +40,7 @@ export class GameService {
         return isUUID(uuid);
     }
 
-    dbGameHistory(game) {
+    saveGameHistory(game) {
         this.gameRepository.createGameHistory(game);
     }
 }

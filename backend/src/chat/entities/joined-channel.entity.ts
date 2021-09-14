@@ -4,7 +4,7 @@ import { Channel } from './channel.entity';
 
 @Entity()
 export class JoinedChannel {
-	
+
 	@PrimaryGeneratedColumn("uuid")
 	joinId: string;
 
