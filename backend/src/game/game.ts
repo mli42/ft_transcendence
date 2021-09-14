@@ -1,5 +1,5 @@
 import { playingGames } from "./game.gateway";
-import { Game, Player, Ball } from "./dataStructures";
+import { Game, Player, Ball, PowerUp } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { GameService } from "./game.service";
 import { User } from "src/user/entities/user.entity";
@@ -60,6 +60,12 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         ball.color = pCrea.color;
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
+        if ((Math.random() * 10) >= 0) {
+          let pow = new PowerUp();
+          game.powerUps.push(new PowerUp());
+          client.to(game.id).emit("newPowTC", pow, pow.type);
+          client.emit("newPowTC", pow, pow.type);
+        }
         collBarChecker = collOppoChecker;
       }
     }
@@ -77,6 +83,12 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         ball.color = pOppo.color;
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
+        if ((Math.random() * 10) >= 8) {
+          let pow = new PowerUp();
+          game.powerUps.push(new PowerUp());
+          client.to(game.id).emit("newPowTC", pow, pow.type);
+          client.emit("newPowTC", pow, pow.type);
+        }
         collBarChecker = collCreaChecker;
       }
     }
