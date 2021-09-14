@@ -144,16 +144,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
     /********************* Block user *********************/
     @SubscribeMessage('blockUser')
-    async blockOrDefiUser(client: Socket, data: any) {
-        let { user, block } = data;
-        this.userService.updateBlockUser(block, client.data.user, user);
+    async blockOrDefiUser(client: Socket, data: any): Promise<User> {
+        const { user, block } = data;
+        const userUpdate = this.userService.updateBlockUser(block, client.data.user, user);
         // emit message ?
+        return userUpdate;
     }
 
     /********************* Autorisation Channel *********************/
     @SubscribeMessage('autorisationChannel')
     async updateAutorisationChannel(client: Socket, data: any) {
-        let { user, channel, admin } = data;
+        const { user, channel, admin } = data;
         const channelFound = await this.channelService.getChannel(channel.channelId);
 
         this.channelService.updateAdminUser(admin, channelFound, user);

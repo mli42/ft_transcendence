@@ -242,7 +242,7 @@ export class UserService {
 		}
 	}
 
-	updateBlockUser(block: boolean, user: User, userToBlock: User) {
-		this.usersRepository.updateBlockUser(block, user, userToBlock);
+	updateBlockUser(block: boolean, user: User, userToBlock: User): Promise<User> {
+		return this.usersRepository.updateBlockUser(block, user, userToBlock);
 	}
 }

@@ -188,7 +188,7 @@ export class UsersRepository extends Repository<User> {
 		}
 	}
 
-	async updateBlockUser(block: boolean, user: User, userToBlock: User) {
+	async updateBlockUser(block: boolean, user: User, userToBlock: User): Promise<User> {
 		console.log(user);
 		const userFound = user.blockedUsers.find(element => element === userToBlock.userId)
 		if (block === true && !userFound)
@@ -211,5 +211,6 @@ export class UsersRepository extends Repository<User> {
 				throw new InternalServerErrorException('add blocked user');
 			}
 		}
+		return user;
 	}
 }
