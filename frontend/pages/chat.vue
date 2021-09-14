@@ -18,7 +18,8 @@
         <div class="flexAlignRow">
           <Avatar v-if="currentChannel.directMessage" :user="whoIsIt(currentChannel)" ></Avatar>
           <img v-else class="chanelImg" src="~/assets/img/chatbubble.svg">
-          <p> {{ currentChannel.channelName }} </p>
+          <p v-if="currentChannel.directMessage"> {{ whoIsIt(currentChannel).username }}</p>
+          <p v-else> {{ currentChannel.channelName }} </p>
         </div>
         <div class="settingBtn flexHVcenter" v-if="this.currentChannel.publicChannel === false && this.currentChannel.owner === this.currentUser.userId">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
