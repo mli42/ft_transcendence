@@ -105,6 +105,9 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       ball.delta = genRandDelta();
       ball.speed = 3;
       if (ball.delta[0] > 0) { collBarChecker = collOppoChecker; } else { collBarChecker = collCreaChecker; }
+      ball.color = "#DCE1E5";
+      client.to(game.id).emit("changeSettingsTC", {ball: ball});
+      client.emit("changeSettingsTC", {ball: ball});
       client.to(game.id).emit("pointTC", game.score); // Update point on front
       client.emit("pointTC", game.score);
     }
