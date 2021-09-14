@@ -319,4 +319,14 @@ export class UserController {
 		const user: User = req.user;
 		return this.userService.updateIsAdmin(bool, userId, user);
 	}
+
+	@ApiOperation({summary: 'Get all game history'})
+	@ApiOkResponse({description: 'returns game history'})
+	@ApiParam({name: 'userId', required: true, description: 'userId to get game history of user'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/gameHistory/:userId')
+	getGameHistory(@Param('userId') userId: string) {
+	  this.userService.getGameHistory(userId);
+	}
 }

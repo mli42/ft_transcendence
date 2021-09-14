@@ -1,4 +1,4 @@
-import { Injectable, Res } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Res } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { join } from 'path';
 import * as fs from 'fs';
@@ -43,8 +43,21 @@ export class GameService {
         return isUUID(uuid);
     }
 
-    saveGameHistory(game: Game, userOne: User, userTwo: User) {
-        this.gameRepository.createGameHistory(game, userOne, userTwo);
+    async saveGameHistory(game: Game, userOne: User, userTwo: User) {
+        let gameHistory = await this.gameRepository.createGameHistory(game, userOne, userTwo);
+        console.log(gameHistory, userOne, userTwo);
+        userOne.game_history = [];
+        userTwo.game_history = [];
+        userOne.game_history.push(gameHistory);
+        userTwo.game_history.push(gameHistory);
+        try {
+            await this.userRepository.save(userOne);
+            await this.userRepository.save(userTwo);
+		} catch (e) {
+			throw new InternalServerErrorException();
+		}
+        console.log(userOne);
+        console.log(userTwo);
     }
 
     async getUser(id: string) : Promise<User> {

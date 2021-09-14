@@ -28,7 +28,6 @@ export class GameHistory {
     @Column("text", {default: ""})
     playerLoose: string;
 
-    @ManyToMany(() => User)
-	@JoinTable()
+    @ManyToMany(() => User, user => user.game_history)
 	users: User[];
 }

@@ -35,9 +35,6 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   const userOne: User = await gameService.getUser(it.next().value);
   const userTwo: User = await gameService.getUser(it.next().value);
 
-  console.log(userOne);
-  console.log(userTwo);
-
   pCrea.barX = 16 + BAR_WIDTH; // Padding + bar width
   pOppo.barX = 768 - (16 + BAR_WIDTH); // Screen width - (bar width + padding)
 

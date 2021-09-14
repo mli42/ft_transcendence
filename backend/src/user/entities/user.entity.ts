@@ -1,6 +1,6 @@
 import { IsAlphanumeric, IsEmail } from 'class-validator';
 import { Channel } from '../../chat/entities/channel.entity';
-import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany, OneToMany, JoinColumn, JoinTable } from 'typeorm';
 import { JoinedChannel } from '../../chat/entities/joined-channel.entity';
 import { ConnectedUser } from '../../chat/entities/connected-user.entity';
 import { Message } from '../../chat/entities/message.entity';
@@ -47,6 +47,7 @@ export class User {
   friends: string[];
 
   @ManyToMany(() => GameHistory, gameHistory => gameHistory.users)
+  @JoinTable()
   game_history: GameHistory[];
 
   @Column("text", {default: ""})
