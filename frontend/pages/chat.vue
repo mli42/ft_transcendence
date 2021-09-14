@@ -111,10 +111,13 @@
         <NuxtLink :to="`/profile/${currentMemberMod.username}`"><Avatar :user="currentMemberMod"></Avatar></NuxtLink>
       </div>
       <v-btn class="DoneBtn" @click="modalBool.showPersonnalSettings = false">
-        <p class="v-btn-content">Defi to a Game</p>
+        <p class="v-btn-content">Challenge to a Game</p>
       </v-btn>
-      <v-btn class="BlockBtn" @click="moderation.blockedUser = true, modalBool.showPersonnalSettings= false, blockUser(currentMemberMod)">
+      <v-btn class="BlockBtn" v-if="isBlocked(currentMemberMod) === false" @click="blockedUser = true, modalBool.showPersonnalSettings= false, blockUser(currentMemberMod)">
         <p class="v-btn-content">Block this user</p>
+      </v-btn>
+      <v-btn class="BlockBtn" v-if="isBlocked(currentMemberMod) === true" @click="blockedUser = false, modalBool.showPersonnalSettings= false, blockUser(currentMemberMod)">
+        <p class="v-btn-content">Unblock this user</p>
       </v-btn>
     </SettingModal>
   </div>
@@ -156,7 +159,6 @@ export default Vue.extend({
         banTime: 0 as number,
         muteTime: 0 as number,
         timer: [1, 3, 7, 30, 365] as number[],
-        blockedUser: false as boolean,
       },
       channelSettings: {
         password: '' as string,
@@ -168,6 +170,7 @@ export default Vue.extend({
       friends: [] as User[],
       password: '' as string,
       currentMemberMod: {} as User,
+      blockedUser: false as boolean,
     }
   },
   computed: {
@@ -308,7 +311,7 @@ export default Vue.extend({
     joinUserChannel(user: User): void{
       let name1 = this.currentUser.userId + user.userId;
       let name2 = user.userId + this.currentUser.userId;
-      let channel: Channel = this.channels.find((el: Channel) => {el.channelName === name1 || el.channelName === name1 });
+      let channel: Channel = this.channels.find((el: Channel) => el.channelName === name1 || el.channelName === name1);
       if(channel)
       {
         this.$user.socket.emit('joinChannel', channel);
@@ -354,7 +357,22 @@ export default Vue.extend({
       }
     },
     blockUser(user: User): void {
-
+      console.log("deblocage", this.blockedUser);
+      let arg = {
+        user: user,
+        block: this.blockedUser,
+      }
+      this.$user.socket.emit("blockUser", arg, (data: any) => {
+        this.currentUser = data;
+      });
+      this.blockedUser = false;
+    },
+    isBlocked(user: User): boolean{
+      let find: string = this.currentUser.blockedUsers.find((el: string) => el === user.userId)
+      if (find)
+        return true;
+      else
+        return false;
     },
     hideSearch(): void{
       this.$nuxt.$emit('hide-search');
