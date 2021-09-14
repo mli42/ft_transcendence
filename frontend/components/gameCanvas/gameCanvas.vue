@@ -27,7 +27,8 @@
         </span>
         <span class="playerBar" :class="playerColorClass" ></span>
       </div>
-      <div id="privateSettings" v-if="this.isMapsDisplayed || this.isPowDisplayed" class="flexAlignRow">
+      <br v-if="isColorDisplayed && !showPrivateSettings" />
+      <div id="privateSettings" v-if="showPrivateSettings" class="flexAlignRow">
         <div id="privateSelection" class="flexAlignCol">
           <!-- MAP SELECTION -->
           <div id="map" v-if="this.isMapsDisplayed">
@@ -423,6 +424,9 @@ export default Vue.extend({
         return (false);
       }
       return (true);
+    },
+    showPrivateSettings(): boolean {
+      return (this.isMapsDisplayed || this.isPowDisplayed);
     },
     preGameHeight(): object {
       return {
