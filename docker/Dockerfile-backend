@@ -5,6 +5,16 @@ WORKDIR /app_backend
 # Install dependencies required for project
 RUN npm i -g @nestjs/cli
 
+# HTTPS
+ARG SSLPATH="/etc/ssl/pong"
+ARG SSLNAME="server"
+
+RUN apk add openssl && \
+	mkdir -p ${SSLPATH} && \
+	openssl req -new -x509 -nodes -sha256 -days 365 -newkey rsa:2048 \
+	-subj "/C=FR/ST=75/L=Paris" \
+	-keyout "${SSLPATH}/${SSLNAME}.key" -out "${SSLPATH}/${SSLNAME}.crt"
+
 EXPOSE 3000
 
 ENTRYPOINT npm install && npm run start:dev

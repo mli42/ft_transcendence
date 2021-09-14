@@ -1,4 +1,6 @@
 import colors from 'vuetify/es5/util/colors'
+import path from 'path'
+import fs from 'fs'
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -99,6 +101,10 @@ export default {
   },
 
   server: {
-    port:3030 //default 3000
-  }
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, '/etc/ssl/pong/server.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, '/etc/ssl/pong/server.crt')),
+    },
+    port: 3030, //default 3000
+  },
 }

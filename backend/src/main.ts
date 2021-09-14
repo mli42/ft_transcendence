@@ -5,7 +5,16 @@ import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const fs = require('fs');
+  const keySSL = fs.readFileSync(__dirname + '/../../etc/ssl/pong/server.key');
+  const crtSSL = fs.readFileSync(__dirname + '/../../etc/ssl/pong/server.crt');
+
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions: {
+      key: keySSL,
+      cert: crtSSL,
+    },
+  });
 
   app.enableCors({
     origin: true,
