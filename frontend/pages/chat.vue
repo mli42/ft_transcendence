@@ -4,7 +4,7 @@
       <SearchResult :friends="friends" :joinUserChannel="joinUserChannel"></SearchResult>
       <ul class="listChannel" @click="hideSearch()">
         <li v-for="(item, index) in channels" :key="index">
-          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannelName"></UserCard>
+          <UserCard :channel="item" :index="index" :joinChannel="joinChannel" :channelName="currentChannelName" :currentUser="currentUser"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter" @click="hideSearch()">
@@ -16,7 +16,8 @@
     <div class="chatChamp boxHVcenter" v-if="userBanned === false" @click="hideSearch()">
       <div class="chatRoomName" v-if="currentChannel != undefined">
         <div class="flexAlignRow">
-          <img class="chanelImg" src="~/assets/img/chatbubble.svg">
+          <Avatar v-if="currentChannel.directMessage" :user="whoIsIt(currentChannel)" ></Avatar>
+          <img v-else class="chanelImg" src="~/assets/img/chatbubble.svg">
           <p> {{ currentChannel.channelName }} </p>
         </div>
         <div class="settingBtn flexHVcenter" v-if="this.currentChannel.publicChannel === false && this.currentChannel.owner === this.currentUser.userId">
@@ -28,7 +29,7 @@
           <ul>
             <li class="newMsg" v-for="(msg, index) in messages" :key="index">
               <div class="msgAvatar" @click="currentMemberMod = msg.user, modalBool.showPersonnalSettings = true ">
-                  <Avatar :user="msg.user" ></Avatar>
+                <Avatar :user="msg.user" ></Avatar>
               </div>
               <div class="msgDiv">
                 <p>{{ msg.user.username }}</p>
@@ -84,7 +85,7 @@
       </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
-      <h1 id="settingModal">Join Channel</h1>
+      <h1 id="settingModal">Join {{ channels[selectedChannel].channelName }}</h1>
       <ModalInput  name="Channel password :" v-model.lazy="password"  placeHolder="" :isPassword="true" :ispublic="true"  @keyup.enter.native="modalBool.showPrivacy = false, sendPassword()"></ModalInput>
       <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false, sendPassword()">
         <p class="v-btn-content" >Join</p>
@@ -184,6 +185,7 @@ export default Vue.extend({
         console.error('joinChannel: index out of range');
         return ;
       }
+      this.selectedChannel = index;
       this.$user.socket.emit('leaveChannel');
       this.$user.socket.emit("checkRoleChannelBan", this.channels[index], (resp: boolean) => {
         if (resp === true)
@@ -192,10 +194,7 @@ export default Vue.extend({
           return;
         }
         if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
-        {
           this.modalBool.showPrivacy = true;
-          this.selectedChannel = index;
-        }
         else
         {
           this.$user.socket.emit('joinChannel', this.channels[index]);
@@ -247,6 +246,8 @@ export default Vue.extend({
       this.moderationblockedUser = false;
     },
     sendMsg(): void {
+      if (this.txt === '')
+        return;
       this.$user.socket.emit('newMessage',
       	{text: this.txt,
         channel: this.currentChannel,
@@ -320,7 +321,8 @@ export default Vue.extend({
       else
       {
         this.$user.socket.emit('createChannel', {channelName: name1,
-        users: user});
+        users: user,
+        directMessage: true});
       }
     },
     getModStatus(): void{
@@ -351,7 +353,7 @@ export default Vue.extend({
         return ;
       }
       this.channels = newChannels;
-      const newChannelIndex = this.channels.length - 1; // Not viable atm
+      const newChannelIndex = this.channels.length - 1;
       if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
         this.joinChannel(newChannelIndex);
       }
@@ -376,7 +378,14 @@ export default Vue.extend({
     },
     hideSearch(): void{
       this.$nuxt.$emit('hide-search');
-    }
+    },
+    whoIsIt(channel: Channel): User{
+      let find: User|any = channel.users.find((el: User) => el.userId != this.currentUser.userId)
+      if (find)
+        return find;
+      else
+        return this.currentUser;
+    },
   },
   mounted() {
     this.$user.socket.on("messageAdded", (data: any) => {
