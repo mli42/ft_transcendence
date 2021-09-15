@@ -244,9 +244,6 @@ export class UserService {
 
 	async getGameHistory(userId: string) {
 		const user = await this.usersRepository.findOne({userId: userId});
-		const test = await this.usersRepository.createQueryBuilder('user')
-		.leftJoinAndSelect('user.game_history', 'gameHistory').getMany()
-		console.log(test);
 		console.log(user);
 	}
 }

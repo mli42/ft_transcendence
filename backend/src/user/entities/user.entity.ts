@@ -25,7 +25,7 @@ export class User {
   @Column("text", {default: "empty"})
   profile_picture: string;
 
-  @Column('int',  {default: 0})
+  @Column('int',  {default: 1000})
   elo: number;
 
   @Column('int',  {default: 0})
@@ -34,7 +34,10 @@ export class User {
   @Column('int',  {default: 0})
   lost_game: number;
 
-  @Column('int',  {default: -1})
+  @Column('int', {default: 0})
+  numberOfParty: number;
+
+  @Column('int',  {default: 0})
   ratio: number;
 
   @Column('text', {default: 'Offline'})
@@ -46,7 +49,7 @@ export class User {
   @Column("simple-array")
   friends: string[];
 
-  @ManyToMany(() => GameHistory, gameHistory => gameHistory.users)
+  @ManyToMany(() => GameHistory, gameHistory => gameHistory.users, {eager: true})
   @JoinTable()
   game_history: GameHistory[];
 

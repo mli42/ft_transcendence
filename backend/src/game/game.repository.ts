@@ -21,9 +21,9 @@ export class GameRepository extends Repository<GameHistory> {
         gameHistory.score.push(game.score[0]);
         gameHistory.score.push(game.score[1]);
         gameHistory.gameDuration = date.getTime() - game.startDate.getTime();
-        // gameHistory.users = [];
-        // gameHistory.users.push(userOne);
-        // gameHistory.users.push(userTwo);
+        gameHistory.users = [];
+        gameHistory.users.push(userOne);
+        gameHistory.users.push(userTwo);
         if (game.score[0] != 5) {
             gameHistory.playerWin = playertwo;
             gameHistory.playerLoose = playerone;
