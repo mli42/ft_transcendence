@@ -175,11 +175,15 @@ async function sketch(s: any): Promise<any> {
     socket.on("endGameTC", () => {
       setTimeout(() => { updateHUDtxt(); }, 5);
     });
-    socket.on("collPowTC", (pos: Array<number>) => {
+    socket.on("collPowTC", (pos: Array<number>, userAffected?: string) => {
       let i: number = 0;
       for (let elem of game.powerUps) {
         if (elem.pos[0] === pos[0] && elem.pos[1] === pos[1]) {
-          elem.modifier(game, vueInstance.$data.user.userId);
+          if (userAffected) {
+            elem.modifier(game, userAffected);
+          } else {
+            elem.modifier(game, vueInstance.$data.user.userId);
+          }
           game.powerUps.splice(i, 1);
           if (elem.type === "ballSizeUp" || elem.type === "ballSizeDown") {
             ballSizeFacted = transX(ball.size);

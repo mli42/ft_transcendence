@@ -123,10 +123,15 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         Math.pow((ball.pos[0] - elem.pos[0]), 2) +
         Math.pow((ball.pos[1] - elem.pos[1]), 2));
       if (Math.abs(distance) <= ball.size) {                 // Collision !
-        elem.modifier(game, client.handshake.query.userId as string);
-        client.to(game.id).emit("collPowTC", elem.pos);
-        client.emit("collPowTC", elem.pos);
-        console.log(`COLLIDE ! (elem = ${elem.pos}, pos = ${ball.pos})`);
+        let userAffected: string = "";
+        if (collBarChecker === collCreaChecker) {
+          userAffected = game.opponentId;
+        } else if (collBarChecker === collOppoChecker) {
+          userAffected = game.creatorId;
+        }
+        elem.modifier(game, userAffected);
+        client.to(game.id).emit("collPowTC", elem.pos, userAffected);
+        client.emit("collPowTC", elem.pos, userAffected);
         game.powerUps.splice(i, 1);
         return ;
       }
