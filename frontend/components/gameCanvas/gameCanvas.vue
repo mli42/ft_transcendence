@@ -436,7 +436,7 @@ export default Vue.extend({
     },
     preGameHeight(): object {
       return {
-        height: this.game.type == 'private' ? '580px' : '340px',
+        height: (this.showPrivateSettings) ? '580px' : '340px',
       };
     },
     creatorTxtStyle(): object {
