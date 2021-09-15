@@ -45,6 +45,15 @@ export class ChannelService {
 		return this.channelRepository.save(channel);
 	}
 
+	async deleteChannel(channel: ChannelI): Promise<boolean> {
+		try {
+			await this.channelRepository.delete(channel);
+		} catch (error) {
+			console.log(error);
+			return false
+		}
+		return true;
+	}
 
 	async getChannelsForUser(userId: string): Promise <ChannelI[]> {
 		let query = this.channelRepository
@@ -60,6 +69,7 @@ export class ChannelService {
 		.leftJoinAndSelect('channel.users', 'all_users')
 		.orderBy('channel.date', 'ASC');
 		const privateChannels: ChannelI[] = await query.getMany();
+
 		const channels = publicChannels.concat(privateChannels);
 
 		channels.sort(function(date1,date2) {
