@@ -16,6 +16,7 @@ import { join } from "path";
 import multer = require("multer");
 import { UserAuth } from "./guards/userAuth.guard";
 import { AdminGuard } from "./guards/admin.guard";
+import { GameHistory } from "src/game/entities/gameHistory.entity";
 
 type validMimeType =  'image/png' | 'image/jpg' | 'image/jpeg' | 'image/gif'
 
@@ -326,7 +327,7 @@ export class UserController {
 	/*******/
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/gameHistory/:userId')
-	getGameHistory(@Param('userId') userId: string) {
-	  this.userService.getGameHistory(userId);
+	getGameHistory(@Param('userId') userId: string) : Promise<GameHistory[]> {
+	  return this.userService.getGameHistory(userId);
 	}
 }

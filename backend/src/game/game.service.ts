@@ -100,8 +100,10 @@ export class GameService {
     async saveGameHistory(game: Game, userOne: User, userTwo: User) {
         let gameHistory = await this.gameRepository.createGameHistory(game, userOne, userTwo);
 
-        userOne.game_history = [];
-        userTwo.game_history = [];
+        if (!userOne.game_history)
+            userOne.game_history = [];
+        if (!userTwo.game_history)
+            userTwo.game_history = [];
         userOne.game_history.push(gameHistory);
         userTwo.game_history.push(gameHistory);
 

@@ -14,6 +14,7 @@ import { join } from 'path';
 import { User42Dto } from './dto/user42.dto';
 import { Response, Request } from 'express';
 import { UserModule } from './user.module';
+import { GameHistory } from 'src/game/entities/gameHistory.entity';
 
 @Injectable()
 export class UserService {
@@ -242,8 +243,8 @@ export class UserService {
 		}
 	}
 
-	async getGameHistory(userId: string) {
+	async getGameHistory(userId: string): Promise<GameHistory[]> {
 		const user = await this.usersRepository.findOne({userId: userId});
-		console.log(user);
+		return user.game_history;
 	}
 }
