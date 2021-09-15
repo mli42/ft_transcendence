@@ -100,7 +100,6 @@ export class GameService {
     async saveGameHistory(game: Game, userOne: User, userTwo: User) {
         let gameHistory = await this.gameRepository.createGameHistory(game, userOne, userTwo);
 
-        console.log(gameHistory, userOne, userTwo);
         userOne.game_history = [];
         userTwo.game_history = [];
         userOne.game_history.push(gameHistory);
@@ -113,8 +112,6 @@ export class GameService {
 		} catch (e) {
 			throw new InternalServerErrorException();
         }
-        console.log(userOne);
-        console.log(userTwo);
     }
 
     async getUser(id: string) : Promise<User> {
