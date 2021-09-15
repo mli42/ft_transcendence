@@ -7,6 +7,7 @@
     <p v-if="channel.directMessage"> {{ whoIsIt().username }}</p>
     <p v-else>{{ channel.channelName }}</p>
     <img v-if="!channel.publicChannel && !channel.directMessage" class="lock" src="~/assets/img/padlock.svg">
+    <!-- <img  class="cross" src="~/assets/img/red_cross.svg" @click.native="leaveChannel(channel)"> -->
   </div>
 </template>
 
@@ -39,7 +40,7 @@ export default Vue.extend({
         this.selected = false;
     }
   },
-  props: ['channel', 'joinChannel', 'index', 'channelName', 'currentUser'],
+  props: ['channel', 'joinChannel', 'index', 'channelName', 'currentUser', 'leaveChannel'],
 });
 </script>
 
