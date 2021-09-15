@@ -26,7 +26,7 @@
         </div>
       </div>
       <div class="chatMain">
-        <div class="received">
+        <div class="received" ref="msgContainer">
           <ul>
             <li class="newMsg" v-for="(msg, index) in messages" :key="index">
               <div class="msgAvatar" @click="currentMemberMod = msg.user, modalBool.showPersonnalSettings = true ">
@@ -261,6 +261,9 @@ export default Vue.extend({
     },
     recvMsg(msg: string): void {
       this.messages.push(msg);
+      this.$nextTick(() => {
+        this.$refs.msgContainer.scrollTop = 0;
+      });
     },
     createChannel(): void{
       if (this.newChannel.name === "")
@@ -361,8 +364,15 @@ export default Vue.extend({
       }
       this.channels = newChannels;
       const newChannelIndex = this.channels.length - 1;
-      if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
+      if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userIdc) {
         this.joinChannel(newChannelIndex);
+      }
+      else if (!this.channels.find((el: Channel) => el.channelName === this.currentChannel.channelName))
+      {
+        if(this.channels.length === 0)
+          this.currentChannel = new Channel;
+        else
+          this.joinChannel(newChannelIndex);
       }
     },
     blockUser(user: User): void {
