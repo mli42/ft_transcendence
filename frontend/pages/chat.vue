@@ -71,18 +71,21 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
       <h1 id="settingModal">Channel Settings</h1>
-      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.deletePassword">
+      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.deletePassword && !currentChannel.publicChannel">
         <input type="checkbox" name="addpassword" v-model="channelSettings.applyPassword">
         <label class="addPassword" for="addpassword">Protect by new password</label>
       </div>
-      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.applyPassword">
+      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.applyPassword && !currentChannel.publicChannel">
         <input type="checkbox" name="addpassword" v-model="channelSettings.deletePassword">
         <label class="addPassword" for="addpassword">Disable current password</label>
       </div>
       <ModalInput  name="New passeword :"  placeHolder="" :isPassword="true" :ispublic="true" v-model.lazy="channelSettings.password" v-if="channelSettings.applyPassword"></ModalInput>
-      <Dropdown toselect="Add members :" :items="friends"></Dropdown>
-      <v-btn class="DoneBtn" @click="modalBool.showSettings = false, changeSettings()">
+      <Dropdown toselect="Add members :" :items="friends" v-if="!currentChannel.publicChannel"></Dropdown>
+      <v-btn class="DoneBtn" @click="modalBool.showSettings = false, changeSettings()" v-if="!currentChannel.publicChannel">
         <p class="v-btn-content">Apply</p>
+      </v-btn>
+      <v-btn class="BlockBtn" @click="modalBool.showSettings = false, changeSettings(), deleteChannel(currentChannel)">
+        <p class="v-btn-content">Delete Channel</p>
       </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
@@ -390,6 +393,9 @@ export default Vue.extend({
       else
         return this.currentUser;
     },
+    deleteChannel(channel: Channel): void{
+      this.$user.socket.emit("deleteChannel", channel);
+    }
   },
   mounted() {
     this.$user.socket.on("messageAdded", (data: any) => {
