@@ -127,7 +127,7 @@ class Player {
     this.color = "#FA163F";
     this.barLen = 64; // in px
     this.isReady = false;
-    this.barSpeed = 1;
+    this.barSpeed = 1.5;
   }
 }
 
