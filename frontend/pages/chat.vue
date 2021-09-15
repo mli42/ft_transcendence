@@ -4,7 +4,7 @@
       <SearchResult :friends="friends" :joinUserChannel="joinUserChannel"></SearchResult>
       <ul class="listChannel" @click="hideSearch()">
         <li v-for="(item, index) in channels" :key="index">
-          <UserCard :channel="item" :index="index" :joinChannel="joinChannel" :channelName="currentChannelName" :currentUser="currentUser"></UserCard>
+          <UserCard :channel="item" :index="index" :joinChannel="joinChannel" :channelName="currentChannelName" :currentUser="currentUser" :leaveChannel="leaveChannel"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter" @click="hideSearch()">
@@ -395,7 +395,10 @@ export default Vue.extend({
     },
     deleteChannel(channel: Channel): void{
       this.$user.socket.emit("deleteChannel", channel);
-    }
+    },
+    leaveChannel(channel: Channel): void{
+      // this.$user.socket.emit("leaveChannel", channel);
+    },
   },
   mounted() {
     this.$user.socket.on("messageAdded", (data: any) => {
