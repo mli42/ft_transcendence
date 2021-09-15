@@ -17,10 +17,6 @@ export class ConnectedUserService {
 		return this.connectedUserRepository.save(connectedUser);
 	}
 
-	async findByUser(user: User): Promise<ConnectedUserI[]> {
-		return this.connectedUserRepository.find({user});
-	}
-
 	async findAll(): Promise<ConnectedUserI[]> {
 		const connections = await this.connectedUserRepository.find({ relations: ["user"] });
 		return connections;
