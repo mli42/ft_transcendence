@@ -162,9 +162,11 @@ export default Vue.extend({
       tabTypes: ["matchmaking", "private"] as Array<string>,
       creatorColor: "" as string,
       creatorName: "" as string,
+      creatorElo: -1 as number,
       isCreatorReady: false as boolean,
       opponentColor: "" as string,
       opponentName: "" as string,
+      opponentElo: -1 as number,
       isOpponentReady: false as boolean,
       barColor: "" as string,
       endGame: {
@@ -198,13 +200,17 @@ export default Vue.extend({
       this.endGame.isFinished = true;
       if (this.game.score[0] > this.game.score[1]) {
         this.endGame.winner.username = this.creatorName;
+        this.endGame.winner.elo = this.creatorElo;
         this.endGame.winner.score = this.game.score[0];
         this.endGame.loser.username = this.opponentName;
+        this.endGame.loser.elo = this.opponentElo;
         this.endGame.loser.score = this.game.score[1];
       } else {
         this.endGame.loser.username = this.creatorName;
+        this.endGame.loser.elo = this.creatorElo;
         this.endGame.loser.score = this.game.score[0];
         this.endGame.winner.username = this.opponentName;
+        this.endGame.winner.elo = this.opponentElo;
         this.endGame.winner.score = this.game.score[1];
       }
     });
@@ -463,7 +469,29 @@ export default Vue.extend({
         }
       }
     },
-  }
+    "game.creatorId": function (): void {
+      if (!this.game.creatorId) {
+        return ;
+      }
+      this.$axios.get(`/api/user/partialInfo?userId=${this.game.creatorId}`)
+      .then((res: any) => {
+        const user = res.data;
+        this.creatorElo = user.elo;
+      })
+      .catch(this.$mytoast.defaultCatch);
+    },
+    "game.opponentId": function (): void {
+      if (!this.game.opponentId) {
+        return ;
+      }
+      this.$axios.get(`/api/user/partialInfo?userId=${this.game.opponentId}`)
+      .then((res: any) => {
+        const user = res.data;
+        this.opponentElo = user.elo;
+      })
+      .catch(this.$mytoast.defaultCatch);
+    },
+  },
 },
 );
 </script>

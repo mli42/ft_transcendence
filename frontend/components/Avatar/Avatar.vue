@@ -14,8 +14,11 @@ import Vue from 'vue';
 export default Vue.extend({
   name: 'Avatar',
   computed: {
+    hasAvatar(): boolean {
+      return (this.user?.profile_picture);
+    },
     avatarURL(): string {
-      return `${this.$user.avatarBaseURL}/${this.user.profile_picture}`;
+      return this.hasAvatar ? `${this.$user.avatarBaseURL}/${this.user.profile_picture}` : '';
     },
     title(): string {
       return (this.isConnected) ? 'is Online' : 'is Offline';
