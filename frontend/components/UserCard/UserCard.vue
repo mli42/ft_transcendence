@@ -1,9 +1,9 @@
 <template>
   <div :class="{ red : channel.channelName === channelName }" @click="joinChannel(index)">
-    <div class="pp" v-if="channel.directMessage">
+    <div class="pp flexHVcenter" v-if="channel.directMessage">
       <Avatar :user="whoIsIt()" ></Avatar>
     </div>
-    <img v-else src="~/assets/img/chatbubble.svg">
+    <img v-else class="pp" src="~/assets/img/chatbubble.svg">
     <p v-if="channel.directMessage"> {{ whoIsIt().username }}</p>
     <p v-else>{{ channel.channelName }}</p>
     <img v-if="!channel.publicChannel && !channel.directMessage" class="lock" src="~/assets/img/padlock.svg">
