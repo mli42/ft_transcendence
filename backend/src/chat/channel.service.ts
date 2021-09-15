@@ -62,6 +62,15 @@ export class ChannelService {
 			await this.deleteChannel(channel);
 		} else {
 			this.updateAdminUser(false, channel, user);
+			if (channel.owner === user.userId) {
+				const userFound = channel.users.find(el => el.userId !== user.userId );
+				if (userFound) {
+					channel.owner = userFound.userId;
+				} else {
+					await this.deleteChannel(channel);
+					return;
+				}
+			}
 			channel.users = channel.users.filter(el => el.userId !== user.userId );
 			try {
 				await this.channelRepository.save(channel);
