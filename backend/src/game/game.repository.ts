@@ -24,7 +24,7 @@ export class GameRepository extends Repository<GameHistory> {
         gameHistory.users = [];
         gameHistory.users.push(userOne);
         gameHistory.users.push(userTwo);
-        if (game.score[0] != 7) {
+        if (game.score[0] < game.score[1]) {
             gameHistory.playerWin = playertwo;
             gameHistory.playerLoose = playerone;
         } else {
