@@ -23,8 +23,10 @@ div{
 
 p{
     margin: auto 5px;
+    width: 200px;
     color: $pg-white;
     font-size: 18px;
+    overflow-wrap: anywhere;
 }
 
 .lock{
@@ -33,9 +35,10 @@ p{
     margin: auto 8px;
 }
 
-// .cross{
-//     width: 8px;
-//     height: 8px;
-//     margin-top: 5px;
-// }
+.cross{
+    width: 13px;
+    height: 13px;
+    margin: 10px 10px;
+    cursor: pointer;
+}
 

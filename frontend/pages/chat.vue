@@ -396,8 +396,13 @@ export default Vue.extend({
     deleteChannel(channel: Channel): void{
       this.$user.socket.emit("deleteChannel", channel);
     },
-    leaveChannel(channel: Channel): void{
-      // this.$user.socket.emit("leaveChannel", channel);
+    leaveChannel(channel: Channel, user: User): void{
+      let arg: any = {
+        channel: channel,
+        user: user,
+      }
+      this.$user.socket.emit("userLeaveChannel", arg);
+      this.$mytoast.info(`You left "${channel.channelName}"`);
     },
   },
   mounted() {
