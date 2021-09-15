@@ -10,18 +10,21 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function genRandDelta(): Array<number> {
+function genRandDelta(score?: Array<number>): Array<number> {
   let ballDelta: Array<number> = new Array();
   let ballDeltaSum: number = 1;
   let ballDeltaRand: number = Math.random();
 
-  while (ballDeltaRand * 10 < 1 || ballDeltaRand * 10 > 5) {// Ajust to start with a delta more horizontal
+  while (ballDeltaRand * 10 < 1 || ballDeltaRand * 10 > 5) {      // Ajust to start with a delta more horizontal
     ballDeltaRand = Math.random();
   }
   ballDelta[0] = ballDeltaSum - ballDeltaRand;
   if (Math.round(Math.random())) { ballDelta[0] = -ballDelta[0] } // Add negative ranges between -1 and 0
   ballDelta[1] = ballDeltaRand;
   if (Math.round(Math.random())) { ballDelta[1] = -ballDelta[1] }
+  if (score != undefined && score === [0, 0]) {                   // Aim the ball to the creator for the first round
+    ballDelta[0] = Math.abs(ballDelta[0]) * -1;
+  }
   return (ballDelta);
 }
 
@@ -91,7 +94,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     }
   };
 
-  ball.delta = genRandDelta();
+  ball.delta = genRandDelta(game.score);
   if (ball.delta[0] > 0) {
     collBarChecker = collOppoChecker;
   } else {
@@ -118,7 +121,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     }
   }
 
-  while (game.score[0] < 50 && game.score[1] < 50) {
+  while (game.score[0] < 7 && game.score[1] < 7) {
     // Temp loop
     await sleep(10);
     // Move bars if needed
@@ -141,7 +144,11 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         game.score[0]++;
       }
       ball.pos = [768 / 2, 432 / 2];
-      ball.delta = genRandDelta();
+      ball.delta = genRandDelta(game.score);
+      ball.delta[0] = Math.abs(ball.delta[0]);
+      if (ball.pos[0] - (ball.size / 2) <= 0) { // Redirect the ball to the looser
+        ball.delta[0] *= -1;
+      }
       ball.speed = 3;
       if (ball.delta[0] > 0) { collBarChecker = collOppoChecker; } else { collBarChecker = collCreaChecker; }
       ball.color = "#DCE1E5";
