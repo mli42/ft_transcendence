@@ -1,6 +1,6 @@
 import { socket } from "./socket";
 import * as p5 from "p5";
-import { Game, Player, Ball, PowerUp, IcolorPalette } from "./dataStructures";
+import { Game, Player, Ball, PowerUp, IstringsAssociation } from "./dataStructures";
 import Vue from "vue";
 
 export { sketchWrap, p5Instance };
@@ -165,7 +165,7 @@ async function sketch(s: any): Promise<any> {
     });
     socket.on("newPowTC", (powType: string, powPos: Array<number>) => {
       console.log(`LOG: newPowTC (powtype = ${powType}, powPos = ${powPos})`);
-      let pow: PowerUp = new PowerUp();
+      let pow: PowerUp = new PowerUp(game.enabledPowerUps);
       pow.color = pow.colorMatch[powType];
       pow.modifier = pow.powMatch[powType];
       pow.pos = powPos;

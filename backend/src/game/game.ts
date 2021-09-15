@@ -73,8 +73,8 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         ball.color = pCrea.color;
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
-        if ((Math.random() * 10) >= 0) {
-          let pow = new PowerUp();
+        if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 0) {
+          let pow = new PowerUp(game.enabledPowerUps);
           game.powerUps.push(pow);
           client.to(game.id).emit("newPowTC", pow.type, pow.pos);
           client.emit("newPowTC", pow.type, pow.pos);
@@ -96,8 +96,8 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         ball.color = pOppo.color;
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
-        if ((Math.random() * 10) >= 8) {
-          let pow = new PowerUp();
+        if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 8) {
+          let pow = new PowerUp(game.enabledPowerUps);
           game.powerUps.push(pow);
           client.to(game.id).emit("newPowTC", pow.type, pow.pos);
           client.emit("newPowTC", pow.type, pow.pos);

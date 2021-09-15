@@ -118,7 +118,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Game, Player, IcolorPalette, Button} from "./dataStructures";
+import { Game, Player, IstringsAssociation, Button} from "./dataStructures";
 import lookup from "socket.io-client";
 import { use } from "vue/types/umd";
 import { socket, socketInit } from "./socket"
@@ -128,11 +128,11 @@ export { SOCKET_URL };
 
 const SOCKET_URL: string = `ws://${window.location.hostname}:3000/game`;
 
-const uiPalette: IcolorPalette = {
+const uiPalette: IstringsAssociation = {
   green: "#219653", white: "#DCE1E5", red: "#B30438",
 };
 
-const playerPalette: IcolorPalette = {
+const playerPalette: IstringsAssociation = {
   Red: "#FA163F", Green: "#54E346", Blue: "#3EDBF0", Yellow: "#FFF338",
   Purple: "#D62AD0", Pink: "#FB7AFC",
 };
@@ -148,7 +148,7 @@ export default Vue.extend({
       playerColorClass: "playerRed",
       playersList: {} as Array<any>,
       powList: [
-        "➕ ball size up", "➖ ball size down", "⚡ bar speed up", "↔️ lenght up", "🔥 FIRE !"
+        "ball size up", "ball size down", "bar speed up", "length up"
       ],
       // Condition to display or not element. Modified by display* methods
       isPowDisplayed: false as boolean,

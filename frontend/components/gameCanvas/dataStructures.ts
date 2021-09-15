@@ -1,10 +1,10 @@
-export { Ball, Game, PowerUp, Player, IcolorPalette, Button }
+export { Ball, Game, PowerUp, Player, IstringsAssociation, Button }
 
 /**
  * 🔽 UI STRUCTURES 🔽
  */
 
-interface IcolorPalette {
+interface IstringsAssociation {
   [index: string]: string;
 }
 
@@ -16,12 +16,12 @@ class Button {
   actionHoverEnter: () => void; // function called when the client hover the button
   actionHoverLeave: () => void; // function called when the client hover the button
   isLoading: boolean;
-  uiPalette: IcolorPalette;
+  uiPalette: IstringsAssociation;
 
   private _color: string;
 
   constructor() {
-    this.uiPalette = {} as IcolorPalette;
+    this.uiPalette = {} as IstringsAssociation;
     this.uiPalette["green"] = "#219653"; this.uiPalette["white"] = "#DCE1E5";
     this.uiPalette["red"] = "#B30438";
     this.txt = "";
@@ -149,9 +149,13 @@ class PowerUp {
 
   powList: Array<string>;
   powMatch: ItypePow;
-  colorMatch: IcolorPalette;
+  nameMatch: IstringsAssociation;
+  colorMatch: IstringsAssociation;
 
-  constructor() {
+  constructor(enabledPowerUps: Array<string>) {
+    if (enabledPowerUps.length <= 0) {
+      throw "ERR: powerup tried to be created without enabled powerups";
+    }
     // DEFAULT
     this.pos = [0, 0];
     this.size = 16;
@@ -165,25 +169,31 @@ class PowerUp {
     this.powMatch["ballSizeDown"] = this.modBallSizeDown;
     this.powMatch["barLenUp"] = this.modBarLenUp;
     this.powMatch["barSpeedUp"] = this.modBarSpeedUp;
-    this.colorMatch = {} as IcolorPalette;
+    this.colorMatch = {} as IstringsAssociation;
     this.colorMatch["ballSizeUp"] = "#DCE1E5";
     this.colorMatch["ballSizeDown"] = "#DCE1E5";
     this.colorMatch["barLenUp"] = "#219653";
     this.colorMatch["barSpeedUp"] = "#219653";
+    this.nameMatch = {} as IstringsAssociation;
+    this.nameMatch["ball size up"] = "ballSizeUp";
+    this.nameMatch["ball size down"] = "ballSizeDown";
+    this.nameMatch["bar speed up"] = "barLenUp";
+    this.nameMatch["length up"] = "barSpeedUp";
     // INIT VARIABLES
-    this.genType();
+    this.genType(enabledPowerUps);
     this.modifier = this.powMatch[this.type];
     this.color = this.colorMatch[this.type];
     this.genPos();
-    console.log(this);
   }
 
-  private genType(): void {
+  private genType(enabledPowerUps: Array<string>): void {
     let randNum: number = Math.round(Math.random() * 10);
+    let randName: string;
     while (randNum < this.powList.length) {
       randNum = Math.round(Math.random() * 10);
     }
-    this.type = this.powList[Math.round(randNum % this.powList.length)];
+    randName = enabledPowerUps[Math.round(randNum % enabledPowerUps.length)]
+    this.type = this.nameMatch[randName];
   }
 
   // This function generate a position 
