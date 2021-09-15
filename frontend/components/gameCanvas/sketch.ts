@@ -113,6 +113,20 @@ async function sketch(s: any): Promise<any> {
   let barLenUpImg: p5.Image;
   let barSpeedUpImg: p5.Image;
 
+  function resetPowEffect(game: Game): void {
+    let pCrea: Player | undefined = game.players.get(game.creatorId);
+    let pOppo: Player | undefined = game.players.get(game.opponentId);
+
+    if (pCrea && pOppo) {
+      game.ball.size = 16;
+      ballSizeFacted = transX(ball.size);
+      pCrea.barLen = 64;
+      pOppo.barLen = 64;
+      pCrea.barSpeed = 1;
+      pOppo.barSpeed = 1;
+    }
+  }
+
   s.setup = () => {
     console.log();
     ballSizeUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/plus.svg`);
@@ -135,6 +149,7 @@ async function sketch(s: any): Promise<any> {
       console.log("LOG: pointTC");
       game.score = score;
       updateHUDtxt();
+      resetPowEffect(game);
     });
     socket.on("changeSettingsTC", (settings: any) => {
       console.log("LOG: changeSettingsTC");
@@ -142,8 +157,11 @@ async function sketch(s: any): Promise<any> {
         pCrea = settings.pCrea;
       if (settings.pOppo != undefined)
         pOppo = settings.pOppo;
-      if (settings.ball != undefined)
-        ball = settings.ball;
+      if (settings.ball != undefined) {
+        game.ball = settings.ball;
+        ball = game.ball;
+        ballSizeFacted = transX(ball.size);
+      }
     });
     socket.on("newPowTC", (powType: string, powPos: Array<number>) => {
       console.log(`LOG: newPowTC (powtype = ${powType}, powPos = ${powPos})`);

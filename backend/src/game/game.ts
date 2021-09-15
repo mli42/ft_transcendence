@@ -38,6 +38,19 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   const userOne: User = await gameService.getUser(it.next().value);
   const userTwo: User = await gameService.getUser(it.next().value);
 
+  function resetPowEffect(game: Game): void {
+    let pCrea: Player | undefined = game.players.get(game.creatorId);
+    let pOppo: Player | undefined = game.players.get(game.opponentId);
+
+    if (pCrea && pOppo) {
+      ball.size = 16;
+      pCrea.barLen = 64;
+      pOppo.barLen = 64;
+      pCrea.barSpeed = 1;
+      pOppo.barSpeed = 1;
+    }
+  }
+
   pCrea.barX = 16 + BAR_WIDTH; // Padding + bar width
   pOppo.barX = 768 - (16 + BAR_WIDTH); // Screen width - (bar width + padding)
 
@@ -156,6 +169,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       client.emit("changeSettingsTC", {ball: ball});
       client.to(game.id).emit("pointTC", game.score); // Update point on front
       client.emit("pointTC", game.score);
+      resetPowEffect(game);
     }
     // Broadcast positions
     client.to(game.id).emit("b", {posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY} );
