@@ -77,7 +77,7 @@ class PowerUp {
   nameMatch: IstringsAssociation;
   colorMatch: IstringsAssociation;
 
-  constructor(enabledPowerUps: Array<string>) {
+  constructor(enabledPowerUps: Array<string>, powerUps: Array<PowerUp>) {
     if (enabledPowerUps.length <= 0) {
       throw "ERR: powerup tried to be created without enabled powerups";
     }
@@ -109,6 +109,25 @@ class PowerUp {
     this.modifier = this.powMatch[this.type];
     this.color = this.colorMatch[this.type];
     this.genPos();
+    while (this.checkSuperposition(powerUps) === true) { // Avoid superposition 
+      this.genPos();
+    }
+  }
+
+  private checkSuperposition(powerUps: Array<PowerUp>): boolean {
+    let i: number = 0;
+    let distance: number;
+
+    for (let elem of powerUps) {
+      distance = Math.sqrt(                        // √((x2−x1)2+(y2−y1)2)
+        Math.pow((this.pos[0] - elem.pos[0]), 2) +
+        Math.pow((this.pos[1] - elem.pos[1]), 2));
+      if (Math.abs(distance) <= this.size) {                 // Collision !
+        return true;
+      }
+      i++;
+    }
+    return false;
   }
 
   private genType(enabledPowerUps: Array<string>): void {

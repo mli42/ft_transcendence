@@ -74,7 +74,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
         if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 0) {
-          let pow = new PowerUp(game.enabledPowerUps);
+          let pow = new PowerUp(game.enabledPowerUps, game.powerUps);
           game.powerUps.push(pow);
           client.to(game.id).emit("newPowTC", pow.type, pow.pos);
           client.emit("newPowTC", pow.type, pow.pos);
@@ -97,7 +97,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
         if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 8) {
-          let pow = new PowerUp(game.enabledPowerUps);
+          let pow = new PowerUp(game.enabledPowerUps, game.powerUps);
           game.powerUps.push(pow);
           client.to(game.id).emit("newPowTC", pow.type, pow.pos);
           client.emit("newPowTC", pow.type, pow.pos);
@@ -139,7 +139,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     }
   }
 
-  while (game.score[0] < 7 && game.score[1] < 7) {
+  while (game.score[0] < 99 && game.score[1] < 99) {
     // Temp loop
     await sleep(10);
     // Move bars if needed
