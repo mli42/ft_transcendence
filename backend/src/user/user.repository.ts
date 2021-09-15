@@ -187,4 +187,29 @@ export class UsersRepository extends Repository<User> {
 			throw new InternalServerErrorException();
 		}
 	}
+
+	async updateBlockUser(block: boolean, user: User, userToBlock: User): Promise<User> {
+		const userFound = user.blockedUsers.find(element => element === userToBlock.userId)
+		if (block === true && !userFound)
+		{
+			user.blockedUsers.push(userToBlock.userId);
+			try {
+				await this.save(user);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('add blocked user');
+			}
+		}
+		if (block === false && userFound) {
+			const index = user.blockedUsers.indexOf(userToBlock.userId);
+			user.blockedUsers.splice(index, 1);
+			try {
+				await this.save(user);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('add blocked user');
+			}
+		}
+		return user;
+	}
 }

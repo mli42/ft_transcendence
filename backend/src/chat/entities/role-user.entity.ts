@@ -16,7 +16,7 @@ export class RoleUser {
 	@Column({nullable: true, type: 'timestamptz'})
     mute: Date;
 
-	@ManyToOne(() => Channel, channel => channel.joinedUsers)
+	@ManyToOne(() => Channel, channel => channel.joinedUsers, {onDelete:'CASCADE'})
 	@JoinColumn()
 	channel: Channel;
 }

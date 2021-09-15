@@ -254,4 +254,8 @@ export class UserService {
 		let elo = EloRating.calculate(parseInt(eloPlayerWin), parseInt(eloPlayerLoose));
 		return elo.playerRating - parseInt(eloPlayerWin);
 	}
+
+	updateBlockUser(block: boolean, user: User, userToBlock: User): Promise<User> {
+		return this.usersRepository.updateBlockUser(block, user, userToBlock);
+	}
 }

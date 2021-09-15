@@ -1,9 +1,8 @@
 @import '~/assets/Palette.scss';
 
 div{
-    background-color: $pg-blue;
     display: flex;
-    padding: 16px 8px;
+    flex-direction: row;
     width: 300px;
     height: 70px;
     border-radius: 10px;
@@ -15,15 +14,31 @@ div{
     background-color: $pg-dark-blue;
 }
 
-img{
-    width: 40px;
-    height: 40px;
+.pp{
+    max-width: 40px; 
+    max-height: 40px;
     border-radius: 150px;
     margin: auto 8px;
 }
 
 p{
     margin: auto 5px;
+    width: 200px;
     color: $pg-white;
     font-size: 18px;
+    overflow-wrap: anywhere;
 }
+
+.lock{
+    width: 16px;
+    height: 16px;
+    margin: auto 8px;
+}
+
+.cross{
+    width: 13px;
+    height: 13px;
+    margin: 10px 10px;
+    cursor: pointer;
+}
+

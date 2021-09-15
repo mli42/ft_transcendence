@@ -26,7 +26,7 @@
     display: flex;
     width: 95%;
     height: 40px;
-    margin: 16px 0;
+    margin: 30px 0;
 }
 
 .chatfield input {
@@ -45,7 +45,11 @@
     border-radius: 50%;
     background-color: $pg-white;
 }
-  
+
+.sendBtn{
+    cursor: pointer;
+}
+
 .imgIcone {
     width: 50px;
     height: 30px;
@@ -53,6 +57,8 @@
 }
 
 .received{
+    display: flex;
+    flex-direction: column-reverse;
     width: 100%;
     height: 100%;
     background-color: $pg-dark-blue;
@@ -99,7 +105,7 @@ ul {
 .creatChatRoom
 {
     position: absolute;
-    bottom: 4%;
+    bottom: 6%;
 }
 
 #createChatRoomBtn{
@@ -123,16 +129,18 @@ ul {
 }
 
 .chanelImg{
-    width: 40px;
-    height: 40px;
+    max-width: 40px;
+    max-height: 40px;
     margin-right: 16px;
     border-radius: 150px;
 }
 
 .chatRoomName p{
     margin: auto 0px;
+    width: 900px;
     font-size: 20px;
     color: $pg-white;
+    overflow-wrap: anywhere;
 }
 
 .newMsg{
@@ -158,6 +166,7 @@ ul {
     color: $pg-white;
     margin-top: 8px;
     overflow-wrap: anywhere;
+    white-space: pre-line;
 }
 
 h1{
@@ -200,10 +209,6 @@ h1{
     margin: 0 0 7px 16px;
 }
 
-// v-select label{
-//     color: $pg-white !important; 
-// }
-
 .addPassword{
     color: $pg-white;
     margin: 7px;
@@ -225,10 +230,3 @@ h1{
     height: 100px;
     margin: 0;
 }
-
-// .checkBoxeModerator, .checkBoxePassword{
-//     width: 336px;
-//     padding-left: 28px;
-//     text-align: left;
-// }
-

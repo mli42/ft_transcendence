@@ -4,7 +4,7 @@
       <SearchResult :friends="friends" :joinUserChannel="joinUserChannel"></SearchResult>
       <ul class="listChannel" @click="hideSearch()">
         <li v-for="(item, index) in channels" :key="index">
-          <UserCard :name="item.channelName" :index="index" :joinChannel="joinChannel" :channelName="currentChannelName"></UserCard>
+          <UserCard :channel="item" :index="index" :joinChannel="joinChannel" :channelName="currentChannelName" :currentUser="currentUser" :leaveChannel="leaveChannel"></UserCard>
         </li>
       </ul>
       <div class="creatChatRoom flexHVcenter" @click="hideSearch()">
@@ -16,19 +16,21 @@
     <div class="chatChamp boxHVcenter" v-if="userBanned === false" @click="hideSearch()">
       <div class="chatRoomName" v-if="currentChannel != undefined">
         <div class="flexAlignRow">
-          <img class="chanelImg" src="~/assets/img/chatbubble.svg">
-          <p> {{ currentChannel.channelName }} </p>
+          <Avatar v-if="currentChannel.directMessage" class="chanelImg" :user="whoIsIt(currentChannel)" ></Avatar>
+          <img v-else class="chanelImg" src="~/assets/img/chatbubble.svg">
+          <p v-if="currentChannel.directMessage"> {{ whoIsIt(currentChannel).username }}</p>
+          <p v-else> {{ currentChannel.channelName }} </p>
         </div>
-        <div class="settingBtn flexHVcenter" v-if="this.currentChannel.publicChannel === false && this.currentChannel.owner === this.currentUser.userId">
+        <div class="settingBtn flexHVcenter" v-if="this.currentChannel.directMessage === false && this.currentChannel.owner === this.currentUser.userId">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
       <div class="chatMain">
-        <div class="received">
+        <div class="received" ref="msgContainer">
           <ul>
             <li class="newMsg" v-for="(msg, index) in messages" :key="index">
               <div class="msgAvatar" @click="currentMemberMod = msg.user, modalBool.showPersonnalSettings = true ">
-                  <Avatar :user="msg.user" ></Avatar>
+                <Avatar :user="msg.user" ></Avatar>
               </div>
               <div class="msgDiv">
                 <p>{{ msg.user.username }}</p>
@@ -44,7 +46,7 @@
             </div>
         </div>
       </div>
-      <div class="control" v-if="currentChannel != undefined">
+      <div class="control" v-if="currentChannel != undefined && currentChannel.directMessage === false">
         <ChatMember :channelUsers="currentChannel.users" :public="currentChannel.publicChannel" :getModStatus="getModStatus"></ChatMember>
       </div>
     </div>
@@ -69,22 +71,25 @@
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showSettings">
       <h1 id="settingModal">Channel Settings</h1>
-      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.deletePassword">
+      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.deletePassword && !currentChannel.publicChannel">
         <input type="checkbox" name="addpassword" v-model="channelSettings.applyPassword">
         <label class="addPassword" for="addpassword">Protect by new password</label>
       </div>
-      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.applyPassword">
+      <div class="checkBoxePassword flexHVcenter" v-if="!channelSettings.applyPassword && !currentChannel.publicChannel">
         <input type="checkbox" name="addpassword" v-model="channelSettings.deletePassword">
         <label class="addPassword" for="addpassword">Disable current password</label>
       </div>
       <ModalInput  name="New passeword :"  placeHolder="" :isPassword="true" :ispublic="true" v-model.lazy="channelSettings.password" v-if="channelSettings.applyPassword"></ModalInput>
-      <Dropdown toselect="Add members :" :items="friends"></Dropdown>
-      <v-btn class="DoneBtn" @click="modalBool.showSettings = false, changeSettings()">
+      <Dropdown toselect="Add members :" :items="friends" v-if="!currentChannel.publicChannel"></Dropdown>
+      <v-btn class="DoneBtn" @click="modalBool.showSettings = false, changeSettings()" v-if="!currentChannel.publicChannel">
         <p class="v-btn-content">Apply</p>
+      </v-btn>
+      <v-btn class="BlockBtn" @click="modalBool.showSettings = false, changeSettings(), deleteChannel(currentChannel)">
+        <p class="v-btn-content">Delete Channel</p>
       </v-btn>
     </SettingModal>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showPrivacy">
-      <h1 id="settingModal">Join Channel</h1>
+      <h1 id="settingModal">Join {{ channels[selectedChannel].channelName }}</h1>
       <ModalInput  name="Channel password :" v-model.lazy="password"  placeHolder="" :isPassword="true" :ispublic="true"  @keyup.enter.native="modalBool.showPrivacy = false, sendPassword()"></ModalInput>
       <v-btn class="DoneBtn" @click="modalBool.showPrivacy = false, sendPassword()">
         <p class="v-btn-content" >Join</p>
@@ -111,10 +116,13 @@
         <NuxtLink :to="`/profile/${currentMemberMod.username}`"><Avatar :user="currentMemberMod"></Avatar></NuxtLink>
       </div>
       <v-btn class="DoneBtn" @click="modalBool.showPersonnalSettings = false">
-        <p class="v-btn-content">Defi to a Game</p>
+        <p class="v-btn-content" @click="challengeUser">Challenge to a Game</p>
       </v-btn>
-      <v-btn class="BlockBtn" @click="moderation.blockedUser = true, modalBool.showPersonnalSettings= false, blockUser(currentMemberMod)">
+      <v-btn class="BlockBtn" v-if="isBlocked(currentMemberMod) === false" @click="blockedUser = true, modalBool.showPersonnalSettings= false, blockUser(currentMemberMod)">
         <p class="v-btn-content">Block this user</p>
+      </v-btn>
+      <v-btn class="BlockBtn" v-if="isBlocked(currentMemberMod) === true" @click="blockedUser = false, modalBool.showPersonnalSettings= false, blockUser(currentMemberMod)">
+        <p class="v-btn-content">Unblock this user</p>
       </v-btn>
     </SettingModal>
   </div>
@@ -156,7 +164,6 @@ export default Vue.extend({
         banTime: 0 as number,
         muteTime: 0 as number,
         timer: [1, 3, 7, 30, 365] as number[],
-        blockedUser: false as boolean,
       },
       channelSettings: {
         password: '' as string,
@@ -168,6 +175,7 @@ export default Vue.extend({
       friends: [] as User[],
       password: '' as string,
       currentMemberMod: {} as User,
+      blockedUser: false as boolean,
     }
   },
   computed: {
@@ -181,6 +189,7 @@ export default Vue.extend({
         console.error('joinChannel: index out of range');
         return ;
       }
+      this.selectedChannel = index;
       this.$user.socket.emit('leaveChannel');
       this.$user.socket.emit("checkRoleChannelBan", this.channels[index], (resp: boolean) => {
         if (resp === true)
@@ -189,10 +198,7 @@ export default Vue.extend({
           return;
         }
         if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
-        {
           this.modalBool.showPrivacy = true;
-          this.selectedChannel = index;
-        }
         else
         {
           this.$user.socket.emit('joinChannel', this.channels[index]);
@@ -244,6 +250,8 @@ export default Vue.extend({
       this.moderationblockedUser = false;
     },
     sendMsg(): void {
+      if (this.txt === '')
+        return;
       this.$user.socket.emit('newMessage',
       	{text: this.txt,
         channel: this.currentChannel,
@@ -253,6 +261,9 @@ export default Vue.extend({
     },
     recvMsg(msg: string): void {
       this.messages.push(msg);
+      this.$nextTick(() => {
+        this.$refs.msgContainer.scrollTop = 0;
+      });
     },
     createChannel(): void{
       if (this.newChannel.name === "")
@@ -306,9 +317,11 @@ export default Vue.extend({
         return false;
     },
     joinUserChannel(user: User): void{
-      let name1 = this.currentUser.userId + user.userId;
-      let name2 = user.userId + this.currentUser.userId;
-      let channel: Channel = this.channels.find((el: Channel) => {el.channelName === name1 || el.channelName === name1 });
+      let name1: string = this.currentUser.userId + user.userId;
+      let name2: string = user.userId + this.currentUser.userId;
+      let users: User[] = [];
+      users.push(user);
+      let channel: Channel = this.channels.find((el: Channel) => el.channelName === name1 || el.channelName === name1);
       if(channel)
       {
         this.$user.socket.emit('joinChannel', channel);
@@ -317,7 +330,9 @@ export default Vue.extend({
       else
       {
         this.$user.socket.emit('createChannel', {channelName: name1,
-        users: user});
+        users: users,
+        publicChannel: false,
+        directMessage: true});
       }
     },
     getModStatus(): void{
@@ -348,17 +363,75 @@ export default Vue.extend({
         return ;
       }
       this.channels = newChannels;
-      const newChannelIndex = this.channels.length - 1; // Not viable atm
-      if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
+      const newChannelIndex = this.channels.length - 1;
+      if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userIdc) {
         this.joinChannel(newChannelIndex);
+      }
+      else if (!this.channels.find((el: Channel) => el.channelName === this.currentChannel.channelName))
+      {
+        if(this.channels.length === 0)
+          this.currentChannel = new Channel;
+        else
+          this.joinChannel(newChannelIndex);
       }
     },
     blockUser(user: User): void {
-
+      console.log("deblocage", this.blockedUser);
+      let arg = {
+        user: user,
+        block: this.blockedUser,
+      }
+      this.$user.socket.emit("blockUser", arg, (data: any) => {
+        this.currentUser = data;
+      });
+      this.blockedUser = false;
+    },
+    isBlocked(user: User): boolean{
+      let find: string = this.currentUser.blockedUsers.find((el: string) => el === user.userId)
+      if (find)
+        return true;
+      else
+        return false;
     },
     hideSearch(): void{
       this.$nuxt.$emit('hide-search');
-    }
+    },
+    whoIsIt(channel: Channel): User{
+      let find: User|any = channel.users.find((el: User) => el.userId != this.currentUser.userId)
+      if (find)
+        return find;
+      else
+        return this.currentUser;
+    },
+    deleteChannel(channel: Channel): void{
+      this.$user.socket.emit("deleteChannel", channel);
+    },
+    leaveChannel(channel: Channel, user: User): void{
+      let arg: any = {
+        channel: channel,
+        user: user,
+      }
+      this.$user.socket.emit("userLeaveChannel", arg);
+      this.$mytoast.info(`You left "${channel.channelName}"`);
+    },
+    challengeUser(): void {
+      const inviteUser: any = this.currentMemberMod;
+
+      this.$axios.get('/api/game/uuid')
+      .then((res: any) => {
+        const uuid: string = res.data;
+        const gamePath: string = `/game/${uuid}`;
+        const gameURL: string = `${window.location.origin}${gamePath}`;
+        const inviteMsg: string = `BATTLE: ${this.currentUser.username} vs. ${inviteUser.username}\nThe challenge will take place here:\n${gameURL}`;
+
+        this.$user.socket.emit('newMessage', {
+          text: inviteMsg,
+          channel: this.currentChannel,
+        });
+        this.$router.push(gamePath);
+      })
+      .catch(this.$mytoast.defaultCatch);
+    },
   },
   mounted() {
     this.$user.socket.on("messageAdded", (data: any) => {
