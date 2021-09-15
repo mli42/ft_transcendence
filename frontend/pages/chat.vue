@@ -16,7 +16,7 @@
     <div class="chatChamp boxHVcenter" v-if="userBanned === false" @click="hideSearch()">
       <div class="chatRoomName" v-if="currentChannel != undefined">
         <div class="flexAlignRow">
-          <Avatar v-if="currentChannel.directMessage" :user="whoIsIt(currentChannel)" ></Avatar>
+          <Avatar v-if="currentChannel.directMessage" class="chanelImg" :user="whoIsIt(currentChannel)" ></Avatar>
           <img v-else class="chanelImg" src="~/assets/img/chatbubble.svg">
           <p v-if="currentChannel.directMessage"> {{ whoIsIt(currentChannel).username }}</p>
           <p v-else> {{ currentChannel.channelName }} </p>
