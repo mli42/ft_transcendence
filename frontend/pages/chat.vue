@@ -26,7 +26,7 @@
         </div>
       </div>
       <div class="chatMain">
-        <div class="received">
+        <div class="received" ref="msgContainer">
           <ul>
             <li class="newMsg" v-for="(msg, index) in messages" :key="index">
               <div class="msgAvatar" @click="currentMemberMod = msg.user, modalBool.showPersonnalSettings = true ">
@@ -261,6 +261,9 @@ export default Vue.extend({
     },
     recvMsg(msg: string): void {
       this.messages.push(msg);
+      this.$nextTick(() => {
+        this.$refs.msgContainer.scrollTop = 0;
+      });
     },
     createChannel(): void{
       if (this.newChannel.name === "")
