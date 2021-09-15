@@ -115,8 +115,8 @@ export default Vue.extend({
     modFriendIcon(): string {
       return (!this.isMyFriend) ? 'bx:bx-user-plus' : 'bx:bx-user-minus';
     },
-    ratio(): number | string {
-      return (this.user.ratio == -1) ? 'N/A' : this.user.ratio;
+    ratio(): string {
+      return (this.user.ratio == -1) ? 'N/A' : `${this.user.ratio}%`;
     },
     banTitle(): string {
       return this.user.isBan ? 'Un-ban user' : 'Ostracize user';
