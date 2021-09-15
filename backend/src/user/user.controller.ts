@@ -330,4 +330,16 @@ export class UserController {
 	getGameHistory(@Param('userId') userId: string) : Promise<GameHistory[]> {
 	  return this.userService.getGameHistory(userId);
 	}
+
+
+	@ApiOperation({summary: 'Calculate elo gain'})
+	@ApiOkResponse({description: 'returns Elo Gain'})
+	@ApiParam({name: 'eloPlayerWin', required: true, description: 'EloPlayerWin'})
+	@ApiParam({name: 'eloPlayerLoose', required: true, description: 'EloPlayerLoose'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/calculElo/:eloPlayerWin/:eloPlayerLoose')
+	calculElo(@Param('eloPlayerWin') eloPlayerWin: string, @Param('eloPlayerLoose') eloPlayerLoose: string): number {
+		return this.userService.calculElo(eloPlayerWin, eloPlayerLoose);
+	}
 }

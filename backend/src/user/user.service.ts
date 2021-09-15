@@ -247,4 +247,11 @@ export class UserService {
 		const user = await this.usersRepository.findOne({userId: userId});
 		return user.game_history;
 	}
+
+	calculElo(eloPlayerWin: string, eloPlayerLoose: string): number {
+		let EloRating = require('elo-rating');
+
+		let elo = EloRating.calculate(parseInt(eloPlayerWin), parseInt(eloPlayerLoose));
+		return elo.playerRating - parseInt(eloPlayerWin);
+	}
 }
