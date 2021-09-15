@@ -139,7 +139,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     }
   }
 
-  while (game.score[0] < 99 && game.score[1] < 99) {
+  while (game.score[0] < 7 && game.score[1] < 7) {
     // Temp loop
     await sleep(10);
     // Move bars if needed
@@ -161,12 +161,12 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       } else {                                  // right collision
         game.score[0]++;
       }
-      ball.pos = [768 / 2, 432 / 2];
       ball.delta = genRandDelta(game.score);
       ball.delta[0] = Math.abs(ball.delta[0]);
       if (ball.pos[0] - (ball.size / 2) <= 0) { // Redirect the ball to the looser
         ball.delta[0] *= -1;
       }
+      ball.pos = [768 / 2, 432 / 2];
       ball.speed = 3;
       if (ball.delta[0] > 0) { collBarChecker = collOppoChecker; } else { collBarChecker = collCreaChecker; }
       ball.color = "#DCE1E5";
