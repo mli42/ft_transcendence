@@ -93,7 +93,7 @@
             <div id="endGameInfos" class="flexAlignCol">
               <div class="endUpInfos">
                 <p class="endGameMainInfo">{{endGame.winner.username}}</p>
-                <p class="eloHUD">elo {{endGame.winner.elo}} + 5</p>
+                <p class="eloHUD">elo {{endGame.winner.elo}} + {{endGame.eloDiff}}</p>
               </div>
 
               <div class="endMidInfos flexAlignRow">
@@ -103,7 +103,7 @@
               </div>
 
               <div class="endBotInfos">
-                <p class="eloHUD">elo {{endGame.loser.elo}} - 5</p> <br />
+                <p class="eloHUD">elo {{endGame.loser.elo}} - {{endGame.eloDiff}}</p> <br />
                 <p class="endGameMainInfo">{{endGame.loser.username}}</p>
               </div>
             </div> <!-- EndGameInfos End -->
@@ -171,6 +171,7 @@ export default Vue.extend({
       barColor: "" as string,
       endGame: {
         isFinished: false as boolean,
+        eloDiff: '...' as string,
         winner: {
           username: '' as string,
           score: 0 as number,
@@ -198,21 +199,22 @@ export default Vue.extend({
     socket.emit("fetchGameTS", this.gameId); // This function will ask to the server to fetch game class
     socket.on("endGameTC", () => {
       this.endGame.isFinished = true;
-      if (this.game.score[0] > this.game.score[1]) {
-        this.endGame.winner.username = this.creatorName;
-        this.endGame.winner.elo = this.creatorElo;
-        this.endGame.winner.score = this.game.score[0];
-        this.endGame.loser.username = this.opponentName;
-        this.endGame.loser.elo = this.opponentElo;
-        this.endGame.loser.score = this.game.score[1];
-      } else {
-        this.endGame.loser.username = this.creatorName;
-        this.endGame.loser.elo = this.creatorElo;
-        this.endGame.loser.score = this.game.score[0];
-        this.endGame.winner.username = this.opponentName;
-        this.endGame.winner.elo = this.opponentElo;
-        this.endGame.winner.score = this.game.score[1];
-      }
+      const isCreatorWinner: boolean = (this.game.score[0] > this.game.score[1]);
+      const eloReq: string = isCreatorWinner ? `${this.creatorElo}/${this.opponentElo}` : `${this.opponentElo}/${this.creatorElo}`;
+      let creatorEndGameInfos: any = isCreatorWinner ? this.endGame.winner : this.endGame.loser;
+      let opponentEndGameInfos: any = isCreatorWinner ? this.endGame.loser : this.endGame.winner;
+
+      this.$axios.get(`/api/user/calculElo/${eloReq}`)
+      .then((res: any) => {
+        this.endGame.eloDiff = res.data;
+      })
+      .catch(this.$mytoast.defaultCatch);
+      creatorEndGameInfos.username = this.creatorName;
+      creatorEndGameInfos.elo = this.creatorElo;
+      creatorEndGameInfos.score = this.game.score[0];
+      opponentEndGameInfos.username = this.opponentName;
+      opponentEndGameInfos.elo = this.opponentElo;
+      opponentEndGameInfos.score = this.game.score[1];
     });
   },
   async destroyed() {
