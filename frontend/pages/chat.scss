@@ -26,7 +26,7 @@
     display: flex;
     width: 95%;
     height: 40px;
-    margin: 16px 0;
+    margin: 30px 0;
 }
 
 .chatfield input {
@@ -105,7 +105,7 @@ ul {
 .creatChatRoom
 {
     position: absolute;
-    bottom: 4%;
+    bottom: 6%;
 }
 
 #createChatRoomBtn{
@@ -117,6 +117,7 @@ ul {
     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
     border-radius: 5px;
     padding: 7px 32px;
+    // margin: 50px 0;
 }
 
 .BtnTxt{
