@@ -59,9 +59,16 @@ export class ChannelService {
 		return false;
 	}
 
-	// async userLeaveChannel(channel: ChannelI, user: User) {
-
-	// }
+	async userLeaveChannel(channel: ChannelI, user: User) {
+		const index = channel.users.indexOf(user);
+		channel.users.splice(index, 1);
+		try {
+			await this.channelRepository.save(channel);
+		} catch (error) {
+			console.log(error);
+			throw new InternalServerErrorException('user leave channel');
+		}
+	}
 
 	async getChannelsForUser(userId: string): Promise <ChannelI[]> {
 		let query = this.channelRepository

@@ -115,11 +115,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* USER LEAVE FROM CHANNEL CHANNEL **************** */
-    // @SubscribeMessage('userLeaveChannel')
-    // async onUserLeaveChannel(channel: ChannelI, user: User) {
+    @SubscribeMessage('userLeaveChannel')
+    async onUserLeaveChannel(channel: ChannelI, user: User) {
+        await this.channelService.userLeaveChannel(channel, user);
+        const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
+        for (const connection of connections) {
+            const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
+            await this.server.to(connection.socketId).emit('channel', channels);
+        }
+    }
 
-    // }
-    
     /********************* UPDATE CHANNEL **************** */
     @SubscribeMessage('updateChannel')
     async updateChannel(client: Socket, info: any) {
@@ -230,7 +235,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* Join Channel *********************/
     @SubscribeMessage('joinChannel')
-    async handleJoinChannel(client: Socket, channel: ChannelI) {
+    async handleJoinChannel(client: Socket, channel: ChannelI) { // voir pour recup exception
         
         const channelFound = await this.channelService.getChannel(channel.channelId);
         if (channelFound.publicChannel === false && await this.channelService.isAuthPrivateChannel(channelFound, client.data.user) == false){
