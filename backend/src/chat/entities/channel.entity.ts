@@ -30,16 +30,16 @@ export class Channel {
 	@JoinTable()
 	users: User[];
 
-	@OneToMany(() => JoinedChannel, joinedChannel => joinedChannel.channel)
+	@OneToMany(() => JoinedChannel, joinedChannel => joinedChannel.channel, { cascade: true })
 	joinedUsers: JoinedChannel[];
 
-	@OneToMany(() => RoleUser, roleUser => roleUser.channel)
+	@OneToMany(() => RoleUser, roleUser => roleUser.channel, { cascade: true })
 	roleUser: RoleUser[];
 
 	@Column("simple-array", {default: []})
 	adminUsers: string[];
 	
-	@OneToMany(() => Message, message => message.channel)
+	@OneToMany(() => Message, message => message.channel, { cascade: true })
 	messages: Message[];
 
 	@Column("text", {default: ""})

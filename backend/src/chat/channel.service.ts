@@ -46,14 +46,22 @@ export class ChannelService {
 	}
 
 	async deleteChannel(channel: ChannelI): Promise<boolean> {
-		try {
-			await this.channelRepository.delete(channel);
-		} catch (error) {
-			console.log(error);
-			return false
+		const channelFound: Channel = await this.channelRepository.findOne(channel.channelId);
+		if (channelFound) {
+			try {
+				await this.channelRepository.delete(channelFound.channelId);
+			} catch (error) {
+				console.log(error);
+				return false
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
+
+	// async userLeaveChannel(channel: ChannelI, user: User) {
+
+	// }
 
 	async getChannelsForUser(userId: string): Promise <ChannelI[]> {
 		let query = this.channelRepository

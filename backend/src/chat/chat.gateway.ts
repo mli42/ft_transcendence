@@ -99,7 +99,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* DELETE CHANNEL **************** */
     @SubscribeMessage('deleteChannel')
-    async onDeleteChannel(channel: ChannelI): Promise<boolean> {
+    async onDeleteChannel(client: Socket, channel: ChannelI): Promise<boolean> {
+       
         const delChannel: Boolean = await this.channelService.deleteChannel(channel);
         if (!delChannel) {
             return false;
@@ -112,6 +113,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             return true;
         }
     }
+
+    /********************* USER LEAVE FROM CHANNEL CHANNEL **************** */
+    // @SubscribeMessage('userLeaveChannel')
+    // async onUserLeaveChannel(channel: ChannelI, user: User) {
+
+    // }
+    
     /********************* UPDATE CHANNEL **************** */
     @SubscribeMessage('updateChannel')
     async updateChannel(client: Socket, info: any) {

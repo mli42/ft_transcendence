@@ -14,7 +14,7 @@ export class Message {
 	@JoinColumn()
 	user: User;
 
-	@ManyToOne(() => Channel, channel => channel.messages)
+	@ManyToOne(() => Channel, channel => channel.messages, {onDelete:'CASCADE'})
 	@JoinTable()
 	channel: Channel;
 
