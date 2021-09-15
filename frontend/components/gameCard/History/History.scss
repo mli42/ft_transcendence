@@ -1,0 +1,10 @@
+@import '~/assets/Palette.scss';
+@import '../Spectate/Spectate.scss';
+
+.winningGame {
+  border: 2px solid $pg-green;
+}
+
+.losingGame {
+  border: 2px solid $pg-red;
+}

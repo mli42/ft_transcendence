@@ -37,10 +37,11 @@
         <div> <div class="bullet ratio"></div> <p>{{ratio}} ratio</p> </div>
       </div>
       <!-- Game History -->
-      <overflowContainer width="664px" heightMax="458px"
+      <overflowContainer width="664px" heightMin="60px" heightMax="360px"
       label="Game History" style="margin: 32px">
-        <!-- Placeholder to replace -->
-        <div style="height: 1000px;"></div>
+        <p v-if="gameHistory.length == 0">No game at the moment...</p>
+        <gameCardHistory v-for="(game, index) in gameHistory"
+        :key="index" :game="game" :user="user" />
       </overflowContainer>
     </div>
   </div>
@@ -51,6 +52,16 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'Profile',
+  data() {
+    return {
+      gameHistory: [] as any,
+    };
+  },
+  fetch() {
+    this.$axios.get(`/api/user/gameHistory/${this.user.userId}`)
+    .then((res: any) => { this.gameHistory = res.data.reverse(); })
+    .catch(this.$mytoast.defaultCatch);
+  },
   methods: {
     modFriend(): void {
       let url: string;
