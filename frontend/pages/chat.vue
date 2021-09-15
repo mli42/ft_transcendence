@@ -361,8 +361,15 @@ export default Vue.extend({
       }
       this.channels = newChannels;
       const newChannelIndex = this.channels.length - 1;
-      if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userId) {
+      if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userIdc) {
         this.joinChannel(newChannelIndex);
+      }
+      else if (!this.channels.find((el: Channel) => el.channelName === this.currentChannel.channelName))
+      {
+        if(this.channels.length === 0)
+          this.currentChannel = new Channel;
+        else
+          this.joinChannel(newChannelIndex);
       }
     },
     blockUser(user: User): void {
