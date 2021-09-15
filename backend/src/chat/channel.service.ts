@@ -93,7 +93,7 @@ export class ChannelService {
 		.where('users.userId = :userId', {userId})
 		.andWhere('channel.publicChannel = false')
 		.leftJoinAndSelect('channel.users', 'all_users')
-		.orderBy('channel.date', 'ASC');
+		.orderBy('channel.date', 'DESC');
 		const privateChannels: ChannelI[] = await query.getMany();
 
 		const channels = publicChannels.concat(privateChannels);
@@ -101,8 +101,8 @@ export class ChannelService {
 		channels.sort(function(date1,date2) {
 			let d1 = new Date(date1.date);
 			let d2 = new Date(date2.date);
-			if (d1 > d2) return 1;
-			else if (d1 < d2) return -1;
+			if (d1 < d2) return 1;
+			else if (d1 > d2) return -1;
 			else return 0;
 		  });
 		return channels;
