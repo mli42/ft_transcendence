@@ -149,7 +149,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const createMessage: MessageI = await this.messageService.create({...message, user: client.data.user});
         const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
         const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
+        const originalMessage = createMessage.text;
         for (const user of joinedUsers) {
+            createMessage.text = originalMessage;
             const userFound: string = user.user.blockedUsers.find(element => element === createMessage.user.userId)
             if (userFound) {
                 createMessage.text = "--------[Vous avez bloqué cet utilisateur]--------";
@@ -165,7 +167,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async blockOrDefiUser(client: Socket, data: any): Promise<User> {
         const { user, block } = data;
         const userUpdate = this.userService.updateBlockUser(block, client.data.user, user);
-        // emit message ?
         return userUpdate;
     }
 
