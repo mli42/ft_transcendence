@@ -10,18 +10,21 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function genRandDelta(): Array<number> {
+function genRandDelta(score?: Array<number>): Array<number> {
   let ballDelta: Array<number> = new Array();
   let ballDeltaSum: number = 1;
   let ballDeltaRand: number = Math.random();
 
-  while (ballDeltaRand * 10 < 1 || ballDeltaRand * 10 > 5) {// Ajust to start with a delta more horizontal
+  while (ballDeltaRand * 10 < 1 || ballDeltaRand * 10 > 5) {      // Ajust to start with a delta more horizontal
     ballDeltaRand = Math.random();
   }
   ballDelta[0] = ballDeltaSum - ballDeltaRand;
   if (Math.round(Math.random())) { ballDelta[0] = -ballDelta[0] } // Add negative ranges between -1 and 0
   ballDelta[1] = ballDeltaRand;
   if (Math.round(Math.random())) { ballDelta[1] = -ballDelta[1] }
+  if (score != undefined && score === [0, 0]) {                   // Aim the ball to the creator for the first round
+    ballDelta[0] = Math.abs(ballDelta[0]) * -1;
+  }
   return (ballDelta);
 }
 
@@ -34,6 +37,19 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   const it = game.players.keys();
   const userOne: User = await gameService.getUser(it.next().value);
   const userTwo: User = await gameService.getUser(it.next().value);
+
+  function resetPowEffect(game: Game): void {
+    let pCrea: Player | undefined = game.players.get(game.creatorId);
+    let pOppo: Player | undefined = game.players.get(game.opponentId);
+
+    if (pCrea && pOppo) {
+      ball.size = 16;
+      pCrea.barLen = 64;
+      pOppo.barLen = 64;
+      pCrea.barSpeed = 1;
+      pOppo.barSpeed = 1;
+    }
+  }
 
   pCrea.barX = 16 + BAR_WIDTH; // Padding + bar width
   pOppo.barX = 768 - (16 + BAR_WIDTH); // Screen width - (bar width + padding)
@@ -57,11 +73,11 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         ball.color = pCrea.color;
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
-        if ((Math.random() * 10) >= 0) {
-          let pow = new PowerUp();
-          game.powerUps.push(new PowerUp());
-          client.to(game.id).emit("newPowTC", pow, pow.type);
-          client.emit("newPowTC", pow, pow.type);
+        if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 0) {
+          let pow = new PowerUp(game.enabledPowerUps, game.powerUps);
+          game.powerUps.push(pow);
+          client.to(game.id).emit("newPowTC", pow.type, pow.pos);
+          client.emit("newPowTC", pow.type, pow.pos);
         }
         collBarChecker = collOppoChecker;
       }
@@ -80,24 +96,50 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         ball.color = pOppo.color;
         client.to(game.id).emit("changeSettingsTC", {ball: ball});
         client.emit("changeSettingsTC", {ball: ball});
-        if ((Math.random() * 10) >= 8) {
-          let pow = new PowerUp();
-          game.powerUps.push(new PowerUp());
-          client.to(game.id).emit("newPowTC", pow, pow.type);
-          client.emit("newPowTC", pow, pow.type);
+        if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 8) {
+          let pow = new PowerUp(game.enabledPowerUps, game.powerUps);
+          game.powerUps.push(pow);
+          client.to(game.id).emit("newPowTC", pow.type, pow.pos);
+          client.emit("newPowTC", pow.type, pow.pos);
         }
         collBarChecker = collCreaChecker;
       }
     }
   };
 
-  ball.delta = genRandDelta();
+  ball.delta = genRandDelta(game.score);
   if (ball.delta[0] > 0) {
     collBarChecker = collOppoChecker;
   } else {
     collBarChecker = collCreaChecker;
   }
-  while (game.score[0] < 5 && game.score[1] < 5) {
+
+  let checkPowColl = function(ball: Ball): void {
+    let i: number = 0;
+    let distance: number;
+
+    for (let elem of game.powerUps) {
+      distance = Math.sqrt(                        // √((x2−x1)2+(y2−y1)2)
+        Math.pow((ball.pos[0] - elem.pos[0]), 2) +
+        Math.pow((ball.pos[1] - elem.pos[1]), 2));
+      if (Math.abs(distance) <= ball.size) {                 // Collision !
+        let userAffected: string = "";
+        if (collBarChecker === collCreaChecker) {
+          userAffected = game.opponentId;
+        } else if (collBarChecker === collOppoChecker) {
+          userAffected = game.creatorId;
+        }
+        elem.modifier(game, userAffected);
+        client.to(game.id).emit("collPowTC", elem.pos, userAffected);
+        client.emit("collPowTC", elem.pos, userAffected);
+        game.powerUps.splice(i, 1);
+        return ;
+      }
+      i++;
+    }
+  }
+
+  while (game.score[0] < 7 && game.score[1] < 7) {
     // Temp loop
     await sleep(10);
     // Move bars if needed
@@ -105,6 +147,8 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     if (game.modBarOppo === 1) { modifierUpOppo(); } else if (game.modBarOppo === -1) { modifierDownOppo(); }
     // Check collisions between ball and bars
     collBarChecker();
+    // Check collision between ball and powerUps
+    checkPowColl(ball);
     // Move the ball one step
     ball.pos[0] += ball.delta[0] * ball.speed;
     ball.pos[1] += ball.delta[1] * ball.speed;
@@ -117,8 +161,12 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       } else {                                  // right collision
         game.score[0]++;
       }
+      ball.delta = genRandDelta(game.score);
+      ball.delta[0] = Math.abs(ball.delta[0]);
+      if (ball.pos[0] - (ball.size / 2) <= 0) { // Redirect the ball to the looser
+        ball.delta[0] *= -1;
+      }
       ball.pos = [768 / 2, 432 / 2];
-      ball.delta = genRandDelta();
       ball.speed = 3;
       if (ball.delta[0] > 0) { collBarChecker = collOppoChecker; } else { collBarChecker = collCreaChecker; }
       ball.color = "#DCE1E5";
@@ -126,6 +174,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       client.emit("changeSettingsTC", {ball: ball});
       client.to(game.id).emit("pointTC", game.score); // Update point on front
       client.emit("pointTC", game.score);
+      resetPowEffect(game);
     }
     // Broadcast positions
     client.to(game.id).emit("b", {posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY} );

@@ -86,6 +86,15 @@ export class GameController {
     return this.gameService.getUuid();
   }
 
+  @ApiOperation({summary: 'Get powerup icons'})
+  @ApiOkResponse({description: 'returns svg icons asked'})
+  @ApiParam({name: 'name', required: true, description: 'name of the icon wanted'})
+  /*******/
+  @Get('/powIcons/:name')
+  getPowIcon( @Res() res, @Param('name') name: string): Promise<Observable<object>> {
+    return this.gameService.getPowIcon(res, name);
+  }
+
   @ApiOperation({summary: 'Verifying a UUID'})
   @ApiOkResponse({description: 'returns true or false'})
   @ApiParam({name: 'uuid', required: true, description: 'uuid to check'})

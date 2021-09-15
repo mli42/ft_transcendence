@@ -1,9 +1,9 @@
-export {Ball, Game, PowerUp, Mouse, Player, IcolorPalette}
+export {Ball, Game, PowerUp, Mouse, Player, IstringsAssociation}
 
 const GRID_WIDTH = 768;
 const GRID_HEIGHT = 432;
 
-interface IcolorPalette {
+interface IstringsAssociation {
   [index: string]: string;
 }
 
@@ -52,7 +52,7 @@ class Player {
     this.color = "#FA163F";
     this.barLen = 64; // in px
     this.isReady = false;
-    this.barSpeed = 1;
+    this.barSpeed = 1.5;
   }
 }
 
@@ -68,38 +68,76 @@ interface ItypePow {
 class PowerUp {
   pos: Array<number>;
   size: number;
+  type: string;
   color: string;
   modifier: ((game: Game, userId?: string | undefined) => void);
 
-  private _type: string;
-  private _powMatch: ItypePow;
-  private _colorMatch: IcolorPalette;
-  private _powList: Array<string>;
+  powList: Array<string>;
+  powMatch: ItypePow;
+  nameMatch: IstringsAssociation;
+  colorMatch: IstringsAssociation;
 
-  constructor() {
+  constructor(enabledPowerUps: Array<string>, powerUps: Array<PowerUp>) {
+    if (enabledPowerUps.length <= 0) {
+      throw "ERR: powerup tried to be created without enabled powerups";
+    }
+    // DEFAULT
     this.pos = [0, 0];
     this.size = 16;
-    this.color = "#DCE1E5";
-    this._type = "ballSizeUp";
-    this._powList = ["ballSizeUp", "ballSizeDown", "barLenUp", "barSpeedUp"];
+    this.color = "";
+    this.type = "";
     this.modifier = () => {};
-    this._powMatch = {} as ItypePow;
-    this._powMatch["ballSizeUp"] = this.modBallSizeUp;
-    this._powMatch["ballSizeDown"] = this.modBallSizeDown;
-    this._powMatch["barLenUp"] = this.modBarLenUp;
-    this._powMatch["barSpeedUp"] = this.modBarSpeedUp;
-    this._colorMatch = {} as IcolorPalette;
-    this._colorMatch["ballSizeUp"] = "#DCE1E5";
-    this._colorMatch["ballSizeDown"] = "#DCE1E5";
-    this._colorMatch["barLenUp"] = "#219653";
-    this._colorMatch["barSpeedUp"] = "#219653";
+    this.powList = ["ballSizeUp", "ballSizeDown", "barLenUp", "barSpeedUp"];
+    // CREATE ASSOCIATION TABLES
+    this.powMatch = {} as ItypePow;
+    this.powMatch["ballSizeUp"] = this.modBallSizeUp;
+    this.powMatch["ballSizeDown"] = this.modBallSizeDown;
+    this.powMatch["barLenUp"] = this.modBarLenUp;
+    this.powMatch["barSpeedUp"] = this.modBarSpeedUp;
+    this.colorMatch = {} as IstringsAssociation;
+    this.colorMatch["ballSizeUp"] = "#DCE1E5";
+    this.colorMatch["ballSizeDown"] = "#DCE1E5";
+    this.colorMatch["barLenUp"] = "#219653";
+    this.colorMatch["barSpeedUp"] = "#219653";
+    this.nameMatch = {} as IstringsAssociation;
+    this.nameMatch["ball size up"] = "ballSizeUp";
+    this.nameMatch["ball size down"] = "ballSizeDown";
+    this.nameMatch["bar speed up"] = "barLenUp";
+    this.nameMatch["length up"] = "barSpeedUp";
+    // INIT VARIABLES
+    this.genType(enabledPowerUps);
+    this.modifier = this.powMatch[this.type];
+    this.color = this.colorMatch[this.type];
     this.genPos();
-    this.genPow();
+    while (this.checkSuperposition(powerUps) === true) { // Avoid superposition 
+      this.genPos();
+    }
   }
 
-  private genPow(): void {
-    const randNum: number = Math.round(Math.random() * 1000);
-    this.type = this._powList[randNum % this._powList.length];
+  private checkSuperposition(powerUps: Array<PowerUp>): boolean {
+    let i: number = 0;
+    let distance: number;
+
+    for (let elem of powerUps) {
+      distance = Math.sqrt(                        // √((x2−x1)2+(y2−y1)2)
+        Math.pow((this.pos[0] - elem.pos[0]), 2) +
+        Math.pow((this.pos[1] - elem.pos[1]), 2));
+      if (Math.abs(distance) <= this.size) {                 // Collision !
+        return true;
+      }
+      i++;
+    }
+    return false;
+  }
+
+  private genType(enabledPowerUps: Array<string>): void {
+    let randNum: number = Math.round(Math.random() * 10);
+    let randName: string;
+    while (randNum < this.powList.length) {
+      randNum = Math.round(Math.random() * 10);
+    }
+    randName = enabledPowerUps[Math.round(randNum % enabledPowerUps.length)]
+    this.type = this.nameMatch[randName];
   }
 
   // This function generate a position 
@@ -113,28 +151,20 @@ class PowerUp {
     while (this.pos[0] < widthRange[0] || this.pos[0] > widthRange[1]) {
       this.pos[0] = Math.random() * GRID_WIDTH;
     }
+    this.pos[0] = Math.round(this.pos[0]);
     this.pos[1] = Math.random() * GRID_HEIGHT;
     while (this.pos[1] < heightRange[0] || this.pos[1] > heightRange[1]) {
       this.pos[1] = Math.random() * GRID_HEIGHT;
     }
-  }
-
-  public get type(): string {
-    return (this._type);
-  }
-
-  public set type(type: string) {
-    this._type = type;
-    this.modifier = this._powMatch[type];
-    this.color = this._colorMatch[type];
+    this.pos[1] = Math.round(this.pos[1]);
   }
 
   modBallSizeUp(game: Game): void {
-    game.ball.size *= 1.25;
+    game.ball.size *= 2;
   }
 
   modBallSizeDown(game: Game): void {
-    game.ball.size *= 0.75;
+    game.ball.size *= 0.5;
   }
 
   modBarLenUp(game: Game, userId?: string | undefined): void {
@@ -144,7 +174,7 @@ class PowerUp {
       return ;
     player = game.players.get(userId);
     if (player) {
-      player.barLen *= 1.25;
+      player.barLen *= 2;
     }
   }
 
@@ -155,7 +185,7 @@ class PowerUp {
       return ;
     player = game.players.get(userId);
     if (player) {
-      player.barSpeed *= 1.25;
+      player.barSpeed *= 2;
     }
   }
 }

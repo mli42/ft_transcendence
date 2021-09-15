@@ -36,6 +36,10 @@ export class GameService {
         return files;
     }
 
+    async getPowIcon(@Res() res, icoName: string): Promise<Observable<object>> {
+      return of(res.sendFile(join(process.cwd(), '../upload/powIcons/' + icoName)));
+    }
+
     getUuid(): string {
         return uuidv4();
     }
