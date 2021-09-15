@@ -21,7 +21,7 @@
           <p v-if="currentChannel.directMessage"> {{ whoIsIt(currentChannel).username }}</p>
           <p v-else> {{ currentChannel.channelName }} </p>
         </div>
-        <div class="settingBtn flexHVcenter" v-if="this.currentChannel.publicChannel === false && this.currentChannel.owner === this.currentUser.userId">
+        <div class="settingBtn flexHVcenter" v-if="this.currentChannel.directMessage === false && this.currentChannel.owner === this.currentUser.userId">
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
