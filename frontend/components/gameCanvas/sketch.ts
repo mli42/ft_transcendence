@@ -1,6 +1,6 @@
 import { socket } from "./socket";
 import * as p5 from "p5";
-import { Game, Player, Ball, PowerUp } from "./dataStructures";
+import { Game, Player, Ball, PowerUp, IcolorPalette } from "./dataStructures";
 import Vue from "vue";
 
 export { sketchWrap, p5Instance };
@@ -101,8 +101,24 @@ async function sketch(s: any): Promise<any> {
   canvasHUD = document.getElementById("gameHUD");
   updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
   s.disableFriendlyErrors = true; // Optimize code
+  let ball: Ball = game.ball;
+  let factX: number = canvasWidth / 768;
+  let factY: number = canvasHeight / 432;
+  let transX = (coord: number) => { return (coord * factX); };
+  let transY = (coord: number) => { return (coord * factY); };
+  let barWidthFacted: number = transX(BAR_WIDTH);
+  let ballSizeFacted: number = transX(ball.size);
+  let ballSizeUpImg: p5.Image;
+  let ballSizeDownImg: p5.Image;
+  let barLenUpImg: p5.Image;
+  let barSpeedUpImg: p5.Image;
 
   s.setup = () => {
+    console.log();
+    ballSizeUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/plus.svg`);
+    ballSizeDownImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/minus.svg`);
+    barLenUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/arrows.svg`);
+    barSpeedUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/zap.svg`);
     let myCanvas: any = s.createCanvas(canvasWidth, canvasHeight);
     myCanvas.style('border', '2px dashed white');
     myCanvas.style('position', 'relative');
@@ -127,14 +143,34 @@ async function sketch(s: any): Promise<any> {
       if (settings.pOppo != undefined)
         pOppo = settings.pOppo;
       if (settings.ball != undefined)
-        game.ball = settings.ball;
+        ball = settings.ball;
     });
-    socket.on("newPowTC", (pow: PowerUp, powType: string) => {
+    socket.on("newPowTC", (powType: string, powPos: Array<number>) => {
+      console.log(`LOG: newPowTC (powtype = ${powType}, powPos = ${powPos})`);
+      let pow: PowerUp = new PowerUp();
+      pow.color = pow.colorMatch[powType];
+      pow.modifier = pow.powMatch[powType];
+      pow.pos = powPos;
       pow.type = powType;
       game.powerUps.push(pow);
     });
     socket.on("endGameTC", () => {
       setTimeout(() => { updateHUDtxt(); }, 5);
+    });
+    socket.on("collPowTC", (pos: Array<number>) => {
+      let i: number = 0;
+      for (let elem of game.powerUps) {
+        if (elem.pos[0] === pos[0] && elem.pos[1] === pos[1]) {
+          elem.modifier(game, vueInstance.$data.user.userId);
+          game.powerUps.splice(i, 1);
+          if (elem.type === "ballSizeUp" || elem.type === "ballSizeDown") {
+            ballSizeFacted = transX(ball.size);
+          }
+          ball = game.ball;
+          return ;
+        }
+        i++;
+      }
     });
     s.frameRate(50);
     s.noStroke();
@@ -143,19 +179,13 @@ async function sketch(s: any): Promise<any> {
     s.drawingContext.shadowOffsetY = 0;
     s.drawingContext.shadowColor = "#FFFFFFF0";
     s.rectMode(s.CENTER);
+    s.imageMode(s.CENTER);
   }
 
   /**
    * SKETCH DRAW
    * Draw function is entierly executed each p5 frames.
    */
-  let ball: Ball = game.ball;
-  let factX: number = canvasWidth / 768;
-  let factY: number = canvasHeight / 432;
-  let transX = (coord: number) => { return (coord * factX); };
-  let transY = (coord: number) => { return (coord * factY); };
-  let barWidthFacted: number = transX(BAR_WIDTH);
-  let ballSizeFacted: number = transX(ball.size);
 
   s.draw = () => {
     s.clear();
@@ -163,11 +193,12 @@ async function sketch(s: any): Promise<any> {
     s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen), 6, 6, 6, 6);
     s.fill(pOppo.color);
     s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen), 6, 6, 6, 6);
-    s.fill(game.ball.color);
+    s.fill(ball.color);
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
     for (let elem of game.powerUps) {
       s.fill(elem.color);
-      s.ellipse(transX(elem.pos[0]), transY(elem.pos[1]), ballSizeFacted);
+      s.ellipse(transX(elem.pos[0]), transY(elem.pos[1]), transX(elem.size));
+      s.image(eval(elem.type + "Img"), transX(elem.pos[0]), transY(elem.pos[1]), transX(elem.size) * 0.75, transY(elem.size)* 0.75);
     }
   }
   s.windowResized = () => {

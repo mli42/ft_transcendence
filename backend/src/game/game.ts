@@ -59,9 +59,9 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         client.emit("changeSettingsTC", {ball: ball});
         if ((Math.random() * 10) >= 0) {
           let pow = new PowerUp();
-          game.powerUps.push(new PowerUp());
-          client.to(game.id).emit("newPowTC", pow, pow.type);
-          client.emit("newPowTC", pow, pow.type);
+          game.powerUps.push(pow);
+          client.to(game.id).emit("newPowTC", pow.type, pow.pos);
+          client.emit("newPowTC", pow.type, pow.pos);
         }
         collBarChecker = collOppoChecker;
       }
@@ -82,9 +82,9 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         client.emit("changeSettingsTC", {ball: ball});
         if ((Math.random() * 10) >= 8) {
           let pow = new PowerUp();
-          game.powerUps.push(new PowerUp());
-          client.to(game.id).emit("newPowTC", pow, pow.type);
-          client.emit("newPowTC", pow, pow.type);
+          game.powerUps.push(pow);
+          client.to(game.id).emit("newPowTC", pow.type, pow.pos);
+          client.emit("newPowTC", pow.type, pow.pos);
         }
         collBarChecker = collCreaChecker;
       }
@@ -97,7 +97,28 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   } else {
     collBarChecker = collCreaChecker;
   }
-  while (game.score[0] < 5 && game.score[1] < 5) {
+
+  let checkPowColl = function(ball: Ball): void {
+    let i: number = 0;
+    let distance: number;
+
+    for (let elem of game.powerUps) {
+      distance = Math.sqrt(                        // √((x2−x1)2+(y2−y1)2)
+        Math.pow((ball.pos[0] - elem.pos[0]), 2) +
+        Math.pow((ball.pos[1] - elem.pos[1]), 2));
+      if (Math.abs(distance) <= ball.size) {                 // Collision !
+        elem.modifier(game, client.handshake.query.userId as string);
+        client.to(game.id).emit("collPowTC", elem.pos);
+        client.emit("collPowTC", elem.pos);
+        console.log(`COLLIDE ! (elem = ${elem.pos}, pos = ${ball.pos})`);
+        game.powerUps.splice(i, 1);
+        return ;
+      }
+      i++;
+    }
+  }
+
+  while (game.score[0] < 50 && game.score[1] < 50) {
     // Temp loop
     await sleep(10);
     // Move bars if needed
@@ -105,6 +126,8 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     if (game.modBarOppo === 1) { modifierUpOppo(); } else if (game.modBarOppo === -1) { modifierDownOppo(); }
     // Check collisions between ball and bars
     collBarChecker();
+    // Check collision between ball and powerUps
+    checkPowColl(ball);
     // Move the ball one step
     ball.pos[0] += ball.delta[0] * ball.speed;
     ball.pos[1] += ball.delta[1] * ball.speed;
