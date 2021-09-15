@@ -116,7 +116,7 @@
         <NuxtLink :to="`/profile/${currentMemberMod.username}`"><Avatar :user="currentMemberMod"></Avatar></NuxtLink>
       </div>
       <v-btn class="DoneBtn" @click="modalBool.showPersonnalSettings = false">
-        <p class="v-btn-content">Challenge to a Game</p>
+        <p class="v-btn-content" @click="challengeUser">Challenge to a Game</p>
       </v-btn>
       <v-btn class="BlockBtn" v-if="isBlocked(currentMemberMod) === false" @click="blockedUser = true, modalBool.showPersonnalSettings= false, blockUser(currentMemberMod)">
         <p class="v-btn-content">Block this user</p>
@@ -410,6 +410,24 @@ export default Vue.extend({
       }
       this.$user.socket.emit("userLeaveChannel", arg);
       this.$mytoast.info(`You left "${channel.channelName}"`);
+    },
+    challengeUser(): void {
+      const inviteUser: any = this.currentMemberMod;
+
+      this.$axios.get('/api/game/uuid')
+      .then((res: any) => {
+        const uuid: string = res.data;
+        const gamePath: string = `/game/${uuid}`;
+        const gameURL: string = `${window.location.origin}${gamePath}`;
+        const inviteMsg: string = `BATTLE: ${this.currentUser.username} vs. ${inviteUser.username}\nThe challenge will take place here:\n${gameURL}`;
+
+        this.$user.socket.emit('newMessage', {
+          text: inviteMsg,
+          channel: this.currentChannel,
+        });
+        this.$router.push(gamePath);
+      })
+      .catch(this.$mytoast.defaultCatch);
     },
   },
   mounted() {

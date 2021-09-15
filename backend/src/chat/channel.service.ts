@@ -61,7 +61,8 @@ export class ChannelService {
 		if (channel.directMessage === true) {
 			await this.deleteChannel(channel);
 		} else {
-			channel.users = channel.users.filter(el => { el.userId !== user.userId });
+			this.updateAdminUser(false, channel, user);
+			channel.users = channel.users.filter(el => el.userId !== user.userId );
 			try {
 				await this.channelRepository.save(channel);
 			} catch (error) {
