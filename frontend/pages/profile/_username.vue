@@ -2,7 +2,6 @@
   <div class="usernameMain">
     <div class="usernameContent">
       <Profile v-if="this.user !== undefined" :user="this.user"></Profile>
-      <NotExistProfile v-else :username="this.username"></NotExistProfile>
     </div>
   </div>
 </template>
@@ -16,11 +15,14 @@ export default Vue.extend({
       title: this.titlePage as String,
     };
   },
-  async asyncData({ params, app }) {
+  async asyncData({ params, app, error }) {
     const username: string = params.username;
     const user: any = await app.$axios.get(`/api/user/userInfo?username=${username}`)
     .then((res: any) => res.data)
     .catch(() => undefined);
+
+    if (user === undefined)
+      return error({ statusCode: 404 });
     return { username, user };
   },
   computed: {
