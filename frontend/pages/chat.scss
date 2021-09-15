@@ -137,8 +137,10 @@ ul {
 
 .chatRoomName p{
     margin: auto 0px;
+    width: 900px;
     font-size: 20px;
     color: $pg-white;
+    overflow-wrap: anywhere;
 }
 
 .newMsg{
