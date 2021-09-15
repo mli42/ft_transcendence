@@ -81,7 +81,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         if (!createChannel) {
             return false;
         } else {
-            this.emitUpdateChannel(createChannel, publicChannel);
+            const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
+            for (const connection of connections) {
+                const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
+                await this.server.to(connection.socketId).emit('channel', channels);
+            }
             return true;
         }
     }
@@ -93,23 +97,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         return channels;
     }
 
-    async emitUpdateChannel(channel:ChannelI, publicChannel: boolean) {
-        if (publicChannel === true) {
-            const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
-            for (const connection of connections) {
-                const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
-                await this.server.to(connection.socketId).emit('channel', channels);
-            }
-        } else {
-            for (const user of channel.users) {
-                const connections: ConnectedUserI[] = await this.connectedUserService.findByUser(user);
-                const channels: ChannelI[] = await this.channelService.getChannelsForUser(user.userId);
-                for (const connection of connections) {
-                    await this.server.to(connection.socketId).emit('channel', channels);
-                }
-            }
-        }
-    }
     /********************* DELETE CHANNEL **************** */
     @SubscribeMessage('deleteChannel')
     async onDeleteChannel(channel: ChannelI): Promise<boolean> {
