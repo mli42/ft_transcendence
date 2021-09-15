@@ -110,7 +110,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             }
         }
     }
-
+    /********************* DELETE CHANNEL **************** */
+    @SubscribeMessage('deleteChannel')
+    async onDeleteChannel(channel: ChannelI): Promise<boolean> {
+        const delChannel: Boolean = await this.channelService.deleteChannel(channel);
+        if (!delChannel) {
+            return false;
+        } else {
+            const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
+            for (const connection of connections) {
+                const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
+                await this.server.to(connection.socketId).emit('channel', channels);
+            }
+            return true;
+        }
+    }
     /********************* UPDATE CHANNEL **************** */
     @SubscribeMessage('updateChannel')
     async updateChannel(client: Socket, info: any) {
@@ -150,8 +164,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('blockUser')
     async blockOrDefiUser(client: Socket, data: any): Promise<User> {
         const { user, block } = data;
-        console.log("DATA")
-        console.log(data)
         const userUpdate = this.userService.updateBlockUser(block, client.data.user, user);
         // emit message ?
         return userUpdate;
