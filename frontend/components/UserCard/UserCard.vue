@@ -4,11 +4,9 @@
       <Avatar :user="whoIsIt()" ></Avatar>
     </div>
     <img v-else class="pp" src="~/assets/img/chatbubble.svg">
-    <!-- <div class="name"> -->
       <p v-if="channel.directMessage"> {{ whoIsIt().username }}</p>
       <p v-else>{{ channel.channelName }}</p>
       <img v-if="!channel.publicChannel && !channel.directMessage" class="lock" src="~/assets/img/padlock.svg">
-    <!-- </div> -->
     <img  v-if="channel.channelName === channelName" class="cross" src="~/assets/img/red_cross.svg" @click="leaveChannel(channel, currentUser)">
   </div>
 </template>
