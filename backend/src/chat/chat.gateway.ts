@@ -99,28 +99,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* DELETE CHANNEL **************** */
     @SubscribeMessage('deleteChannel')
-    async onDeleteChannel(client: Socket, channel: ChannelI): Promise<boolean> {
+    async onDeleteChannel(client: Socket, channel: ChannelI) {
        
-        const delChannel: Boolean = await this.channelService.deleteChannel(channel);
-        if (!delChannel) {
-            return false;
-        } else {
-            const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
-            for (const connection of connections) {
-                const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
-                await this.server.to(connection.socketId).emit('channel', channels);
-            }
-            return true;
+        await this.channelService.deleteChannel(channel);
+
+        const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
+        for (const connection of connections) {
+            const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
+            await this.server.to(connection.socketId).emit('channel', channels);
         }
     }
 
     /********************* USER LEAVE FROM CHANNEL CHANNEL **************** */
     @SubscribeMessage('userLeaveChannel')
-    async onUserLeaveChannel(channel: ChannelI, user: User) {
+    async onUserLeaveChannel(client: Socket, data: any) {
+        const { channel, user } = data;
         await this.channelService.userLeaveChannel(channel, user);
         const connections: ConnectedUserI[] = await this.connectedUserService.findAll();
         for (const connection of connections) {
             const channels: ChannelI[] = await this.channelService.getChannelsForUser(connection.user.userId);
+            console.log(channels)
             await this.server.to(connection.socketId).emit('channel', channels);
         }
     }
@@ -150,8 +148,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const channel: ChannelI = await this.channelService.getChannel(createMessage.channel.channelId);
         const joinedUsers: JoinedChannelI[] = await this.joinedChannelService.findByChannel(channel);
         const originalMessage = createMessage.text;
+
         for (const user of joinedUsers) {
             createMessage.text = originalMessage;
+
             const userFound: string = user.user.blockedUsers.find(element => element === createMessage.user.userId)
             if (userFound) {
                 createMessage.text = "--------[Vous avez bloqué cet utilisateur]--------";

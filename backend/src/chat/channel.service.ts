@@ -45,23 +45,20 @@ export class ChannelService {
 		return this.channelRepository.save(channel);
 	}
 
-	async deleteChannel(channel: ChannelI): Promise<boolean> {
+	async deleteChannel(channel: ChannelI) {
 		const channelFound: Channel = await this.channelRepository.findOne(channel.channelId);
 		if (channelFound) {
 			try {
 				await this.channelRepository.delete(channelFound.channelId);
 			} catch (error) {
 				console.log(error);
-				return false
+				throw new InternalServerErrorException('delete channel');
 			}
-			return true;
 		}
-		return false;
 	}
 
 	async userLeaveChannel(channel: ChannelI, user: User) {
-		const index = channel.users.indexOf(user);
-		channel.users.splice(index, 1);
+		channel.users = channel.users.filter(el => { el.userId !== user.userId });
 		try {
 			await this.channelRepository.save(channel);
 		} catch (error) {
