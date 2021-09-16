@@ -26,7 +26,7 @@ export class Channel {
 	@Column("text", {default: ""})
 	password: string;
 
-	@ManyToMany(() => User)
+	@ManyToMany(() => User, {onDelete:'CASCADE'})
 	@JoinTable()
 	users: User[];
 

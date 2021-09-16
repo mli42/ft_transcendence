@@ -10,7 +10,7 @@ export class ConnectedUser {
 	@Column()
 	socketId: string;
 
-	@ManyToOne(() => User, user => user.connections)
+	@ManyToOne(() => User, user => user.connections, {onDelete:'CASCADE'})
 	@JoinColumn()
 	user:User;
 }
