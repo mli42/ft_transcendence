@@ -85,6 +85,10 @@ ul {
     height: 1099px;
 }
 
+.listChannel li{
+    cursor: pointer;
+}
+
 .chatRoomName {
     width: 1058px;
     height: 72px;
@@ -128,7 +132,7 @@ ul {
     justify-content: space-between;
 }
 
-.chanelImg{
+.channelImg{
     max-width: 40px;
     max-height: 40px;
     margin-right: 16px;
@@ -141,6 +145,10 @@ ul {
     font-size: 20px;
     color: $pg-white;
     overflow-wrap: anywhere;
+}
+
+.cursor{
+    cursor: pointer;
 }
 
 .newMsg{

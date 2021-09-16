@@ -2,8 +2,8 @@
   <div class="friendContainer" @click.prevent="getModStatus">
     <p>Members</p> <hr />
     <div class="friendList">
-      <div v-for="(user, index) in users" :key="index">
-        <ProfileFriendCard :userId="user.userId" page="chat" ></ProfileFriendCard>
+      <div :class="{ items : currentChannel.publicChannel === false }" v-for="(user, index) in users" :key="index">
+        <ProfileFriendCard v-if="user.userId != currentUser.userId" :userId="user.userId" page="chat" ></ProfileFriendCard>
       </div>
     </div>
   </div>
@@ -20,7 +20,7 @@ export default Vue.extend({
       users: [] as User[],
     }
   },
-  props: ['channelUsers', 'public', 'getModStatus'],
+  props: ['channelUsers', 'public', 'getModStatus', 'currentChannel', 'currentUser'],
   async fetch() {
     this.users = await this.$axios
     .get(`/api/admin/allUsers`)
