@@ -48,7 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 await this.connectedUserService.create({socketId: client.id, user});
                 this.userStatus();
 
-                this.logger.log(`Client connected: ${client.id}  ${user.username}`);
+                this.logger.log(`Client connected: ${client.id}`);
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -198,26 +198,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage('checkRoleChannelMute')
-    async checkRoleForChannelMute(client: Socket, channel: ChannelI): Promise<boolean> {
+    async checkRoleForChannelMute(client: Socket, channel: ChannelI): Promise<Date> {
         const channelFound = await this.channelService.getChannel(channel.channelId);
         const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.mute > date) {
-            return true
+            return userChannelRolesFound.mute;
         } else { 
-            return false
+            return null;
         }
     }
 
     @SubscribeMessage('checkRoleChannelBan')
-    async checkRoleForChannelBan(client: Socket, channel: ChannelI): Promise<boolean> {
+    async checkRoleForChannelBan(client: Socket, channel: ChannelI): Promise<Date> {
         const channelFound = await this.channelService.getChannel(channel.channelId);
         const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.ban > date) {
-            return true
+            return userChannelRolesFound.ban
         } else { 
-            return false
+            return null;
         }
     }
 
@@ -245,8 +245,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             console.log("FAUX")
             throw new WsException('The user is not authenticated in this private channel');
         }
-        const messages = await this.messageService.findMessagesForChannel(channelFound, client.data.user);
-        await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel});
+        const messages = await this.messageService.findMessagesForChannel(channelFound, client.data.user)
+        await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
         await this.server.to(client.id).emit('messages', messages);
     }
 
