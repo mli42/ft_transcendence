@@ -49,7 +49,7 @@ export default Vue.extend({
   },
   props: {
     user: {
-      type: Object,
+      type: [Object, String],
       required: true,
     },
     showStatus: {
