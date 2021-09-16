@@ -20,7 +20,7 @@ export class ChannelDto {
     users?: User[];
     
     @IsNotEmpty()
-    publicChannel?: boolean;
+    publicChannel: boolean;
     
     @IsOptional()
     @MinLength(5)
