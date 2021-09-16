@@ -1,4 +1,5 @@
 // Inject in Vue, context and store.
+import io from 'socket.io-client';
 
 function shortName(username: string, max_length: number = 10): string {
   if (username.length <= max_length)
@@ -20,6 +21,34 @@ function logout(context: any): Function {
   }
 }
 
+function socketCreate(context: any): Function {
+  return () => {
+    if (context.$user.socket !== null)
+      return;
+    context.$user.socket = io(`ws://${window.location.hostname}:3000/chat`, {
+      forceNew: true,
+      withCredentials: true,
+    });
+    context.$user.socket.on('userConnected', (users: any) => {
+      context.store.commit('updateConnectedUsers', users);
+    });
+    context.$user.socket.on('userInGame', (users: any) => {
+      context.store.commit('updatePlayingUsers', users);
+    });
+  };
+}
+
+function socketDelete(context: any): Function {
+  return () => {
+    if (context.$user.socket === null)
+      return ;
+    context.$user.socket.off('userConnected');
+    context.$user.socket.off('userInGame');
+    context.$user.socket.emit('disconnectUser');
+    setTimeout(() => { context.$user.socket = null; }, 500);
+  };
+}
+
 function sortCmp(userA: any, userB: any): number {
   return userA.username.localeCompare(userB.username);
 }
@@ -37,6 +66,8 @@ export default (context: any, inject: Function) => {
     logout: logout(context),
     avatarBaseURL,
     socket,
+    socketCreate: socketCreate(context),
+    socketDelete: socketDelete(context),
     sortCmp,
   });
 };
