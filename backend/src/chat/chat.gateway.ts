@@ -14,6 +14,7 @@ import { RoleUserI } from './interfaces/role-user.interface';
 import { RoleUserService } from './role-user.service';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+import { ChannelDto } from './dto/channel.dto';
 
 @WebSocketGateway({ namespace: "/chat", cors: { origin: process.env.IP_FRONTEND, credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
@@ -87,9 +88,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
-    async onCreateChannel(client: Socket, channel: ChannelI): Promise<boolean> {
-        const { publicChannel } = channel;
-        const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
+    async onCreateChannel(client: Socket, channel: ChannelDto): Promise<boolean> {
+        const createChannel: ChannelDto = await this.channelService.createChannel(channel, client.data.user);
         if (!createChannel) {
             return false;
         } else {
@@ -203,10 +203,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.mute > date) {
-            const data = { isMute: true, date: userChannelRolesFound.mute}
+            const data = { isMute: true, date: userChannelRolesFound.mute }
             return data;
         } else {
-            const data = { isMute: false, date: userChannelRolesFound.mute}
+            const data = { isMute: false, date: date }
             return data;
         }
     }
@@ -217,10 +217,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.ban > date) {
-            const data = { isBan: true, date: userChannelRolesFound.mute}
+            const data = { isBan: true, date: userChannelRolesFound.ban }
             return data;
         } else {
-            const data = { isBan: false, date: userChannelRolesFound.mute}
+            const data = { isBan: false, date: date }
             return data;
         }
     }
