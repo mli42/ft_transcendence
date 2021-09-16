@@ -198,26 +198,30 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage('checkRoleChannelMute')
-    async checkRoleForChannelMute(client: Socket, channel: ChannelI): Promise<Boolean> {
+    async checkRoleForChannelMute(client: Socket, channel: ChannelI): Promise<any> {
         const channelFound = await this.channelService.getChannel(channel.channelId);
         const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.mute > date) {
-            return true;
-        } else { 
-            return false;
+            const data = { isMute: true, date: userChannelRolesFound.mute}
+            return data;
+        } else {
+            const data = { isMute: false, date: userChannelRolesFound.mute}
+            return data;
         }
     }
 
     @SubscribeMessage('checkRoleChannelBan')
-    async checkRoleForChannelBan(client: Socket, channel: ChannelI): Promise<Boolean> {
+    async checkRoleForChannelBan(client: Socket, channel: ChannelI): Promise<any> {
         const channelFound = await this.channelService.getChannel(channel.channelId);
         const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, client.data.user.userId);
         let date = new Date;
         if (userChannelRolesFound && userChannelRolesFound.ban > date) {
-            return true
-        } else { 
-            return false;
+            const data = { isBan: true, date: userChannelRolesFound.mute}
+            return data;
+        } else {
+            const data = { isBan: false, date: userChannelRolesFound.mute}
+            return data;
         }
     }
 
