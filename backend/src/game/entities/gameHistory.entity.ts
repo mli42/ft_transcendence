@@ -28,6 +28,6 @@ export class GameHistory {
     @Column("text", {default: ""})
     playerLoose: string;
 
-    @ManyToMany(() => User, user => user.game_history)
+    @ManyToMany(() => User, user => user.game_history, {onDelete:'CASCADE'})
 	users: User[];
 }

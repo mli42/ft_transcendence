@@ -10,7 +10,7 @@ export class Message {
 	@Column()
 	text: string;
 
-	@ManyToOne(() => User, user => user.messages)
+	@ManyToOne(() => User, user => user.messages, { onDelete: 'CASCADE' })
 	@JoinColumn()
 	user: User;
 
