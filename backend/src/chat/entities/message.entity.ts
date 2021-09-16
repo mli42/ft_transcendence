@@ -23,4 +23,7 @@ export class Message {
 
 	@UpdateDateColumn()
 	update_at: Date;
+
+	@Column('boolean', {default: false})
+	isChallenge: boolean;
 }
