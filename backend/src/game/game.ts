@@ -61,47 +61,50 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   const modifierUpOppo = () => { if (protecUp(pOppo)) { return; } pOppo.barY -= 3 * pOppo.barSpeed; };
   const modifierDownOppo = () => { if (protecDown(pOppo)) { return; } pOppo.barY += 3 * pOppo.barSpeed; };
 
-  let collCreaChecker = function(): void { // Check if the ball collide to the crea paddle
+  /**
+   * 0.2857142857
+   * 0.3333333333
+   */
+
+  let padCollision = function(player: Player) {
+    // New ball direction
+    ball.delta[0] *= -1;
+    // Ball general modification
+    ball.speed += 1;
+    ball.color = player.color;
+    // Broadcast the new ball
+    client.to(game.id).emit("changeSettingsTC", { ball: ball });
+    client.emit("changeSettingsTC", { ball: ball });
+    // Generate a new powerUps
+    if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 0) {
+      let pow = new PowerUp(game.enabledPowerUps, game.powerUps);
+      game.powerUps.push(pow);
+      client.to(game.id).emit("newPowTC", pow.type, pow.pos);
+      client.emit("newPowTC", pow.type, pow.pos);
+    }
+  }
+
+  let collCreaChecker = function (): void { // Check if the ball collide to the crea paddle
     const halfBar: number = pCrea.barLen / 2;
     const halfBall: number = ball.size / 2;
     if (ball.pos[1] - halfBall >= pCrea.barY - halfBar && ball.pos[1] - halfBall <= pCrea.barY + halfBar ||
-        ball.pos[1] + halfBall >= pCrea.barY - halfBar && ball.pos[1] + halfBall <= pCrea.barY + halfBar) { // Vertical check
+      ball.pos[1] + halfBall >= pCrea.barY - halfBar && ball.pos[1] + halfBall <= pCrea.barY + halfBar) { // Vertical check
       if (ball.pos[0] - halfBall >= pCrea.barX - (BAR_WIDTH / 2) &&
-          ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
-        ball.delta[0] *= -1;
-        ball.speed += 1;
-        ball.color = pCrea.color;
-        client.to(game.id).emit("changeSettingsTC", {ball: ball});
-        client.emit("changeSettingsTC", {ball: ball});
-        if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 0) {
-          let pow = new PowerUp(game.enabledPowerUps, game.powerUps);
-          game.powerUps.push(pow);
-          client.to(game.id).emit("newPowTC", pow.type, pow.pos);
-          client.emit("newPowTC", pow.type, pow.pos);
-        }
+        ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
+        padCollision(pCrea);
         collBarChecker = collOppoChecker;
       }
     }
   };
 
-  let collOppoChecker = function(): void { // Check if the ball collide to the oppo paddle
+  let collOppoChecker = function (): void { // Check if the ball collide to the oppo paddle
     const halfBar: number = pOppo.barLen / 2;
     const halfBall: number = ball.size / 2;
     if (ball.pos[1] - halfBall >= pOppo.barY - halfBar && ball.pos[1] - halfBall <= pOppo.barY + halfBar ||
-        ball.pos[1] + halfBall >= pOppo.barY - halfBar && ball.pos[1] + halfBall <= pOppo.barY + halfBar) { // Vertical check
+      ball.pos[1] + halfBall >= pOppo.barY - halfBar && ball.pos[1] + halfBall <= pOppo.barY + halfBar) { // Vertical check
       if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
-        ball.delta[0] *= -1;
-        ball.speed += 1;
-        ball.color = pOppo.color;
-        client.to(game.id).emit("changeSettingsTC", {ball: ball});
-        client.emit("changeSettingsTC", {ball: ball});
-        if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 8) {
-          let pow = new PowerUp(game.enabledPowerUps, game.powerUps);
-          game.powerUps.push(pow);
-          client.to(game.id).emit("newPowTC", pow.type, pow.pos);
-          client.emit("newPowTC", pow.type, pow.pos);
-        }
+        padCollision(pOppo);
         collBarChecker = collCreaChecker;
       }
     }
@@ -114,7 +117,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     collBarChecker = collCreaChecker;
   }
 
-  let checkPowColl = function(ball: Ball): void {
+  let checkPowColl = function (ball: Ball): void {
     let i: number = 0;
     let distance: number;
 
@@ -133,7 +136,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         client.to(game.id).emit("collPowTC", elem.pos, userAffected);
         client.emit("collPowTC", elem.pos, userAffected);
         game.powerUps.splice(i, 1);
-        return ;
+        return;
       }
       i++;
     }
@@ -170,15 +173,15 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       ball.speed = 3;
       if (ball.delta[0] > 0) { collBarChecker = collOppoChecker; } else { collBarChecker = collCreaChecker; }
       ball.color = "#DCE1E5";
-      client.to(game.id).emit("changeSettingsTC", {ball: ball});
-      client.emit("changeSettingsTC", {ball: ball});
+      client.to(game.id).emit("changeSettingsTC", { ball: ball });
+      client.emit("changeSettingsTC", { ball: ball });
       client.to(game.id).emit("pointTC", game.score); // Update point on front
       client.emit("pointTC", game.score);
       resetPowEffect(game);
     }
     // Broadcast positions
-    client.to(game.id).emit("b", {posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY} );
-    client.emit("b", {posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY} );
+    client.to(game.id).emit("b", { posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY });
+    client.emit("b", { posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY });
   }
   playingGames.splice(playingGames.lastIndexOf(game.id));
   game.state = "ended";
@@ -189,7 +192,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     await sleep(10);
     if (game.modBarCrea === 1) { modifierUpCrea(); } else if (game.modBarCrea === -1) { modifierDownCrea(); }
     if (game.modBarOppo === 1) { modifierUpOppo(); } else if (game.modBarOppo === -1) { modifierDownOppo(); }
-    client.to(game.id).emit("b", {posX: -100, posY: -100, barCreaY: pCrea.barY, barOppoY: pOppo.barY} );
-    client.emit("b", {posX: -100, posY: -100, barCreaY: pCrea.barY, barOppoY: pOppo.barY} );
+    client.to(game.id).emit("b", { posX: -100, posY: -100, barCreaY: pCrea.barY, barOppoY: pOppo.barY });
+    client.emit("b", { posX: -100, posY: -100, barCreaY: pCrea.barY, barOppoY: pOppo.barY });
   }
 }
