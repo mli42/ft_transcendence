@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ bgDarkBlue : channel.channelName === channelName }" @click="joinChannel(index)">
+  <div :class="{ bgDarkBlue : channel.channelId === currentChannel.channelId }" @click="joinChannel(index)">
     <div class="pp flexHVcenter" v-if="channel.directMessage">
       <Avatar :user="whoIsIt()" ></Avatar>
     </div>
@@ -7,7 +7,7 @@
       <p v-if="channel.directMessage"> {{ whoIsIt().username }}</p>
       <p v-else>{{ channel.channelName }}</p>
       <img v-if="!channel.publicChannel && !channel.directMessage" class="lock" src="~/assets/img/padlock.svg">
-    <img  v-if="channel.channelName === channelName && !channel.publicChannel" class="cross" src="~/assets/img/red_cross.svg" @click="leaveChannel(channel, currentUser)">
+    <img  v-if="channel.channelId === currentChannel.channelId && !channel.publicChannel" class="cross" src="~/assets/img/red_cross.svg" @click="leaveChannel(channel, currentUser)">
   </div>
 </template>
 
@@ -34,13 +34,13 @@ export default Vue.extend({
   },
   computed: {
     checkselected(): void{
-      if (this.channel.channelName === this.channelName)
+      if (this.channel.channelId === this.currentChannel.channelId)
         this.selected = true;
       else
         this.selected = false;
     }
   },
-  props: ['channel', 'joinChannel', 'index', 'channelName', 'currentUser', 'leaveChannel'],
+  props: ['channel', 'joinChannel', 'index', 'currentChannel', 'currentUser', 'leaveChannel'],
 });
 </script>
 
