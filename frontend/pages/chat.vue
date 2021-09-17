@@ -369,14 +369,13 @@ export default Vue.extend({
       }
       this.channels = newChannels;
       const newChannelIndex: number = 0;
-      if (onMount === true || (this.channels?.[newChannelIndex]?.owner === this.currentUser.userIdc && this.createdChannel)) {
+      if (onMount === true || (this.channels?.[newChannelIndex]?.owner === this.currentUser.userId && this.createdChannel)) {
         this.joinChannel(newChannelIndex);
         this.createdChannel = false;
         return ;
       }
       if (!this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId))
       {
-        this.$user.socket.emit('leaveChannel');
         this.joinChannel(newChannelIndex);
       }
     },
@@ -417,6 +416,7 @@ export default Vue.extend({
     },
     deleteChannel(channel: Channel): void{
       this.$user.socket.emit("deleteChannel", channel);
+      this.$user.socket.emit('leaveChannel');
       this.$user.socket.emit("displayChannel", (data: any) => {
         this.updateChannels(data, true);
       });
