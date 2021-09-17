@@ -24,7 +24,7 @@ export default Vue.extend({
   fetch() {
     // `${OneUsername} ${OneUserId} ${TwoUsername} ${TwoUserId} ${gameURL}`;
     let reg: RegExp = /(\w+) (.+) (\w+) (.+) (.+)/g;
-    let regParse: string[] = reg.exec(this.content);
+    let regParse: any = reg.exec(this.content);
 
     if (regParse === undefined)
       return ;
