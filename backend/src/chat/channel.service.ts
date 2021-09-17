@@ -50,6 +50,13 @@ export class ChannelService {
 		const channelFound: Channel = await this.channelRepository.findOne(channel.channelId);
 		if (channelFound) {
 			try {
+				channelFound.users = [];
+				try {
+					await this.channelRepository.save(channelFound);
+				} catch (error) {
+					console.log(error);
+					throw new InternalServerErrorException('empty user on channel');
+				}
 				await this.channelRepository.delete(channelFound.channelId);
 			} catch (error) {
 				console.log(error);
