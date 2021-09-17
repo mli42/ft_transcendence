@@ -342,4 +342,14 @@ export class UserController {
 	calculElo(@Param('eloPlayerWin') eloPlayerWin: string, @Param('eloPlayerLoose') eloPlayerLoose: string): number {
 		return this.userService.calculElo(eloPlayerWin, eloPlayerLoose);
 	}
+
+	@ApiOperation({summary: 'Get Rank'})
+	@ApiOkResponse({description: 'returns image of Rank'})
+	@ApiParam({name: 'eloPlayer', required: true, description: 'EloPlayer'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/rank/:eloPlayer')
+	getRank(@Res() res, @Param('eloPlayer') eloPlayer: string) {
+		return this.userService.getRank(res, eloPlayer);
+	}
 }

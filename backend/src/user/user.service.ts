@@ -258,4 +258,29 @@ export class UserService {
 	updateBlockUser(block: boolean, user: User, userToBlock: User): Promise<User> {
 		return this.usersRepository.updateBlockUser(block, user, userToBlock);
 	}
+
+	getRank(res: Response, elo: string) {
+		if (elo === '1000') {
+			return of(res.sendFile(join(process.cwd(), '../upload/RankIcons/' + 'noRank.jpg')));
+		}
+		else if (elo < '1000') {
+			return of(res.sendFile(join(process.cwd(), '../upload/RankIcons/' + 'bronze00.jpg')));
+		}
+		else if (elo > '1010') {
+			return of(res.sendFile(join(process.cwd(), '../upload/RankIcons/' + 'silver00.jpg')));
+		}
+		else if (elo > '1020') {
+			return of(res.sendFile(join(process.cwd(), '../upload/RankIcons/' + 'gold00.jpg')));
+		}
+		else if (elo > '1030') {
+			return of(res.sendFile(join(process.cwd(), '../upload/RankIcons/' + 'emeraude00.jpg')));
+		}
+		else if (elo > '1040') {
+			return of(res.sendFile(join(process.cwd(), '../upload/RankIcons/' + 'diamand00.jpg')));
+		}
+		else if (elo > '1050') {
+			return of(res.sendFile(join(process.cwd(), '../upload/RankIcons/' + 'master.jpg')));
+		}
+		return of(res.sendFile(join(process.cwd(), '../upload/RankIcons/' + 'noRank.jpg')));
+	}
 }
