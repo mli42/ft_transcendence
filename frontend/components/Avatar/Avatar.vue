@@ -1,6 +1,6 @@
 <template>
   <div class="avatarContainer">
-    <img :src="avatarURL"
+    <img :src="avatarURL" :title="imgTitle"
     style="width: 100%; height: 100%; border-radius: 50%;"
     :alt="`${user.username}'s profile picture`" />
     <div v-if="showStatus" :title="title"
@@ -13,12 +13,20 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'Avatar',
+  data() {
+    return {
+      defaultAvatarName: 'deluxe_pong_default_picture.png' as string,
+    };
+  },
   computed: {
     hasAvatar(): boolean {
       return (this.user?.profile_picture);
     },
     avatarURL(): string {
-      return this.hasAvatar ? `${this.$user.avatarBaseURL}/${this.user.profile_picture}` : '';
+      return `${this.$user.avatarBaseURL}/${this.user?.profile_picture || this.defaultAvatarName}`;
+    },
+    imgTitle(): string {
+      return (this.hasAvatar) ? "User's Avatar" : 'Deleted User';
     },
     title(): string {
       return (this.isConnected) ? 'is Online' : 'is Offline';
@@ -41,7 +49,7 @@ export default Vue.extend({
   },
   props: {
     user: {
-      type: Object,
+      type: [Object, String],
       required: true,
     },
     showStatus: {

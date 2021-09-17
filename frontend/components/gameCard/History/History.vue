@@ -7,8 +7,11 @@
       <div class="flexAlignRow">
         <NuxtLink :to="`/profile/${playerOne.username}`" class="avatar"> <Avatar :user="playerOne" :showStatus=false></Avatar> </NuxtLink>
         <div class="userTxt flexHVcenter flexAlignCol">
-          <p>{{playerOne.username}}</p>
-          <p>{{playerOne.elo}} elo</p>
+          <template v-if="playerOne.length != 0">
+            <p>{{playerOne.username}}</p>
+            <p>{{playerOne.elo}} elo</p>
+          </template>
+          <p v-else>Deleted user</p>
         </div>
       </div>
 
@@ -19,8 +22,11 @@
       <!-- PlayerTwo Infos -->
       <div class="flexAlignRow">
         <div class="userTxt flexHVcenter flexAlignCol">
-          <p>{{playerTwo.username}}</p>
-          <p>{{playerTwo.elo}} elo</p>
+          <template v-if="playerTwo.length != 0">
+            <p>{{playerTwo.username}}</p>
+            <p>{{playerTwo.elo}} elo</p>
+          </template>
+          <p v-else>Deleted user</p>
         </div>
         <NuxtLink :to="`/profile/${playerTwo.username}`" class="avatar"> <Avatar :user="playerTwo" :showStatus=false></Avatar> </NuxtLink>
       </div>
