@@ -34,7 +34,8 @@
               </div>
               <div class="msgDiv">
                 <p>{{ msg.user.username }}</p>
-                <div class="msgContent"> {{ msg.text }} </div>
+                <ChatChallengeMsg v-if="msg.isChallenge" class="msgContent" :content="msg.text" />
+                <div v-else class="msgContent"> {{ msg.text }} </div>
               </div>
             </li>
           </ul>
@@ -365,7 +366,7 @@ export default Vue.extend({
         return ;
       }
       this.channels = newChannels;
-      const newChannelIndex = this.channels.length - 1;
+      const newChannelIndex: number = 0;
       if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userIdc) {
         this.joinChannel(newChannelIndex);
       }
@@ -416,16 +417,15 @@ export default Vue.extend({
       this.$axios.get('/api/game/uuid')
       .then((res: any) => {
         const uuid: string = res.data;
-        const gamePath: string = `/game/${uuid}`;
-        const gameURL: string = `${window.location.origin}${gamePath}`;
-        const inviteMsg: string = `${this.currentUser.username} ${inviteUser.username} ${gameURL}`;
+        const gameURL: string = `/game/${uuid}`;
+        const inviteMsg: string = `${this.currentUser.username} ${this.currentUser.userId} ${inviteUser.username} ${inviteUser.userId} ${gameURL}`;
 
         this.$user.socket.emit('newMessage', {
           text: inviteMsg,
           channel: this.currentChannel,
           isChallenge: true,
         });
-        this.$router.push(gamePath);
+        this.$router.push(gameURL);
       })
       .catch(this.$mytoast.defaultCatch);
     },
