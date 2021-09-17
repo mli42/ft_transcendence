@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatModule } from 'src/chat/chat.module';
+import { UserModule } from 'src/user/user.module';
 import { UsersRepository } from 'src/user/user.repository';
 import { GameHistory } from './entities/gameHistory.entity';
 import { GameController } from './game.controller';
@@ -12,7 +13,8 @@ import { GameService } from './game.service';
     TypeOrmModule.forFeature([GameHistory]),
     TypeOrmModule.forFeature([GameRepository]),
     TypeOrmModule.forFeature([UsersRepository]),
-    ChatModule],
+    ChatModule,
+    UserModule],
   providers: [GameService],
   controllers: [GameController],
   exports: [GameService],

@@ -5,6 +5,9 @@ import { Observable, of } from "rxjs";
 import { GameService } from './game.service';
 import { playingGames, gamesMap, playingUsers } from "./game.gateway";
 import { Game } from "./dataStructures";
+import { UserAuth } from 'src/user/guards/userAuth.guard';
+import { AdminGuard } from 'src/user/guards/admin.guard';
+import { GameHistory } from './entities/gameHistory.entity';
 
 @ApiTags('game')
 @Controller('api/game')
@@ -103,5 +106,15 @@ export class GameController {
   @Get('/isUuid/:uuid')
   isUuid(@Param('uuid') uuid: string): boolean {
     return this.gameService.isUuid(uuid);
+  }
+
+
+  @ApiOperation({summary: 'Get All GameHistory'})
+  @ApiOkResponse({description: 'returns all GameHistory'})
+  /*******/
+  @UseGuards(AuthGuard('jwt'), UserAuth, AdminGuard)
+  @Get('/allGame')
+  getAllGame(): Promise<GameHistory[]> {
+    return this.gameService.getAllGame();
   }
 }
