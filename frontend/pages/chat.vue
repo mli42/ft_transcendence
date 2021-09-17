@@ -33,7 +33,9 @@
                 <Avatar :class="{ cursor : msg.user.userId != currentUser.userId }" :user="msg.user" ></Avatar>
               </div>
               <div class="msgDiv">
-                <p>{{ msg.user.username }}</p>
+                <NuxtLink :to="`/profile/${msg.user.username}`">
+                  <p>{{ msg.user.username }}</p>
+                </NuxtLink>
                 <ChatChallengeMsg v-if="msg.isChallenge" class="msgContent" :content="msg.text" />
                 <div v-else class="msgContent"> {{ msg.text }} </div>
               </div>
