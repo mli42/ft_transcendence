@@ -34,6 +34,10 @@ export default Vue.extend({
       return [];
     });
   },
+  // mounted(){
+  //    this.$user.socket.on('update-member', (channel: Channel) => {
+  //     this.channelUsers = channel.users});
+  // },
   watch: {
     channelUsers(): void{
       this.users = [];

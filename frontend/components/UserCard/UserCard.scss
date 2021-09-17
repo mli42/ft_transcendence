@@ -9,7 +9,11 @@ div{
     margin: 16px auto;
 }
 
-.red
+div:hover{
+    background-color: $pg-grey;
+}
+
+.bgDarkBlue
 {
     background-color: $pg-dark-blue;
 }

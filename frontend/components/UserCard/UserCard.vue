@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ red : channel.channelName === channelName }" @click="joinChannel(index)">
+  <div :class="{ bgDarkBlue : channel.channelName === channelName }" @click="joinChannel(index)">
     <div class="pp flexHVcenter" v-if="channel.directMessage">
       <Avatar :user="whoIsIt()" ></Avatar>
     </div>

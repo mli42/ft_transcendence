@@ -1,7 +1,6 @@
 <template>
     <div class="container">
       <h2>{{ toselect }}</h2>
-      <!-- <p>{{ state.date }}<p> -->
       <div class="selectBox">
         <div class="selected" @click="rotate = !rotate; toggleModal()">
           <img :class="{ rotate: rotate }" src="~/assets/img/arrow.svg" >
@@ -47,7 +46,7 @@ export default Vue.extend({
         this.$nuxt.$emit('send-muteTime', this.result);
     },
   },
-  props: ['toselect', 'items', 'action', 'state'],
+  props: ['toselect', 'items', 'action'],
 });
 </script>
 

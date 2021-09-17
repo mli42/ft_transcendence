@@ -105,8 +105,8 @@
         <input type="checkbox" name="addmoderator" v-model="moderation.newMod">
         <label class="addPassword" for="addmoderator">Moderator</label>
       </div>
-      <DropdownChatMod toselect="Ban for (days):" :items="moderation.timer" action="ban" :state="checkIfBan(currentChannel)"></DropdownChatMod>
-      <DropdownChatMod  toselect="Mute for (days):" :items="moderation.timer" action="mute" :state="checkIfMute(currentChannel)"></DropdownChatMod>
+      <DropdownChatMod toselect="Ban for (days):" :items="moderation.timer" action="ban"></DropdownChatMod>
+      <DropdownChatMod  toselect="Mute for (days):" :items="moderation.timer" action="mute"></DropdownChatMod>
       <v-btn class="DoneBtn" @click="modalBool.showMembersMod = false, sendModeration()">
         <p class="v-btn-content">Apply</p>
       </v-btn>
@@ -179,6 +179,7 @@ export default Vue.extend({
       password: '' as string,
       currentMemberMod: {} as User,
       blockedUser: false as boolean,
+      createdChannel: false as boolean,
     }
   },
   computed: {
@@ -292,6 +293,7 @@ export default Vue.extend({
       }
       this.newChannel = new newChannel(); // Run on succes only!
       this.protectByPassword = false;
+      this.createdChannel = true;
       this.hideModal();
     },
     hideModal(): void {
@@ -367,11 +369,24 @@ export default Vue.extend({
       }
       this.channels = newChannels;
       const newChannelIndex: number = 0;
-      if (onMount === true || this.channels?.[newChannelIndex]?.owner === this.currentUser.userIdc) {
+      if (onMount === true || (this.channels?.[newChannelIndex]?.owner === this.currentUser.userIdc && this.createdChannel)) {
+        this.joinChannel(newChannelIndex);
+        this.createdChannel = false;
+        return ;
+      }
+      if (!this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId))
+      {
+        this.$user.socket.emit('leaveChannel');
         this.joinChannel(newChannelIndex);
       }
-      // else if(this.channels.length === 0)
-      //   this.currentChannel = new Channel;
+    },
+    updateMembers(): void{
+      let chan: Channel = this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId);
+      if (chan)
+      {
+        this.currentChannel.users = chan.users;
+        // this.$nuxt.$emit('update-member', this.currentChannel);
+      }
     },
     blockUser(user: User): void {
       let arg = {
@@ -402,6 +417,9 @@ export default Vue.extend({
     },
     deleteChannel(channel: Channel): void{
       this.$user.socket.emit("deleteChannel", channel);
+      this.$user.socket.emit("displayChannel", (data: any) => {
+        this.updateChannels(data, true);
+      });
     },
     leaveChannel(channel: Channel, user: User): void{
       let arg: any = {
@@ -439,6 +457,7 @@ export default Vue.extend({
     });
     this.$user.socket.on("channel", (data: any) => {
       this.updateChannels(data);
+      this.updateMembers();
     });
     this.$user.socket.on('banUserChannel', (data: any) => {
        this.$mytoast.err(`You've been banned from "${data.channelName}"`);
