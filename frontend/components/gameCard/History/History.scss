@@ -8,3 +8,9 @@
 .losingGame {
   border: 2px solid $pg-red;
 }
+
+.timer {
+  height: 100%;
+  justify-content: space-around;
+  align-items: flex-end;
+}

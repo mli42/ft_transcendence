@@ -34,6 +34,10 @@
 
     <!-- Timer -->
     <div class="timer flexAlignCol">
+      <div class="flexAlignRow" :title="agoTitle">
+        <p>{{agoStr}}</p>
+        <Iconify iconName="ant-design:clock-circle-outlined" />
+      </div>
       <div class="flexAlignRow" title="Game Duration">
         <p>{{durationStr}}</p>
         <Iconify iconName="jam:chronometer" />
@@ -54,6 +58,7 @@ export default Vue.extend({
       playerTwo: {} as any,
       playerWin: {} as any,
       playerLose: {} as any,
+      playedDate: new Date(this.game.date) as any,
     };
   },
   async fetch() {
@@ -89,6 +94,14 @@ export default Vue.extend({
       const minutes: string = `${Math.floor(timeToConvert / 60000)}`.padStart(2, '0');
       const seconds: string = ((timeToConvert % 60000) / 1000).toFixed(0).padStart(2, '0');
       return `${minutes}:${seconds}`;
+    },
+    agoStr(): string {
+      return this.$timeAgo.format(this.playedDate);
+    },
+    agoTitle(): string {
+      const options = { year: '2-digit', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hourCycle: 'h24' };
+      return `${this.playedDate.toLocaleDateString('en-UK', options)}`;
     },
   },
   props: ['game', 'user'],
