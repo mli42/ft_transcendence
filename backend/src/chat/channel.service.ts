@@ -10,7 +10,6 @@ import { UsersRepository } from '../user/user.repository';
 import { Channel } from './entities/channel.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { ChannelDto } from './dto/channel.dto'
 
 @Injectable()
 export class ChannelService {
@@ -21,7 +20,7 @@ export class ChannelService {
 		private readonly usersRepository: UsersRepository
 	) {}
 
-	async createChannel(channel: ChannelDto, creator: User): Promise<ChannelDto> {
+	async createChannel(channel: ChannelI, creator: User): Promise<ChannelI> {
 		let { channelName, publicChannel, password } = channel;
 		const name = await this.channelRepository.findOne({channelName: channelName});
 		if (name)
@@ -75,6 +74,7 @@ export class ChannelService {
 				if (userFound) {
 					channel.owner = userFound.userId;
 				} else {
+					console.log(channel);
 					await this.deleteChannel(channel);
 					return;
 				}
@@ -113,6 +113,7 @@ export class ChannelService {
 			else if (d1 > d2) return -1;
 			else return 0;
 		  });
+		  console.log("OK---------------")
 		return channels;
 	}
 

@@ -14,7 +14,6 @@ import { RoleUserI } from './interfaces/role-user.interface';
 import { RoleUserService } from './role-user.service';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
-import { ChannelDto } from './dto/channel.dto';
 
 @WebSocketGateway({ namespace: "/chat", cors: { origin: process.env.IP_FRONTEND, credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
@@ -88,8 +87,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* CREATE CHANNEL **************** */
     @SubscribeMessage('createChannel')
-    async onCreateChannel(client: Socket, channel: ChannelDto): Promise<boolean> {
-        const createChannel: ChannelDto = await this.channelService.createChannel(channel, client.data.user);
+    async onCreateChannel(client: Socket, channel: ChannelI): Promise<boolean> {
+        const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
         if (!createChannel) {
             return false;
         } else {
@@ -245,6 +244,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async handleJoinChannel(client: Socket, channel: ChannelI) { // voir pour recup exception
         
         const channelFound = await this.channelService.getChannel(channel.channelId);
+        // console.log(channelFound)
+        // console.log(channelFound.publicChannel)
         if (channelFound.publicChannel === false && await this.channelService.isAuthPrivateChannel(channelFound, client.data.user) == false){
             console.log("FAUX")
             throw new WsException('The user is not authenticated in this private channel');
