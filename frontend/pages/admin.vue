@@ -6,8 +6,10 @@
     <!-- Stats -->
     <h2>Some stats</h2>
     <div class="stats flexAlignRow flexHVcenter">
-      <div class="oneStat flexHVcenter"> <p># of Admins: {{adminList.length}}</p> </div>
-      <div class="oneStat flexHVcenter"> <p># of Users: {{allUsers.length}}</p> </div>
+      <div class="oneStat flexHVcenter"> <p>Admins: {{adminList.length}}</p> </div>
+      <div class="oneStat flexHVcenter"> <p>Users: {{allUsers.length}}</p> </div>
+      <div class="oneStat flexHVcenter"> <p>Connected Users: {{this.$store.state.connectedUsers.length}}</p> </div>
+      <div class="oneStat flexHVcenter"> <p>Playing Users: {{this.$store.state.playingUsers.length}}</p> </div>
     </div>
 
     <template v-if="$fetchState.pending == false">
