@@ -33,6 +33,8 @@ export class ChannelService {
 		if (publicChannel === false) {
 			channel.users.push(creator);
 			if (password) {
+				if (/^([a-zA-Z0-9]+)$/.test(password) === false)
+					return null;
 				const salt = await bcrypt.genSalt();
 				channel.password = await bcrypt.hash(password, salt);
 				channel.authPrivateChannelUsers.push(creator.userId)
