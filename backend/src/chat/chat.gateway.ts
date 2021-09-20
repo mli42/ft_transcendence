@@ -225,6 +225,30 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
     }
 
+
+    @SubscribeMessage('checkRoleMembersChannel')
+    async checkRoleMembersChannel(client: Socket, data: any): Promise<any> {
+        const { user, channel } = data;
+        const channelFound = await this.channelService.getChannel(channel.channelId);
+        const userChannelRolesFound = await this.roleUserService.findUserByChannel(channelFound, user.userId);
+        let date = new Date;
+        let isMute: Boolean  = false;
+        let dateMute: Date = null;
+        let isBan: Boolean = false;
+        let dateBan: Date = null;
+        if (userChannelRolesFound) {
+            if (userChannelRolesFound.mute > date) {
+                isMute = true; 
+                dateMute = userChannelRolesFound.mute;
+            }
+            if (userChannelRolesFound.ban > date) {
+                isBan = true; 
+                dateBan = userChannelRolesFound.ban;
+            }
+        }
+        return {isMute, dateMute, isBan, dateBan}
+    }
+    
     /********************* Auth Private Channel *********************/
     @SubscribeMessage('passwordChannel')
     async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
