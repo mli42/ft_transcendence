@@ -108,7 +108,6 @@
               </div>
             </div> <!-- EndGameInfos End -->
           </div> <!-- Final Card End -->
-
         </div>
       </div>
     </div>
