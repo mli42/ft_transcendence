@@ -180,7 +180,7 @@ export class ChannelService {
 		}
 	}
 
-	async updateChannelInfo(channelFound: ChannelI, info: any) {
+	async updateChannelInfo(channelFound: ChannelI, info: any): Promise<Boolean> {
 		const { applyPassword, password, deletePassword, members } = info;
 		if (members) {
 			const newUsers = [];
@@ -200,9 +200,13 @@ export class ChannelService {
 			}
         }
 		if (applyPassword && password) {
+			if (/^([a-zA-Z0-9]+)$/.test(password) === false)
+				return false;
 			const salt = await bcrypt.genSalt();
 			channelFound.password = await bcrypt.hash(password, salt);
 		}
 		await this.channelRepository.save(channelFound);
+		return true;
 	}
+	
 }

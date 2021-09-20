@@ -121,12 +121,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* UPDATE CHANNEL **************** */
     @SubscribeMessage('updateChannel')
-    async updateChannel(client: Socket, info: any) {
+    async updateChannel(client: Socket, info: any): Promise<boolean> {
         const { channel } = info;
         const channelFound = await this.channelService.getChannel(channel.channelId);
 
-        await this.channelService.updateChannelInfo(channelFound, info.data)
-        await this.emitChannelForConnectedUsers();
+        const ret: Boolean = await this.channelService.updateChannelInfo(channelFound, info.data)
+        if (ret === true){
+            await this.emitChannelForConnectedUsers();
+            return true;
+        }
+        return false;
     }
 
 
@@ -248,7 +252,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
         return {isMute, dateMute, isBan, dateBan}
     }
-    
+
     /********************* Auth Private Channel *********************/
     @SubscribeMessage('passwordChannel')
     async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
