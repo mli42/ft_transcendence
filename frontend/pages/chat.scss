@@ -2,37 +2,47 @@
 
 .content{
     background-color: $pg-grey;
-    // overflow-y: scroll;
+    align-items: unset;
+}
+
+.chatChamp, .connected {
+    height: calc(100% - 64px);
 }
 
 .chatChamp{
     display: flex;
     flex-direction: column;
-    width: 1087px;
-    height: 100vh;
+    justify-content: space-between;
+    max-width: 1087px;
+    width: 60%;
+    min-width: 600px;
     background-color: $pg-dark-blue;
-    position: relative;
     padding: 16px;
     align-items: center;
+    border: 1px solid red;
 }
 
 .connected{
-    width: 320px;
-    height: 100vh;
+    max-width: 320px;
+    min-width: 200px;
+    width: 25%;
     background-color: $pg-blue;
+    border: 1px solid yellow;
+    justify-content: space-between;
 }
 
 .chatfield{
     display: flex;
+    justify-content: space-between;
     width: 95%;
     height: 40px;
-    margin: 30px 0;
+    border: 1px solid green;
 }
 
 .chatfield input {
     background-color: $pg-blue;
-    width: 556px;
-    height: 40px;
+    width: 90%;
+    height: 100%;
     border-radius: 10px;
     margin-right: 16px;
     color: $pg-white;
@@ -44,9 +54,6 @@
     height: 40px;
     border-radius: 50%;
     background-color: $pg-white;
-}
-
-.sendBtn{
     cursor: pointer;
 }
 
@@ -62,18 +69,24 @@
     width: 100%;
     height: 100%;
     background-color: $pg-dark-blue;
-    overflow-y: auto;
+    border: 1px solid purple;
 }
 
 .chatMain{
     display: flex;
     flex-direction: column;
-    width: 612px;
-    height: 90%;
-    margin-bottom: 16px;
-    padding: 10px;
+    width: 70%;
+    height: 100%;
     align-items: center;
     justify-content: space-between;
+    border: 1px solid pink;
+}
+
+#chatContent {
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  border: 1px solid cyan;
 }
 
 ul {
@@ -82,7 +95,7 @@ ul {
 
 .listChannel{
     overflow-y: auto;
-    height: 1099px;
+    height: 100%;
 }
 
 .listChannel li{
@@ -90,30 +103,23 @@ ul {
 }
 
 .chatRoomName {
-    width: 1058px;
+    width: 100%;
     height: 72px;
-    left: 16px;
-    top: 16px;
     background-color: $pg-blue;
     border-radius: 10px;
     margin-bottom: 16px;
     padding: 16px;
+    justify-content: space-between;
 }
 
 .search, .creatChatRoom{
-    width: 320px;
+    width: 100%;
     height: 88px;
     background-color: $pg-dark-blue;
 }
 
-.creatChatRoom
-{
-    position: absolute;
-    bottom: 6%;
-}
-
 #createChatRoomBtn{
-    width: 280px;
+    width: 85%;
     height: 32px;
     text-transform: none;
     font-size: 18px;
@@ -127,11 +133,6 @@ ul {
     color:$pg-dark-blue !important;
 }
 
-.chatRoomName{
-    display: flex;
-    justify-content: space-between;
-}
-
 .channelImg{
     max-width: 40px;
     max-height: 40px;
@@ -141,7 +142,6 @@ ul {
 
 .chatRoomName p{
     margin: auto 0px;
-    width: 900px;
     font-size: 20px;
     color: $pg-white;
     overflow-wrap: anywhere;
@@ -224,13 +224,6 @@ h1{
 
 #settingModal{
     margin: 40px 0;
-}
-
-.control {
-    width: 200px;
-    position: absolute;
-    top: 10%;
-    right: 2%;
 }
 
 .avatar {

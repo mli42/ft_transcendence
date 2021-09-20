@@ -1,6 +1,6 @@
 <template>
   <div class="content flexHVcenter" @click.self="hideSearch()">
-    <div class="connected">
+    <div class="connected flexAlignCol">
       <SearchResult :friends="friends" :joinUserChannel="joinUserChannel"></SearchResult>
       <ul class="listChannel" @click="hideSearch()">
         <li v-for="(item, index) in channels" :key="index">
@@ -13,8 +13,8 @@
         </v-btn>
       </div>
     </div>
-    <div class="chatChamp boxHVcenter" v-if="userBanned === false" @click="hideSearch()">
-      <div class="chatRoomName" v-if="currentChannel != undefined">
+    <div class="chatChamp" v-if="userBanned === false" @click="hideSearch()">
+      <div class="chatRoomName flexAlignRow" v-if="currentChannel != undefined">
         <div class="flexAlignRow">
           <Avatar v-if="currentChannel.directMessage" class="channelImg" :user="whoIsIt(currentChannel)" ></Avatar>
           <img v-else class="channelImg" src="~/assets/img/chatbubble.svg">
@@ -25,6 +25,7 @@
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
+      <div id="chatContent" class="flexAlignRow">
       <div class="chatMain">
         <div class="received" ref="msgContainer">
           <ul>
@@ -49,9 +50,10 @@
             </div>
         </div>
       </div>
-      <div class="control" v-if="currentChannel != undefined && currentChannel.directMessage === false">
+      <div v-if="currentChannel != undefined && currentChannel.directMessage === false">
         <ChatMember :channelUsers="currentChannel.users" :public="currentChannel.publicChannel" :getModStatus="getModStatus" :currentChannel="currentChannel" :currentUser="currentUser"></ChatMember>
       </div>
+      </div> <!-- #ChatContent End -->
     </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
       <h1>Create Channel</h1>
@@ -419,7 +421,7 @@ export default Vue.extend({
     deleteChannel(channel: Channel): void{
       this.$user.socket.emit('leaveChannel');
       this.$user.socket.emit("deleteChannel", channel);
-      
+
       this.$user.socket.emit("displayChannel", (data: any) => {
         this.updateChannels(data, true);
       });
