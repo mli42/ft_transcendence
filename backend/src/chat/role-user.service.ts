@@ -34,20 +34,22 @@ export class RoleUserService {
     }
 
     async updateRole(role: RoleUserI, data: any): Promise<RoleUserI> {
-        let { ban, mute } = data;
+        let { ban, mute, unBan, unMute } = data;
         
         if (ban > 0) {
             let dateBan = new Date;
             dateBan.setDate(dateBan.getDate() + ban);
             role.ban = dateBan;
-        } else {
+        }
+        if(unBan) {
             role.ban = null;
         }
         if (mute > 0) {
             let dateMute = new Date;
             dateMute.setDate(dateMute.getDate() + mute)
             role.mute = dateMute;
-        } else {
+        }
+        if (unMute) {
             role.mute = null;
         }
        const newRole: RoleUserI =  await this.roleUserRepository.save(role);
