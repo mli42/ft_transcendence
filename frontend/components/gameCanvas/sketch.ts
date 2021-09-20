@@ -162,7 +162,8 @@ async function sketch(s: any): Promise<any> {
         ball = game.ball;
         ballSizeFacted = transX(ball.size);
       }
-    });
+      barWidthFacted = transX(BAR_WIDTH);
+});
     socket.on("newPowTC", (powType: string, powPos: Array<number>) => {
       console.log(`LOG: newPowTC (powtype = ${powType}, powPos = ${powPos})`);
       let pow: PowerUp = new PowerUp(game.enabledPowerUps);

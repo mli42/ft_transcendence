@@ -67,7 +67,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     * 0.3333333333
    */
 
-  let padCollision = function(player: Player, isCrea: boolean) {
+  let padCollision = function (player: Player, isCrea: boolean) {
     // New ball direction
     padCollCompute(ball, player.barY, player.barLen);
     ball.delta[0] = Math.abs(ball.delta[0]);
@@ -79,7 +79,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     client.to(game.id).emit("changeSettingsTC", { ball: ball });
     client.emit("changeSettingsTC", { ball: ball });
     // Generate a new powerUps
-    if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 0) {
+    if (game.enabledPowerUps.length > 0 && (Math.random() * 10) >= 5) {
       let pow = new PowerUp(game.enabledPowerUps, game.powerUps);
       game.powerUps.push(pow);
       client.to(game.id).emit("newPowTC", pow.type, pow.pos);
@@ -106,7 +106,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     if (ball.pos[1] - halfBall >= pOppo.barY - halfBar && ball.pos[1] - halfBall <= pOppo.barY + halfBar ||
       ball.pos[1] + halfBall >= pOppo.barY - halfBar && ball.pos[1] + halfBall <= pOppo.barY + halfBar) { // Vertical check
       if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2) &&
-          ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
+        ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
         padCollision(pOppo, false);
         collBarChecker = collCreaChecker;
       }
@@ -145,7 +145,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     }
   }
 
-  while (game.score[0] < 70 && game.score[1] < 70) {
+  while (game.score[0] < 7 && game.score[1] < 7) {
     // Temp loop
     await sleep(10);
     // Move bars if needed

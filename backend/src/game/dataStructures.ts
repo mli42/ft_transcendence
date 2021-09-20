@@ -102,8 +102,8 @@ class PowerUp {
     this.nameMatch = {} as IstringsAssociation;
     this.nameMatch["ball size up"] = "ballSizeUp";
     this.nameMatch["ball size down"] = "ballSizeDown";
-    this.nameMatch["bar speed up"] = "barLenUp";
-    this.nameMatch["length up"] = "barSpeedUp";
+    this.nameMatch["bar speed up"] = "barSpeedUp";
+    this.nameMatch["length up"] = "barLenUp";
     // INIT VARIABLES
     this.genType(enabledPowerUps);
     this.modifier = this.powMatch[this.type];
