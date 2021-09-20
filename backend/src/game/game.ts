@@ -87,8 +87,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     const halfBall: number = ball.size / 2;
     if (ball.pos[1] - halfBall >= pCrea.barY - halfBar && ball.pos[1] - halfBall <= pCrea.barY + halfBar ||
       ball.pos[1] + halfBall >= pCrea.barY - halfBar && ball.pos[1] + halfBall <= pCrea.barY + halfBar) { // Vertical check
-      if (ball.pos[0] - halfBall >= pCrea.barX - (BAR_WIDTH / 2) &&
-        ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
+      if (ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
         padCollision(pCrea, true);
         collBarChecker = collOppoChecker;
       }
@@ -100,8 +99,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     const halfBall: number = ball.size / 2;
     if (ball.pos[1] - halfBall >= pOppo.barY - halfBar && ball.pos[1] - halfBall <= pOppo.barY + halfBar ||
       ball.pos[1] + halfBall >= pOppo.barY - halfBar && ball.pos[1] + halfBall <= pOppo.barY + halfBar) { // Vertical check
-      if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2) &&
-        ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
+      if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2)) {
         padCollision(pOppo, false);
         collBarChecker = collCreaChecker;
       }
