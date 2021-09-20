@@ -194,6 +194,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             if (role.mute > date)
                 this.server.to(userConnectedFound.socketId).emit('muteUserChannel', channelFound);
         }
+        await this.emitChannelForConnectedUsers();
     }
 
     @SubscribeMessage('checkRoleChannelMute')

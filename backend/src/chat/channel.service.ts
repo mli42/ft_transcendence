@@ -74,7 +74,6 @@ export class ChannelService {
 				if (userFound) {
 					channel.owner = userFound.userId;
 				} else {
-					console.log(channel);
 					await this.deleteChannel(channel);
 					return;
 				}
@@ -101,6 +100,7 @@ export class ChannelService {
 		.where('users.userId = :userId', {userId})
 		.andWhere('channel.publicChannel = false')
 		.leftJoinAndSelect('channel.users', 'all_users')
+		.leftJoinAndSelect('channel.roleUser', 'all_roles')
 		.orderBy('channel.date', 'DESC');
 		const privateChannels: ChannelI[] = await query.getMany();
 
@@ -113,7 +113,6 @@ export class ChannelService {
 			else if (d1 > d2) return -1;
 			else return 0;
 		  });
-		  console.log("OK---------------")
 		return channels;
 	}
 
