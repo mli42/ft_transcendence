@@ -16,8 +16,8 @@ export class GameHistory {
     @Column("text", {default: ""})
     playerTwo: string;
 
-    @Column('date', { default: () => '((CURRENT_DATE))' })
-    date: Date;
+    @Column('text', {default: ""})
+    date: string;
 
     @Column('int',  {default: 0})
     gameDuration: number;
@@ -28,6 +28,6 @@ export class GameHistory {
     @Column("text", {default: ""})
     playerLoose: string;
 
-    @ManyToMany(() => User, user => user.game_history)
+    @ManyToMany(() => User, user => user.game_history, {onDelete:'CASCADE'})
 	users: User[];
 }

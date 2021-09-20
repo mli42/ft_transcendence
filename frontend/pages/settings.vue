@@ -116,6 +116,9 @@ export default Vue.extend({
       .then((response: any): void => {
         this.$mytoast.succ(`${Object.keys(this.toSend)}: updated`);
         this.$store.commit('updateUserPartial', this.toSend);
+        // Update Chat's WS
+        this.$user.socketDelete();
+        setTimeout(() => { this.$user.socketCreate(); }, 600);
       })
       .catch(this.catchErr);
     },

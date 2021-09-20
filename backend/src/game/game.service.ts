@@ -120,4 +120,9 @@ export class GameService {
         const user: User = await this.userRepository.findOne({userId: id});
 		return user;
     }
+
+    async getAllGame(): Promise<GameHistory[]> {
+        const query = await this.gameRepository.createQueryBuilder().getMany();
+        return query;
+    }
 }

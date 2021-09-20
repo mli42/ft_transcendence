@@ -36,6 +36,7 @@ export default {
   plugins: [
     '~/plugins/user.ts',
     '~/plugins/mytoast.ts',
+    '~/plugins/timeAgo.ts',
   ],
 
   // pageTransition: 'fade',

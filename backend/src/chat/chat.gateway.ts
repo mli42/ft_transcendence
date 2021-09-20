@@ -48,7 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 await this.connectedUserService.create({socketId: client.id, user});
                 this.userStatus();
 
-                this.logger.log(`Client connected: ${client.id}`);
+                this.logger.log(`Client connected: ${client.id}  ${user.username}`);
                 return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
@@ -245,8 +245,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             console.log("FAUX")
             throw new WsException('The user is not authenticated in this private channel');
         }
-        const messages = await this.messageService.findMessagesForChannel(channelFound, client.data.user)
-        await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
+        const messages = await this.messageService.findMessagesForChannel(channelFound, client.data.user);
+        await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel});
         await this.server.to(client.id).emit('messages', messages);
     }
 
