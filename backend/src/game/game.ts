@@ -62,11 +62,6 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   const modifierUpOppo = () => { if (protecUp(pOppo)) { return; } pOppo.barY -= 3 * pOppo.barSpeed; };
   const modifierDownOppo = () => { if (protecDown(pOppo)) { return; } pOppo.barY += 3 * pOppo.barSpeed; };
 
-  /**
-   * 0.2857142857
-    * 0.3333333333
-   */
-
   let padCollision = function (player: Player, isCrea: boolean) {
     // New ball direction
     padCollCompute(ball, player.barY, player.barLen);
