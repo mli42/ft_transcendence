@@ -3,6 +3,7 @@ import { Game, Player, Ball, PowerUp } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { GameService } from "./game.service";
 import { User } from "src/user/entities/user.entity";
+import { padCollCompute } from "./collisions";
 
 export { gameInstance }
 
@@ -63,14 +64,16 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
 
   /**
    * 0.2857142857
-   * 0.3333333333
+    * 0.3333333333
    */
 
-  let padCollision = function(player: Player) {
+  let padCollision = function(player: Player, isCrea: boolean) {
     // New ball direction
-    ball.delta[0] *= -1;
+    padCollCompute(ball, player.barY, player.barLen);
+    ball.delta[0] = Math.abs(ball.delta[0]);
+    if (isCrea === false)
+      ball.delta[0] *= -1;
     // Ball general modification
-    ball.speed += 1;
     ball.color = player.color;
     // Broadcast the new ball
     client.to(game.id).emit("changeSettingsTC", { ball: ball });
@@ -91,7 +94,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       ball.pos[1] + halfBall >= pCrea.barY - halfBar && ball.pos[1] + halfBall <= pCrea.barY + halfBar) { // Vertical check
       if (ball.pos[0] - halfBall >= pCrea.barX - (BAR_WIDTH / 2) &&
         ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
-        padCollision(pCrea);
+        padCollision(pCrea, true);
         collBarChecker = collOppoChecker;
       }
     }
@@ -104,7 +107,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       ball.pos[1] + halfBall >= pOppo.barY - halfBar && ball.pos[1] + halfBall <= pOppo.barY + halfBar) { // Vertical check
       if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2) &&
           ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
-        padCollision(pOppo);
+        padCollision(pOppo, false);
         collBarChecker = collCreaChecker;
       }
     }
@@ -142,7 +145,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     }
   }
 
-  while (game.score[0] < 7 && game.score[1] < 7) {
+  while (game.score[0] < 70 && game.score[1] < 70) {
     // Temp loop
     await sleep(10);
     // Move bars if needed
