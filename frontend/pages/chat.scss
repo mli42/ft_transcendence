@@ -70,6 +70,10 @@
     overflow-y: auto;
 }
 
+.received::-webkit-scrollbar-thumb {
+  background: $pg-blue;
+}
+
 .chatMain{
     display: flex;
     flex-direction: column;
