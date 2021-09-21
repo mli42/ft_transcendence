@@ -32,7 +32,7 @@ export default Vue.extend({
   name: 'searchCard',
   data() {
     return {
-      ratio: (this.user.ratio == -1 ? 'N/A' : this.user.ratio) as any,
+      ratio: (this.user.ratio == -1 ? 'N/A' : `${this.user.ratio}%`) as string,
       userProfile: `/profile/${this.user.username}` as string,
     };
   },

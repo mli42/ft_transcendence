@@ -3,9 +3,9 @@
     <div class="content">
       <h1 class="contentTitle">Settings</h1>
       <form>
-        <SettingInput name="Change your username :" v-model.lazy="nickName" :placeHolder="this.currentUser.username"></SettingInput>
-        <SettingInput name="Change your password :" v-model.lazy="passWord" :isPassword="true" placeHolder="Your super secret password"></SettingInput>
-        <SettingInput name="Change your mail :" v-model.lazy="email" placeHolder="Enter your new email"></SettingInput>
+        <SettingInput @keyup.enter.native="changeSettings" name="Change your username :" v-model.lazy="nickName" :placeHolder="this.currentUser.username"></SettingInput>
+        <SettingInput @keyup.enter.native="changeSettings" name="Change your password :" v-model.lazy="passWord" :isPassword="true" placeHolder="Your super secret password"></SettingInput>
+        <SettingInput @keyup.enter.native="changeSettings" name="Change your mail :" v-model.lazy="email" :placeHolder="this.currentUser.email"></SettingInput>
         <v-btn class="SaveBtn" @click.prevent="changeSettings">
           <p class="v-btn-content">Save changes</p>
         </v-btn>
@@ -116,6 +116,9 @@ export default Vue.extend({
       .then((response: any): void => {
         this.$mytoast.succ(`${Object.keys(this.toSend)}: updated`);
         this.$store.commit('updateUserPartial', this.toSend);
+        // Update Chat's WS
+        this.$user.socketDelete();
+        setTimeout(() => { this.$user.socketCreate(); }, 600);
       })
       .catch(this.catchErr);
     },
@@ -145,6 +148,9 @@ export default Vue.extend({
         this.pictureFile = null;
         this.$store.dispatch('updateAvatar', res.data);
         this.$mytoast.succ('Avatar successfully updated');
+        // Update Chat's WS
+        this.$user.socketDelete();
+        setTimeout(() => { this.$user.socketCreate(); }, 600);
       })
       .catch(this.catchErr)
       .finally(() => {

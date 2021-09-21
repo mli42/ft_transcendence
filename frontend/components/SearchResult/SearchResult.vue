@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <div class="search flexHVcenter">
-          <input  type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false">
+          <input  type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false" autocomplete="off">
           <div class="loop flexHVcenter" @click="showResult = true, fetchData()"><img src="~/assets/img/loop.png"></div>
         </div>
         <ul v-if="showResult" class="result" @click.self="showResult = false">
@@ -11,6 +11,7 @@
               </div>
                 <p>{{user.username}}</p>
             </li>
+            <p v-if="result.length === 0">No result found</p>
         </ul>
     </div>
 </template>
@@ -27,17 +28,31 @@ export default Vue.extend({
         searchName: '' as string,
         todisplay: [] as string[],
         result: [] as User[],
+        allUser: [] as User[]
     };
   },
-  props: ['friends', 'joinUserChannel'],
+  props: ['currentUser', 'joinUserChannel'],
   methods: {
     fetchData(): void{
         this.result = []
-        this.friends.filter((el: User) => {
+        this.allUser.filter((el: User) => {
         if (el.username.startsWith(this.searchName) == true)
-          this.result.push(el)});
+        {
+          if (el.userId != this.currentUser.userId)
+            this.result.push(el);
+        }
+        });
     },
   },
+  mounted(){
+     this.$nuxt.$on('hide-search', (data: any) => {
+       this.showResult = false;
+     });
+      this.$axios
+      .get(`/api/admin/allUsers`)
+      .then((resp: any) => {this.allUser = resp.data;})
+      .catch(this.$mytoast.defaultCatch);
+  } 
 });
 </script>
 

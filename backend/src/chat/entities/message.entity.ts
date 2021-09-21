@@ -10,11 +10,11 @@ export class Message {
 	@Column()
 	text: string;
 
-	@ManyToOne(() => User, user => user.messages)
+	@ManyToOne(() => User, user => user.messages, { onDelete: 'CASCADE' })
 	@JoinColumn()
 	user: User;
 
-	@ManyToOne(() => Channel, channel => channel.messages)
+	@ManyToOne(() => Channel, channel => channel.messages, {onDelete:'CASCADE'})
 	@JoinTable()
 	channel: Channel;
 
@@ -23,4 +23,7 @@ export class Message {
 
 	@UpdateDateColumn()
 	update_at: Date;
+
+	@Column('boolean', {default: false})
+	isChallenge: boolean;
 }

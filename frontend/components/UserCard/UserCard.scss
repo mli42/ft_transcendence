@@ -1,29 +1,49 @@
 @import '~/assets/Palette.scss';
 
 div{
-    background-color: $pg-blue;
     display: flex;
-    padding: 16px 8px;
-    width: 300px;
+    flex-direction: row;
+    width: 95%;
     height: 70px;
     border-radius: 10px;
     margin: 16px auto;
 }
 
-.red
+div:hover{
+    background-color: $pg-grey;
+}
+
+.bgDarkBlue
 {
     background-color: $pg-dark-blue;
 }
 
-img{
+.pp{
     width: 40px;
     height: 40px;
+    min-width: 40px;
+    min-height: 40px;
     border-radius: 150px;
     margin: auto 8px;
 }
 
 p{
     margin: auto 5px;
+    width: 100%;
     color: $pg-white;
     font-size: 18px;
+    overflow-wrap: anywhere;
+}
+
+.lock{
+    width: 16px;
+    height: 16px;
+    margin: auto 8px;
+}
+
+.cross{
+    width: 13px;
+    height: 13px;
+    margin: 10px 10px;
+    cursor: pointer;
 }

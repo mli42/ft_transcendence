@@ -9,7 +9,7 @@ import { ConnectedUser } from './entities/connected-user.entity';
 import { ConnectedUserService } from './connected-user.service';
 import { Message } from './entities/message.entity';
 import { JoinedChannel } from './entities/joined-channel.entity';
-import { MessageService } from './massage.service';
+import { MessageService } from './message.service';
 import { JoinedChannelService } from './joined-channel.service';
 import { RoleUser } from './entities/role-user.entity';
 import { RoleUserService } from './role-user.service';

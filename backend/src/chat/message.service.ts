@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { ChannelI } from './interfaces/channel.interface'
 import { MessageI } from "./interfaces/message.interface";
+import { User } from "../user/entities/user.entity";
 
 @Injectable()
 export class MessageService {
@@ -16,7 +17,7 @@ export class MessageService {
         return this.messageRepository.save(this.messageRepository.create(message));
     }
 
-    async findMessagesForChannel(channel: ChannelI): Promise<MessageI[]> {
+    async findMessagesForChannel(channel: ChannelI, user: User): Promise<MessageI[]> {
         const query = this.messageRepository
         .createQueryBuilder('message')
         .leftJoin('message.channel', 'channel')
@@ -24,7 +25,16 @@ export class MessageService {
         .leftJoinAndSelect('message.user', 'user')
         .orderBy('message.date', 'ASC');
         const messagesFound: MessageI[] = await query.getMany();
-		return messagesFound;
+
+        let updateMessageFound: MessageI[] = [];
+        for (const message of messagesFound) {
+            const userFound: string = user.blockedUsers.find(element => element === message.user.userId) 
+            if (userFound) {
+                message.text = "--------[Vous avez bloqué cet utilisateur]--------";
+            }
+            updateMessageFound.push(message);
+        }
+		return updateMessageFound;
     }
 
 }

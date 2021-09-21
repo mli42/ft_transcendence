@@ -8,7 +8,7 @@
         <NuxtLink :to="`/profile/${creaUser.username}`" class="avatar"> <Avatar :user="creaUser" :showStatus=false></Avatar> </NuxtLink>
         <div class="userTxt flexHVcenter flexAlignCol">
           <p>{{creaUser.username}}</p>
-          <p>elo</p>
+          <p>{{creaUser.elo}} elo</p>
         </div>
       </div>
 
@@ -20,7 +20,7 @@
       <div class="flexAlignRow">
       <div class="userTxt flexHVcenter flexAlignCol">
           <p>{{oppoUser.username}}</p>
-          <p>elo</p>
+          <p>{{oppoUser.elo}} elo</p>
         </div>
         <NuxtLink :to="`/profile/${oppoUser.username}`" class="avatar"> <Avatar :user="oppoUser" :showStatus=false></Avatar> </NuxtLink>
       </div>

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { User } from "src/user/entities/user.entity";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity()
 export class GameHistory {
@@ -6,30 +7,27 @@ export class GameHistory {
     @PrimaryGeneratedColumn("uuid")
     gameId: string;
 
-    @Column()
-    score: string;
+    @Column("simple-array")
+    score: string[];
 
-    @Column()
+    @Column("text", {default: ""})
     playerOne: string;
 
-    @Column()
-    playerOneElo: number;
-
-    @Column()
+    @Column("text", {default: ""})
     playerTwo: string;
 
-    @Column()
-    playerTwoElo: number;
+    @Column('text', {default: ""})
+    date: string;
 
-    @Column('date', { default: () => '((CURRENT_DATE))' })
-    date: Date;
+    @Column('int',  {default: 0})
+    gameDuration: number;
 
-    @Column('time', {name: 'elapsed_time'})
-    gameDuration: Date;
-
-    @Column()
+    @Column("text", {default: ""})
     playerWin: string;
 
-    @Column()
+    @Column("text", {default: ""})
     playerLoose: string;
+
+    @ManyToMany(() => User, user => user.game_history, {onDelete:'CASCADE'})
+	users: User[];
 }

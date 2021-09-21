@@ -4,18 +4,18 @@ import { Channel } from './channel.entity';
 
 @Entity()
 export class JoinedChannel {
-	
+
 	@PrimaryGeneratedColumn("uuid")
 	joinId: string;
 
 	@Column()
 	socketId: string;
 
-	@ManyToOne(() => User, user => user.joinedChannels)
+	@ManyToOne(() => User, user => user.joinedChannels, {onDelete:'CASCADE'})
 	@JoinColumn()
 	user: User;
 
-	@ManyToOne(() => Channel, channel => channel.joinedUsers)
+	@ManyToOne(() => Channel, channel => channel.joinedUsers, {onDelete:'CASCADE'})
 	@JoinColumn()
 	channel: Channel;
 }

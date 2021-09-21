@@ -14,6 +14,7 @@ import { join } from 'path';
 import { User42Dto } from './dto/user42.dto';
 import { Response, Request } from 'express';
 import { UserModule } from './user.module';
+import { GameHistory } from 'src/game/entities/gameHistory.entity';
 
 @Injectable()
 export class UserService {
@@ -107,7 +108,7 @@ export class UserService {
 		return {
 			userId: user.userId,
 			username: user.username,
-			status: user.status,
+			elo: user.elo,
 			profile_picture: user.profile_picture,
 		}
 	}
@@ -120,7 +121,7 @@ export class UserService {
 		const { username } = updateUser;
 
 		const updated: boolean = await this.usersRepository.updateUser(updateUser, user);
-		if (updated === true)
+		if (updated === true && username !== undefined)
 		{
 		   	let auth: boolean = true;
 			const payload: JwtPayload = { username, auth };
@@ -240,5 +241,21 @@ export class UserService {
 			console.log(e);
 			throw new InternalServerErrorException();
 		}
+	}
+
+	async getGameHistory(userId: string): Promise<GameHistory[]> {
+		const user = await this.usersRepository.findOne({userId: userId});
+		return user.game_history;
+	}
+
+	calculElo(eloPlayerWin: string, eloPlayerLoose: string): number {
+		let EloRating = require('elo-rating');
+
+		let elo = EloRating.calculate(parseInt(eloPlayerWin), parseInt(eloPlayerLoose));
+		return elo.playerRating - parseInt(eloPlayerWin);
+	}
+
+	updateBlockUser(block: boolean, user: User, userToBlock: User): Promise<User> {
+		return this.usersRepository.updateBlockUser(block, user, userToBlock);
 	}
 }

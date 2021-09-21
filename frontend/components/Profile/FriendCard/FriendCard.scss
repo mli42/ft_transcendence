@@ -8,6 +8,8 @@
 div.pp {
   width: 35px;
   height: 35px;
+  min-width: 35px;
+  min-height: 35px;
   border-radius: 50%;
   border: 1px solid $pg-dark-blue;
 }

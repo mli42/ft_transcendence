@@ -1,9 +1,10 @@
 import { IsAlphanumeric, IsEmail } from 'class-validator';
 import { Channel } from '../../chat/entities/channel.entity';
-import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, IsNull, ManyToMany, OneToMany, JoinColumn, JoinTable } from 'typeorm';
 import { JoinedChannel } from '../../chat/entities/joined-channel.entity';
 import { ConnectedUser } from '../../chat/entities/connected-user.entity';
 import { Message } from '../../chat/entities/message.entity';
+import { GameHistory } from 'src/game/entities/gameHistory.entity';
 
 @Entity()
 export class User {
@@ -24,7 +25,7 @@ export class User {
   @Column("text", {default: "empty"})
   profile_picture: string;
 
-  @Column('int',  {default: 0})
+  @Column('int',  {default: 1000})
   elo: number;
 
   @Column('int',  {default: 0})
@@ -33,7 +34,10 @@ export class User {
   @Column('int',  {default: 0})
   lost_game: number;
 
-  @Column('int',  {default: -1})
+  @Column('int', {default: 0})
+  numberOfParty: number;
+
+  @Column('int',  {default: 0})
   ratio: number;
 
   @Column('text', {default: 'Offline'})
@@ -45,8 +49,9 @@ export class User {
   @Column("simple-array")
   friends: string[];
 
-  // @Column()
-  // match_history: string;
+  @ManyToMany(() => GameHistory, gameHistory => gameHistory.users, {eager: true})
+  @JoinTable()
+  game_history: GameHistory[];
 
   @Column("text", {default: ""})
   login42: string;
@@ -62,7 +67,7 @@ export class User {
 
   @OneToMany(() => Message, message => message.user)
   messages: Message[];
-  
+
   @Column("boolean", {default: false})
   twoFactorAuth: boolean;
 
@@ -71,4 +76,7 @@ export class User {
 
   @Column("boolean", {default: false})
   isAdmin: boolean;
+
+  @Column("simple-array", {default: []})
+  blockedUsers: string[];
 }

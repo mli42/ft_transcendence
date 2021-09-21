@@ -1,6 +1,6 @@
 import { socket } from "./socket";
 import * as p5 from "p5";
-import { Mouse, Game, Player, Ball } from "./dataStructures";
+import { Game, Player, Ball, PowerUp, IstringsAssociation } from "./dataStructures";
 import Vue from "vue";
 
 export { sketchWrap, p5Instance };
@@ -12,15 +12,29 @@ let backgroundURL: string;
 let canvasWidth: number;
 let canvasHeight: number;
 let canvasHUD: any;
-let HUDtxt: any;
 
 function updateHUDtxt(): void {
-  const margin: number = canvasHeight / 50;
-  const font_size: number = margin + 10;
+  if (vueInstance.endGame.isFinished == false) {
+    const margin: number = canvasHeight / 50;
+    const font_size: number = margin + 10;
+    let HUDtxt: any = document.getElementsByClassName("txtHUD");
 
-  for (let element of HUDtxt) {
-    element.style.margin = `${margin}px`;
-    element.style['font-size'] = `${font_size}px`;
+    for (let element of HUDtxt) {
+      element.style.margin = `${margin}px`;
+      element.style['font-size'] = `${font_size}px`;
+    }
+  } else {
+    const font_size: number = canvasHeight / 10;
+    const small_font_size: number = (canvasHUD / 50) + 10;
+    let endGameMainInfos: any = document.getElementsByClassName("endGameMainInfo");
+    let eloHUD: any = document.getElementsByClassName("eloHUD");
+
+    for (let element of endGameMainInfos) {
+      element.style['font-size'] = `${font_size}px`;
+    }
+    for (let element of eloHUD) {
+      element.style['font-size'] = `${small_font_size}px`;
+    }
   }
 }
 
@@ -79,140 +93,14 @@ async function sketch(s: any): Promise<any> {
   if (vueInstance.$data.user.userId === game.creatorId ||
     vueInstance.$data.user.userId === game.opponentId) {
     isAPlayer = true;
-    if (vueInstance.$data.user.userId === game.creatorId) {
-      msgBarTS = "posCreaTS";
-    } else if (vueInstance.$data.user.userId === game.opponentId) {
-      msgBarTS = "posOppoTS";
-    }
   }
   /**
    * SKETCH SETUP
    */
   let canvasDom: any = document.getElementById("gameCanvas");
   canvasHUD = document.getElementById("gameHUD");
-  HUDtxt = document.getElementsByClassName("txtHUD");
   updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
   s.disableFriendlyErrors = true; // Optimize code
-
-  let collCreaChecker = function(): void { // Check if the ball collide to the crea paddle
-    const halfBar: number = pCrea.barLen / 2;
-    const halfBall: number = ball.size / 2;
-    if (ball.pos[1] - halfBall >= pCrea.barY - halfBar && ball.pos[1] - halfBall <= pCrea.barY + halfBar ||
-        ball.pos[1] + halfBall >= pCrea.barY - halfBar && ball.pos[1] + halfBall <= pCrea.barY + halfBar) { // Vertical check
-      if (ball.pos[0] - halfBall >= pCrea.barX - (BAR_WIDTH / 2) &&
-          ball.pos[0] - halfBall <= pCrea.barX + (BAR_WIDTH / 2)) {
-        ball.delta[0] *= -1;
-        ball.speed *= 1.15;
-        ball.color = pCrea.color;
-        collBarChecker = collOppoChecker;
-      }
-    }
-  };
-  let collOppoChecker = function(): void { // Check if the ball collide to the oppo paddle
-    const halfBar: number = pOppo.barLen / 2;
-    const halfBall: number = ball.size / 2;
-    if (ball.pos[1] - halfBall >= pOppo.barY - halfBar && ball.pos[1] - halfBall <= pOppo.barY + halfBar ||
-        ball.pos[1] + halfBall >= pOppo.barY - halfBar && ball.pos[1] + halfBall <= pOppo.barY + halfBar) { // Vertical check
-      if (ball.pos[0] + halfBall >= pOppo.barX - (BAR_WIDTH / 2) &&
-          ball.pos[0] + halfBall <= pOppo.barX + (BAR_WIDTH / 2)) {
-        ball.delta[0] *= -1;
-        ball.speed *= 1.15;
-        ball.color = pOppo.color;
-        collBarChecker = collCreaChecker;
-      }
-    }
-  };
-  let collBarChecker: () => void; // Default behavior
-
-  s.setup = () => {
-    let myCanvas: any = s.createCanvas(canvasWidth, canvasHeight);
-    myCanvas.style('border', '2px dashed white');
-    myCanvas.style('position', 'relative');
-    myCanvas.style('backgroundImage', backgroundURL);
-    myCanvas.style('background-size', '100% 100%');
-
-    if (vueInstance.$data.user.userId != game.creatorId) {  // Subscribe to bar player info
-      socket.on("posCreaTC", (pos: number) => {
-        pCrea.barY = pos;
-      });
-    }
-    if (vueInstance.$data.user.userId != game.opponentId) { // Subscribe to bar player info
-      socket.on("posOppoTC", (pos: number) => {
-        pOppo.barY = pos;
-      });
-    }
-    socket.on("ballTC", (payload: {deltaX: number, deltaY: number, posX: number, posY: number}) => {
-      console.log("LOG: ballTC");
-      ball.delta[0] = payload.deltaX;
-      ball.delta[1] = payload.deltaY;
-      ball.pos[0] = payload.posX;
-      ball.pos[1] = payload.posY;
-    });
-    socket.on("ballSync", (payload: {posX: number, posY: number}) => {
-      console.log("LOG: ballSync");
-      ball.pos[0] = payload.posX;
-      ball.pos[1] = payload.posY;
-    });
-    socket.on("changeBarModTC", (payload: {userId: string, state: number}) => {
-      console.log("LOG: changeBarModTC");
-      if (payload.state === 1) {
-        if (payload.userId === game.creatorId) {
-          game.modBarCrea = modifierUpCrea;
-        } else if (payload.userId === game.opponentId) {
-          game.modBarOppo = modifierUpOppo;
-        }
-      } else if (payload.state === 0) {
-        if (payload.userId === game.creatorId) {
-          game.modBarCrea = modifierDownCrea;
-        } else if (payload.userId === game.opponentId) {
-          game.modBarOppo = modifierDownOppo;
-        }
-      }
-    });
-    socket.on("pointTC", (isCreatorLoose: boolean) => {
-      console.log("LOG: pointTC");
-      if (isCreatorLoose) {
-        game.score[1]++;
-      } else {
-        game.score[0]++;
-      }
-      ball.speed = 5;
-    });
-    socket.on("newRoundTC", (delta: Array<number>) => {
-      console.log("LOG: newRoundTC");
-      ball.delta = delta;
-      ball.color = "#DCE1E5";
-      if (ball.delta[0] > 0) {
-        collBarChecker = collOppoChecker;
-      } else {
-        collBarChecker = collCreaChecker;
-      }
-      ball.pos = [768 / 2, 432 / 2];
-    });
-    if (ball.delta[0] > 0) {
-      collBarChecker = collOppoChecker;
-    } else {
-      collBarChecker = collCreaChecker;
-    }
-    s.frameRate(50);
-    s.noStroke();
-    s.drawingContext.shadowBlur = 15;
-    s.drawingContext.shadowOffsetX = 0;
-    s.drawingContext.shadowOffsetY = 0;
-    s.drawingContext.shadowColor = "#FFFFFFF0";
-    s.rectMode(s.CENTER);
-  }
-
-  /**
-   * SKETCH DRAW
-   * Draw function is entierly executed each p5 frames.
-   */
-  const protecUp = (p: Player): boolean => { if (p.barY - (p.barLen / 2) < 0) { return (true) } else { return (false); } };
-  const protecDown = (p: Player): boolean => { if (p.barY + (p.barLen / 2) > 432) { return (true) } else { return (false); } };
-  const modifierUpCrea = () => { if (protecUp(pCrea)) { return; } pCrea.barY -= 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY); };
-  const modifierDownCrea = () => { if (protecDown(pCrea)) { return; } pCrea.barY += 4 * pCrea.barSpeed; socket.emit(msgBarTS, pCrea.barY); };
-  const modifierUpOppo = () => { if (protecUp(pOppo)) { return; } pOppo.barY -= 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY); };
-  const modifierDownOppo = () => { if (protecDown(pOppo)) { return; } pOppo.barY += 4 * pOppo.barSpeed; socket.emit(msgBarTS, pOppo.barY); };
   let ball: Ball = game.ball;
   let factX: number = canvasWidth / 768;
   let factY: number = canvasHeight / 432;
@@ -220,33 +108,130 @@ async function sketch(s: any): Promise<any> {
   let transY = (coord: number) => { return (coord * factY); };
   let barWidthFacted: number = transX(BAR_WIDTH);
   let ballSizeFacted: number = transX(ball.size);
+  let ballSizeUpImg: p5.Image;
+  let ballSizeDownImg: p5.Image;
+  let barLenUpImg: p5.Image;
+  let barSpeedUpImg: p5.Image;
+
+  function resetPowEffect(game: Game): void {
+    let pCrea: Player | undefined = game.players.get(game.creatorId);
+    let pOppo: Player | undefined = game.players.get(game.opponentId);
+
+    if (pCrea && pOppo) {
+      game.ball.size = 16;
+      ballSizeFacted = transX(ball.size);
+      pCrea.barLen = 80;
+      pOppo.barLen = 80;
+      pCrea.barSpeed = 1.65;
+      pOppo.barSpeed = 1.65;
+    }
+  }
+
+  s.setup = () => {
+    console.log();
+    ballSizeUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/plus.svg`);
+    ballSizeDownImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/minus.svg`);
+    barLenUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/arrows.svg`);
+    barSpeedUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/zap.svg`);
+    let myCanvas: any = s.createCanvas(canvasWidth, canvasHeight);
+    myCanvas.style('border', '2px dashed white');
+    myCanvas.style('position', 'relative');
+    myCanvas.style('backgroundImage', backgroundURL);
+    myCanvas.style('background-size', '100% 100%');
+
+    socket.on("countTC", (counterState: string) => {
+      console.log(vueInstance.$data.activeCounter);
+      if (counterState === "3") {
+        vueInstance.$data.activeCounter = true;
+      } else if (counterState === "GO !") {
+        vueInstance.$data.activeCounter = false;
+      }
+      vueInstance.$mytoast.oneSec(counterState);
+    });
+    socket.on("b", (payload: { posX: number, posY: number, barCreaY: number, barOppoY: number }) => {
+      ball.pos[0] = payload.posX;
+      ball.pos[1] = payload.posY;
+      pCrea.barY = payload.barCreaY;
+      pOppo.barY = payload.barOppoY;
+    });
+    socket.on("pointTC", (score: Array<number>) => {
+      console.log("LOG: pointTC");
+      game.score = score;
+      updateHUDtxt();
+      resetPowEffect(game);
+    });
+    socket.on("changeSettingsTC", (settings: any) => {
+      console.log("LOG: changeSettingsTC");
+      if (settings.pCrea != undefined)
+        pCrea = settings.pCrea;
+      if (settings.pOppo != undefined)
+        pOppo = settings.pOppo;
+      if (settings.ball != undefined) {
+        game.ball = settings.ball;
+        ball = game.ball;
+        ballSizeFacted = transX(ball.size);
+      }
+      barWidthFacted = transX(BAR_WIDTH);
+    });
+    socket.on("newPowTC", (powType: string, powPos: Array<number>) => {
+      console.log(`LOG: newPowTC (powtype = ${powType}, powPos = ${powPos})`);
+      let pow: PowerUp = new PowerUp(game.enabledPowerUps);
+      pow.color = pow.colorMatch[powType];
+      pow.modifier = pow.powMatch[powType];
+      pow.pos = powPos;
+      pow.type = powType;
+      game.powerUps.push(pow);
+    });
+    socket.on("endGameTC", () => {
+      setTimeout(() => { updateHUDtxt(); }, 5);
+    });
+    socket.on("collPowTC", (pos: Array<number>, userAffected?: string) => {
+      let i: number = 0;
+      for (let elem of game.powerUps) {
+        if (elem.pos[0] === pos[0] && elem.pos[1] === pos[1]) {
+          if (userAffected) {
+            elem.modifier(game, userAffected);
+          } else {
+            elem.modifier(game, vueInstance.$data.user.userId);
+          }
+          game.powerUps.splice(i, 1);
+          if (elem.type === "ballSizeUp" || elem.type === "ballSizeDown") {
+            ballSizeFacted = transX(ball.size);
+          }
+          ball = game.ball;
+          return;
+        }
+        i++;
+      }
+    });
+    s.frameRate(50);
+    s.noStroke();
+    s.drawingContext.shadowBlur = 15;
+    s.drawingContext.shadowOffsetX = 0;
+    s.drawingContext.shadowOffsetY = 0;
+    s.drawingContext.shadowColor = "#FFFFFFF0";
+    s.rectMode(s.CENTER);
+    s.imageMode(s.CENTER);
+  }
+
+  /**
+   * SKETCH DRAW
+   * Draw function is entierly executed each p5 frames.
+   */
 
   s.draw = () => {
     s.clear();
-    game.modBarCrea();
-    game.modBarOppo();
     s.fill(pCrea.color);
     s.rect(transX(pCrea.barX), transY(pCrea.barY), barWidthFacted, transY(pCrea.barLen), 6, 6, 6, 6);
     s.fill(pOppo.color);
     s.rect(transX(pOppo.barX), transY(pOppo.barY), barWidthFacted, transY(pOppo.barLen), 6, 6, 6, 6);
-    collBarChecker();
-    ball.pos[0] += ball.delta[0] * ball.speed;
-    ball.pos[1] += ball.delta[1] * ball.speed;
-    if (isAPlayer && s.frameCount % 25 == 4 && ball.pos[0] > 50 && ball.pos[1] < 400) { // Sync the ball pos 1 frome on 10
-      socket.emit("ballSync", { posX: ball.pos[0], posY: ball.pos[1] });
-    }
-    if (ball.pos[1] - (ball.size / 2) <= 0 || ball.pos[1] + (ball.size / 2) >= 432) { // top & bot collision
-      ball.delta[1] *= -1;
-    } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) { // left & right collision
-      ball.pos = [768 / 2, 432 / 2];
-      ball.delta = [0, 0];
-      ball.speed = 5;
-      if (vueInstance.$data.user.userId === game.creatorId) {
-        socket.emit("pointTS", (ball.pos[0] - (ball.size / 2) < 0)); // If it's true, oppo win a point, if else it's crea that win;
-      }
-    }
-    s.fill(game.ball.color);
+    s.fill(ball.color);
     s.ellipse(transX(ball.pos[0]), transY(ball.pos[1]), ballSizeFacted);
+    for (let elem of game.powerUps) {
+      s.fill(elem.color);
+      s.ellipse(transX(elem.pos[0]), transY(elem.pos[1]), transX(elem.size));
+      s.image(eval(elem.type + "Img"), transX(elem.pos[0]), transY(elem.pos[1]), transX(elem.size) * 0.75, transY(elem.size) * 0.75);
+    }
   }
   s.windowResized = () => {
     updateCanvasDim(canvasDom.offsetWidth, canvasDom.offsetHeight);
@@ -258,28 +243,14 @@ async function sketch(s: any): Promise<any> {
   }
   s.keyPressed = (event: any) => {
     if (event.key === "ArrowUp") {
-      if (vueInstance.$data.user.userId === game.creatorId) {
-        socket.emit("changeBarModTS", vueInstance.$data.user.userId, 1);
-        game.modBarCrea = modifierUpCrea;
-      } else if (isAPlayer === true) {
-        socket.emit("changeBarModTS", vueInstance.$data.user.userId, 1);
-        game.modBarOppo = modifierUpOppo;
-      }
+      socket.emit("changeBarModTS", { userId: vueInstance.$data.user.userId, state: 1 });
     } else if (event.key === "ArrowDown") {
-      if (vueInstance.$data.user.userId === game.creatorId) {
-        socket.emit("changeBarModTS", vueInstance.$data.user.userId, 0);
-        game.modBarCrea = modifierDownCrea;
-      } else if (isAPlayer === true) {
-        socket.emit("changeBarModTS", vueInstance.$data.user.userId, 0);
-        game.modBarOppo = modifierDownOppo;
-      }
+      socket.emit("changeBarModTS", { userId: vueInstance.$data.user.userId, state: -1 });
     }
   }
   s.keyReleased = (event: any) => {
-    if (vueInstance.$data.user.userId === game.creatorId) {
-      game.modBarCrea = () => {};
-    } else if (isAPlayer === true) {
-      game.modBarOppo = () => {};
+    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+      socket.emit("changeBarModTS", { userId: vueInstance.$data.user.userId, state: 0 });
     }
   }
 }

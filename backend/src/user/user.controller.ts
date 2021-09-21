@@ -16,6 +16,7 @@ import { join } from "path";
 import multer = require("multer");
 import { UserAuth } from "./guards/userAuth.guard";
 import { AdminGuard } from "./guards/admin.guard";
+import { GameHistory } from "src/game/entities/gameHistory.entity";
 
 type validMimeType =  'image/png' | 'image/jpg' | 'image/jpeg' | 'image/gif'
 
@@ -318,5 +319,27 @@ export class UserController {
 	updateIsAdmin(@Body('toggle') bool: boolean, @Query('userId') userId: string, @Req() req): Promise<void> {
 		const user: User = req.user;
 		return this.userService.updateIsAdmin(bool, userId, user);
+	}
+
+	@ApiOperation({summary: 'Get all game history'})
+	@ApiOkResponse({description: 'returns game history'})
+	@ApiParam({name: 'userId', required: true, description: 'userId to get game history of user'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/gameHistory/:userId')
+	getGameHistory(@Param('userId') userId: string) : Promise<GameHistory[]> {
+	  return this.userService.getGameHistory(userId);
+	}
+
+
+	@ApiOperation({summary: 'Calculate elo gain'})
+	@ApiOkResponse({description: 'returns Elo Gain'})
+	@ApiParam({name: 'eloPlayerWin', required: true, description: 'EloPlayerWin'})
+	@ApiParam({name: 'eloPlayerLoose', required: true, description: 'EloPlayerLoose'})
+	/*******/
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/calculElo/:eloPlayerWin/:eloPlayerLoose')
+	calculElo(@Param('eloPlayerWin') eloPlayerWin: string, @Param('eloPlayerLoose') eloPlayerLoose: string): number {
+		return this.userService.calculElo(eloPlayerWin, eloPlayerLoose);
 	}
 }

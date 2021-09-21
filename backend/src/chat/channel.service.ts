@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../user/user.repository';
 import { Channel } from './entities/channel.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -20,27 +21,73 @@ export class ChannelService {
 	) {}
 
 	async createChannel(channel: ChannelI, creator: User): Promise<ChannelI> {
-		const { channelName, publicChannel } = channel;
+		let { channelName, publicChannel, password } = channel;
 		const name = await this.channelRepository.findOne({channelName: channelName});
 		if (name)
-			throw new UnauthorizedException('This channel name already exist');
+			return null;
 		channel.adminUsers = [];
-		channel.blockUsers = [];
 		channel.authPrivateChannelUsers = [];
 		channel.owner = creator.userId;
+		if (!password)
+			password = null;
 		if (publicChannel === false) {
-			const newChannel = await this.addCreatorToChannel(channel, creator);
-			return this.channelRepository.save(newChannel);
+			channel.users.push(creator);
+			if (password) {
+				if (/^([a-zA-Z0-9]+)$/.test(password) === false)
+					return null;
+				const salt = await bcrypt.genSalt();
+				channel.password = await bcrypt.hash(password, salt);
+				channel.authPrivateChannelUsers.push(creator.userId)
+			} else {
+				for (const user of channel.users) {
+					channel.authPrivateChannelUsers.push(user.userId)
+				}
+			}
 		}
 		return this.channelRepository.save(channel);
 	}
 
-	async addCreatorToChannel(channel: ChannelI, creator: User): Promise<ChannelI> {
-		if (!Array.isArray(channel.users)) {
-			channel.users = [];
+	async deleteChannel(channel: ChannelI) {
+		const channelFound: Channel = await this.channelRepository.findOne(channel.channelId);
+		if (channelFound) {
+			try {
+				channelFound.users = [];
+				try {
+					await this.channelRepository.save(channelFound);
+				} catch (error) {
+					console.log(error);
+					throw new InternalServerErrorException('empty user on channel');
+				}
+				await this.channelRepository.delete(channelFound.channelId);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('delete channel');
+			}
 		}
-		channel.users.push(creator);
-		return channel;
+	}
+
+	async userLeaveChannel(channel: ChannelI, user: User) {
+		if (channel.directMessage === true) {
+			await this.deleteChannel(channel);
+		} else {
+			this.updateAdminUser(false, channel, user);
+			if (channel.owner === user.userId) {
+				const userFound = channel.users.find(el => el.userId !== user.userId );
+				if (userFound) {
+					channel.owner = userFound.userId;
+				} else {
+					await this.deleteChannel(channel);
+					return;
+				}
+			}
+			channel.users = channel.users.filter(el => el.userId !== user.userId );
+			try {
+				await this.channelRepository.save(channel);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('user leave channel');
+			}
+		}
 	}
 
 	async getChannelsForUser(userId: string): Promise <ChannelI[]> {
@@ -55,10 +102,19 @@ export class ChannelService {
 		.where('users.userId = :userId', {userId})
 		.andWhere('channel.publicChannel = false')
 		.leftJoinAndSelect('channel.users', 'all_users')
-		.orderBy('channel.update_at', 'DESC');
+		.leftJoinAndSelect('channel.roleUser', 'all_roles')
+		.orderBy('channel.date', 'DESC');
 		const privateChannels: ChannelI[] = await query.getMany();
-		
+
 		const channels = publicChannels.concat(privateChannels);
+
+		channels.sort(function(date1,date2) {
+			let d1 = new Date(date1.date);
+			let d2 = new Date(date2.date);
+			if (d1 < d2) return 1;
+			else if (d1 > d2) return -1;
+			else return 0;
+		  });
 		return channels;
 	}
 
@@ -74,7 +130,7 @@ export class ChannelService {
 	async getChannel(channelId: string): Promise<ChannelI> {
 		return this.channelRepository.findOne(channelId, {relations: ['users']});
 	}
-	
+
 	async foundChannel(channelId: string): Promise<ChannelI> {
 		return this.channelRepository.findOne(channelId);
 	}
@@ -83,16 +139,14 @@ export class ChannelService {
 		if(channel.authPrivateChannelUsers.length === 0)
 			return false;
 		const userFound = channel.authPrivateChannelUsers.find(element => element === user.userId)
-		if (userFound) {
+		if (userFound)
 			return true;
-		}
 		return false;
 	}
 
 	async addAuthUserPrivateChannel(channel: ChannelI, user: User): Promise<boolean>  {
-		if (await this.isAuthPrivateChannel(channel, user) === true) {
+		if (await this.isAuthPrivateChannel(channel, user) === true)
 			return true;
-		}
 		channel.authPrivateChannelUsers.push(user.userId);
 		try {
 			await this.channelRepository.save(channel);
@@ -103,72 +157,56 @@ export class ChannelService {
 		return true;
 	}
 
-
-
-	async isAdminUser(channel: ChannelI, user: User): Promise<boolean> {
+	async updateAdminUser(admin: boolean, channel: ChannelI, user: User) {
 		const userFound = channel.adminUsers.find(element => element === user.userId)
-		if (userFound) {
-			return true;
+		if (admin === true && !userFound) {
+			channel.adminUsers.push(user.userId);
+			try {
+				await this.channelRepository.save(channel);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('add an user admin');
+			}
 		}
-		return false;
-	}
-
-	async addAdminUser(channel: ChannelI, user: User) {
-		if (await this.isAdminUser(channel, user) === true) {
-			return;
-		}
-		channel.adminUsers.push(user.userId);
-		try {
-			await this.channelRepository.save(channel);
-		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException('add an user admin');
-		}
-	}
-
-	async removeAdminUser(channel: ChannelI, user: User) {
-		if (await this.isAdminUser(channel, user) === false)
-			return;
-		const index = channel.adminUsers.indexOf(user.userId);
-		channel.adminUsers.splice(index, 1);
-	}
-
-
-
-	async isBlockUser(channel: ChannelI, user: User): Promise<boolean> {
-		const userFound = channel.blockUsers.find(element => element === user.userId)
-		if (userFound) {
-			return true;
-		}
-		return false;
-	}
-
-	async addBlockUser(channel: ChannelI, user: User) {
-		if (await this.isBlockUser(channel, user) === true) {
-			return;
-		}
-		channel.blockUsers.push(user.userId);
-		try {
-			await this.channelRepository.save(channel);
-		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException('add an blocked user');
+		if (admin === false && userFound) {
+			const index = channel.adminUsers.indexOf(user.userId);
+			channel.adminUsers.splice(index, 1);
+			try {
+				await this.channelRepository.save(channel);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('remove an user admin');
+			}
 		}
 	}
 
-	async removeBlockUser(channel: ChannelI, user: User) {
-		if (await this.isBlockUser(channel, user) === false)
-			return;
-		const index = channel.blockUsers.indexOf(user.userId);
-		channel.blockUsers.splice(index, 1);
+	async updateChannelInfo(channelFound: ChannelI, info: any): Promise<Boolean> {
+		const { applyPassword, password, deletePassword, members } = info;
+		if (members) {
+			const newUsers = [];
+			for (const user of members) {
+				const userFound: User = channelFound.users.find(element => element.userId === user.userId);
+				if (!userFound)
+					newUsers.push(user);
+			}
+			const newMembers = channelFound.users.concat(newUsers);
+			channelFound.users = newMembers;
+		}
+		if (applyPassword && !password || deletePassword) {
+			channelFound.password = "";
+			channelFound.authPrivateChannelUsers = [];
+			for (const user of channelFound.users) {
+				channelFound.authPrivateChannelUsers.push(user.userId)
+			}
+        }
+		if (applyPassword && password) {
+			if (/^([a-zA-Z0-9]+)$/.test(password) === false)
+				return false;
+			const salt = await bcrypt.genSalt();
+			channelFound.password = await bcrypt.hash(password, salt);
+		}
+		await this.channelRepository.save(channelFound);
+		return true;
 	}
-
-
-	// async updateChannelMembers(channelFound: ChannelI, members:string[]) {
-	// 	for (const user of members) {
-    //         const userFound = channelFound.users.find(element => element === user);
-    //     }
-	// }
-
-	// add or remove a user to private channel
+	
 }

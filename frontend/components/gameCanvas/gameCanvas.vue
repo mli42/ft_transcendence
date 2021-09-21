@@ -2,7 +2,7 @@
   <div data-app>
   <v-app id="vappMain">
     <div id="gameSettings" v-if="this.isPreGameDisplayed" class="useWholePage flexHVcenter">
-      <div id="preGame">
+      <div id="preGame" :style="[preGameHeight]" >
       <!-- GAME TYPE SELECTION -->
       <div id="type">
         <v-card flat>
@@ -27,7 +27,8 @@
         </span>
         <span class="playerBar" :class="playerColorClass" ></span>
       </div>
-      <div id="privateSettings" v-if="this.isMapsDisplayed || this.isPowDisplayed" class="flexAlignRow">
+      <br v-if="isColorDisplayed && !showPrivateSettings" />
+      <div id="privateSettings" v-if="showPrivateSettings" class="flexAlignRow">
         <div id="privateSelection" class="flexAlignCol">
           <!-- MAP SELECTION -->
           <div id="map" v-if="this.isMapsDisplayed">
@@ -80,23 +81,44 @@
       <div id="gameCanvas" class="useWholePage flexHVcenter" >
         <div id="gameHUD" class="flexHVcenter">
 
-          <div id="gameInfos" class="flexAlignRow cantSelect">
-            <p class="txtHUD" :style="[creatorTxtStyle]">{{creatorName}}</p>
-            <p class="txtHUD" :style="[creatorTxtStyle]">{{game.score[0]}}</p>
-            <p class="txtHUD" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
-            <p class="txtHUD" :style="[oppoTxtStyle]">{{opponentName}}</p>
+          <div v-if="endGame.isFinished == false" id="gameInfos" class="flexAlignRow cantSelect">
+            <p class="txtHUD txtHUDName" :style="[creatorTxtStyle]" style="text-align: end;" >{{creatorName}}</p>
+            <p class="txtHUD txtHUDScore" :style="[creatorTxtStyle]" style="text-align: end;" >{{game.score[0]}}</p>
+            <p class="txtHUD txtHUDScore" :style="[oppoTxtStyle]">{{game.score[1]}}</p>
+            <p class="txtHUD txtHUDName" :style="[oppoTxtStyle]">{{opponentName}}</p>
           </div>
+          <div v-else id="finalCard">
+            <!-- Background Green/Red -->
+            <div class="finalGreen"></div> <div class="finalRed"></div>
+            <div id="endGameInfos" class="flexAlignCol">
+              <div class="endUpInfos">
+                <p class="endGameMainInfo">{{endGame.winner.username}}</p>
+                <p class="eloHUD">elo {{endGame.winner.elo}} + {{endGame.eloDiff}}</p>
+              </div>
 
+              <div class="endMidInfos flexAlignRow">
+                <h3 class="endGameMainInfo">{{endGame.winner.score}}</h3>
+                <p class="endGameMainInfo">VS</p>
+                <h3 class="endGameMainInfo">{{endGame.loser.score}}</h3>
+              </div>
+
+              <div class="endBotInfos">
+                <p class="eloHUD">elo {{endGame.loser.elo}} - {{endGame.eloDiff}}</p> <br />
+                <p class="endGameMainInfo">{{endGame.loser.username}}</p>
+              </div>
+            </div> <!-- EndGameInfos End -->
+          </div> <!-- Final Card End -->
         </div>
       </div>
     </div>
   </v-app>
+  <v-overlay v-if="activeCounter"></v-overlay>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Game, Player, IcolorPalette, Button} from "./dataStructures";
+import { Game, Player, IstringsAssociation, Button} from "./dataStructures";
 import lookup from "socket.io-client";
 import { use } from "vue/types/umd";
 import { socket, socketInit } from "./socket"
@@ -106,11 +128,11 @@ export { SOCKET_URL };
 
 const SOCKET_URL: string = `ws://${window.location.hostname}:3000/game`;
 
-const uiPalette: IcolorPalette = {
+const uiPalette: IstringsAssociation = {
   green: "#219653", white: "#DCE1E5", red: "#B30438",
 };
 
-const playerPalette: IcolorPalette = {
+const playerPalette: IstringsAssociation = {
   Red: "#FA163F", Green: "#54E346", Blue: "#3EDBF0", Yellow: "#FFF338",
   Purple: "#D62AD0", Pink: "#FB7AFC",
 };
@@ -126,7 +148,7 @@ export default Vue.extend({
       playerColorClass: "playerRed",
       playersList: {} as Array<any>,
       powList: [
-        "➕ ball size up", "➖ ball size down", "⚡ bar speed up", "↔️ lenght up", "🔥 FIRE !"
+        "ball size up", "ball size down", "bar speed up", "length up"
       ],
       // Condition to display or not element. Modified by display* methods
       isPowDisplayed: false as boolean,
@@ -134,17 +156,35 @@ export default Vue.extend({
       isMapsDisplayed: false as boolean,
       isColorDisplayed: false as boolean,
       isPreGameDisplayed: false as boolean,
+      // display a counter
+      activeCounter: false as boolean,
       // model to typeSelection tabs
       tabTypesIndex: 0 as number,
       mainBtn: new Button(),
       tabTypes: ["matchmaking", "private"] as Array<string>,
       creatorColor: "" as string,
       creatorName: "" as string,
+      creatorElo: -1 as number,
       isCreatorReady: false as boolean,
       opponentColor: "" as string,
       opponentName: "" as string,
+      opponentElo: -1 as number,
       isOpponentReady: false as boolean,
       barColor: "" as string,
+      endGame: {
+        isFinished: false as boolean,
+        eloDiff: '...' as string,
+        winner: {
+          username: '' as string,
+          score: 0 as number,
+          elo: '...' as string,
+        },
+        loser: {
+          username: '' as string,
+          score: 0 as number,
+          elo: '...' as string,
+        },
+      } as any,
     }
   },
   async mounted() {
@@ -159,6 +199,25 @@ export default Vue.extend({
     // Connect to the websocket & fetch remote game class
     socketInit(SOCKET_URL, this.gameId, this);
     socket.emit("fetchGameTS", this.gameId); // This function will ask to the server to fetch game class
+    socket.on("endGameTC", () => {
+      this.endGame.isFinished = true;
+      const isCreatorWinner: boolean = (this.game.score[0] > this.game.score[1]);
+      const eloReq: string = isCreatorWinner ? `${this.creatorElo}/${this.opponentElo}` : `${this.opponentElo}/${this.creatorElo}`;
+      let creatorEndGameInfos: any = isCreatorWinner ? this.endGame.winner : this.endGame.loser;
+      let opponentEndGameInfos: any = isCreatorWinner ? this.endGame.loser : this.endGame.winner;
+
+      this.$axios.get(`/api/user/calculElo/${eloReq}`)
+      .then((res: any) => {
+        this.endGame.eloDiff = res.data;
+      })
+      .catch(this.$mytoast.defaultCatch);
+      creatorEndGameInfos.username = this.creatorName;
+      creatorEndGameInfos.elo = this.creatorElo;
+      creatorEndGameInfos.score = this.game.score[0];
+      opponentEndGameInfos.username = this.opponentName;
+      opponentEndGameInfos.elo = this.opponentElo;
+      opponentEndGameInfos.score = this.game.score[1];
+    });
   },
   async destroyed() {
     socket.disconnect();
@@ -207,11 +266,7 @@ export default Vue.extend({
       }
     },
     displayMatchmaking(): void {
-      if (this.game.players.has(this.user.userId) === true) { // If the current client is a player
-        this.isColorDisplayed = true;
-      } else {
-        this.isColorDisplayed = false;
-      }
+      this.isColorDisplayed = (this.game.players.has(this.user.userId) === true); // If the current client is a player
       if (this.game.creatorId == this.user.userId && this.game.players.size == 1) {
         this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       } else {
@@ -291,17 +346,19 @@ export default Vue.extend({
       } else {
         this.game.opponentId = this.user.userId;
       }
-      this.game.players.set(this.user.userId, new Player());
+      if (this.game.players.has(this.user.userId) === false) {
+        this.game.players.set(this.user.userId, new Player());
+      }
       player = this.game.players.get(this.user.userId);
-      if (player) {
+      if (player && player.name === "") {
         player.name = this.user.username;
         if (this.game.creatorId == this.user.userId) {
           player.color = playerPalette["Red"]; // default colors
         } else {
           player.color = playerPalette["Blue"]; // default colors
         }
-        socket.emit("playerJoinTS", player);
       }
+      socket.emit("playerJoinTS", player);
       this.updateDisplayedElem();
     },
     btnActionLeave(): void {  // Action to leave the game as a player
@@ -311,11 +368,16 @@ export default Vue.extend({
       socket.emit("playerLeaveTS", this.user.userId);
     },
     btnActionInvite(): void { // Action to copy the link in the user clipboard
-      navigator.clipboard.writeText(window.location.href);
-      this.$mytoast.succ("URL paste in your clipboard !");
+      try {
+        navigator.clipboard.writeText(window.location.href);
+        this.$mytoast.succ("URL paste in your clipboard !");
+      } catch (e: any) {
+        this.$mytoast.err('Invite through chat please');
+      }
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
       console.log("LOG: button action search");
+      this.isColorDisplayed = false;
       this.mainBtn.isLoading = true;
       this.mainBtn.color = "green";
       this.mainBtn.action = this.btnActionSearchStop;
@@ -325,6 +387,7 @@ export default Vue.extend({
     },
     btnActionSearchStop(): void {
       console.log("LOG: button action search stop");
+      this.isColorDisplayed = true;
       this.mainBtn.setFull("SEARCH FOR A GAME", "white", this.btnActionSearch);
       this.mainBtn.resetHover(); // Delete actions when the client hover the button
       this.mainBtn.isLoading = false;
@@ -376,6 +439,14 @@ export default Vue.extend({
       }
       return (true);
     },
+    showPrivateSettings(): boolean {
+      return (this.isMapsDisplayed || this.isPowDisplayed);
+    },
+    preGameHeight(): object {
+      return {
+        height: (this.showPrivateSettings) ? '580px' : '340px',
+      };
+    },
     creatorTxtStyle(): object {
       return {
         color: this.creatorColor,
@@ -406,7 +477,29 @@ export default Vue.extend({
         }
       }
     },
-  }
+    "game.creatorId": function (): void {
+      if (!this.game.creatorId) {
+        return ;
+      }
+      this.$axios.get(`/api/user/partialInfo?userId=${this.game.creatorId}`)
+      .then((res: any) => {
+        const user = res.data;
+        this.creatorElo = user.elo;
+      })
+      .catch(this.$mytoast.defaultCatch);
+    },
+    "game.opponentId": function (): void {
+      if (!this.game.opponentId) {
+        return ;
+      }
+      this.$axios.get(`/api/user/partialInfo?userId=${this.game.opponentId}`)
+      .then((res: any) => {
+        const user = res.data;
+        this.opponentElo = user.elo;
+      })
+      .catch(this.$mytoast.defaultCatch);
+    },
+  },
 },
 );
 </script>
