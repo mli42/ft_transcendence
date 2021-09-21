@@ -1,5 +1,5 @@
 import { playingGames } from "./game.gateway";
-import { Game, Player, Ball, PowerUp } from "./dataStructures";
+import { Game, Player, Ball, PowerUp, genRand } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { GameService } from "./game.service";
 import { User } from "src/user/entities/user.entity";
@@ -14,11 +14,8 @@ function sleep(ms) {
 function genRandDelta(score?: Array<number>): Array<number> {
   let ballDelta: Array<number> = new Array();
   let ballDeltaSum: number = 1;
-  let ballDeltaRand: number = Math.random();
+  let ballDeltaRand: number = genRand(5, 1, false) / 10; // Ajust to start with a delta more horizontal
 
-  while (ballDeltaRand * 10 < 1 || ballDeltaRand * 10 > 5) {      // Ajust to start with a delta more horizontal
-    ballDeltaRand = Math.random();
-  }
   ballDelta[0] = ballDeltaSum - ballDeltaRand;
   if (Math.round(Math.random())) { ballDelta[0] = -ballDelta[0] } // Add negative ranges between -1 and 0
   ballDelta[1] = ballDeltaRand;

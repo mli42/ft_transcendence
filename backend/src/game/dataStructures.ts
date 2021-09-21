@@ -1,4 +1,4 @@
-export {Ball, Game, PowerUp, Mouse, Player, IstringsAssociation}
+export {Ball, Game, PowerUp, Mouse, Player, IstringsAssociation, genRand}
 
 const GRID_WIDTH = 768;
 const GRID_HEIGHT = 432;
@@ -131,11 +131,9 @@ class PowerUp {
   }
 
   private genType(enabledPowerUps: Array<string>): void {
-    let randNum: number = Math.round(Math.random() * 10);
+    let randNum: number = genRand(this.powList.length, 0, true);
     let randName: string;
-    while (randNum < this.powList.length) {
-      randNum = Math.round(Math.random() * 10);
-    }
+
     randName = enabledPowerUps[Math.round(randNum % enabledPowerUps.length)]
     this.type = this.nameMatch[randName];
   }
@@ -147,14 +145,14 @@ class PowerUp {
     const widthRange: Array<number> = [0 + H_PADDING, GRID_WIDTH - H_PADDING];
     const heightRange: Array<number> = [0 + V_PADDING, GRID_WIDTH - V_PADDING];
 
-    this.pos[0] = Math.random() * GRID_WIDTH;
-    while (this.pos[0] < widthRange[0] || this.pos[0] > widthRange[1]) {
-      this.pos[0] = Math.random() * GRID_WIDTH;
+    this.pos[0] = genRand(GRID_WIDTH, widthRange[0]);
+    while (this.pos[0] > widthRange[1]) {
+      this.pos[0] = genRand(GRID_WIDTH, widthRange[0]);
     }
     this.pos[0] = Math.round(this.pos[0]);
-    this.pos[1] = Math.random() * GRID_HEIGHT;
-    while (this.pos[1] < heightRange[0] || this.pos[1] > heightRange[1]) {
-      this.pos[1] = Math.random() * GRID_HEIGHT;
+    this.pos[1] = genRand(GRID_HEIGHT, heightRange[0]);
+    while (this.pos[1] > heightRange[1]) {
+      this.pos[1] = genRand(GRID_HEIGHT, heightRange[0]);
     }
     this.pos[1] = Math.round(this.pos[1]);
   }
@@ -295,4 +293,11 @@ class Game {
     newPlayer.name = playerName;
     return (newPlayer);
   }
+}
+
+function genRand(max: number, min: number = 0, round: boolean = false): number {
+  let randRes: number = (Math.random() * (max - min)) + min;
+  if (round)
+    randRes = Math.round(randRes);
+  return randRes;
 }
