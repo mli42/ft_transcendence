@@ -42,7 +42,7 @@ export class Channel implements IChannel {
 	messages = [];
 	date = new Date();
 	update_at = new Date();
-	publicChannel = true;
+	publicChannel = false;
 	password = '';
 	adminUsers = [];
 	owner = '';

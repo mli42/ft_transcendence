@@ -100,7 +100,7 @@
         <p class="v-btn-content" >Join</p>
       </v-btn>
     </SettingModal>
-    <SettingModal :hideModal="hideModal" v-if="modalBool.showMembersMod && (isAdmin() === true || (this.currentChannel.owner === this.currentUser.userId && this.currentChannel.publicChannel === false))">
+    <SettingModal :hideModal="hideModal" v-if="modalBool.showMembersMod && (isAdmin() === true || (currentChannel.owner === currentUser.userId && currentChannel.publicChannel === false)) && currentMemberMod.userId != currentChannel.owner">
       <h1>{{ currentMemberMod.username }}</h1>
       <div class="avatar">
         <NuxtLink :to="`/profile/${currentMemberMod.username}`"><Avatar :user="currentMemberMod"></Avatar></NuxtLink>
