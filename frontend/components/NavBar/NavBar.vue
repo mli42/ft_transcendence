@@ -7,6 +7,7 @@
         <NavBarRoundBtn route="/game" icone="ion:tennisball-outline"></NavBarRoundBtn>
         <NavBarRoundBtn route="/chat" icone="carbon-send-alt"></NavBarRoundBtn>
         <NavBarRoundBtn route="/search" icone="ant-design:search-outlined"></NavBarRoundBtn>
+        <NavBarRoundBtn route="/rules" icone="bi:question-diamond"></NavBarRoundBtn>
       </div>
       <div class="align-content">
         <!-- Buttons Profile/Settings/Quit -->

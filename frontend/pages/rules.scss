@@ -1,0 +1,24 @@
+@import '~/assets/Palette.scss';
+
+#rulesMain {
+  position: absolute;
+  align-items: center;
+  overflow-y: auto;
+  margin-top: 32px;
+  margin-bottom: 64px; // Size of the NavBar
+}
+
+#rulesContent {
+  width: 70%;
+  max-width: 650px;
+  min-width: 500px;
+}
+
+p {
+  overflow-wrap: anywhere;
+  white-space: pre-line
+}
+
+h2 {
+  text-decoration: underline;
+}
