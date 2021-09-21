@@ -120,8 +120,8 @@ async function sketch(s: any): Promise<any> {
     if (pCrea && pOppo) {
       game.ball.size = 16;
       ballSizeFacted = transX(ball.size);
-      pCrea.barLen = 64;
-      pOppo.barLen = 64;
+      pCrea.barLen = 80;
+      pOppo.barLen = 80;
       pCrea.barSpeed = 1;
       pOppo.barSpeed = 1;
     }

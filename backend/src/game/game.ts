@@ -73,6 +73,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       ball.delta[0] *= -1;
     // Ball general modification
     ball.color = player.color;
+    ball.speed *= 1.1;
     // Broadcast the new ball
     client.to(game.id).emit("changeSettingsTC", { ball: ball });
     client.emit("changeSettingsTC", { ball: ball });
