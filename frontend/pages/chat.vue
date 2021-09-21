@@ -1,12 +1,7 @@
 <template>
   <div class="content flexHVcenter" @click.self="hideSearch()">
-<<<<<<< HEAD
-    <div class="connected">
-      <SearchResult :currentUser="currentUser" :joinUserChannel="joinUserChannel"></SearchResult>
-=======
     <div class="connected flexAlignCol">
-      <SearchResult :friends="friends" :joinUserChannel="joinUserChannel"></SearchResult>
->>>>>>> 1d8f42c2bcd68257e66b096528c5291ae6a4818e
+      <SearchResult :currentUser="currentUser" :joinUserChannel="joinUserChannel"></SearchResult>
       <ul class="listChannel" @click="hideSearch()">
         <li v-for="(item, index) in channels" :key="index">
           <UserCard :channel="item" :index="index" :joinChannel="joinChannel" :currentChannel="currentChannel" :currentUser="currentUser" :leaveChannel="leaveChannel"></UserCard>
@@ -429,7 +424,7 @@ export default Vue.extend({
         this.currentChannel = chan;
         console.log("admins", this.currentChannel.adminUsers);
       }
-      
+
     },
     blockUser(user: User): void {
       let arg = {
@@ -461,17 +456,9 @@ export default Vue.extend({
     deleteChannel(channel: Channel): void{
       this.$user.socket.emit('leaveChannel');
       this.$user.socket.emit("deleteChannel", channel);
-<<<<<<< HEAD
-      
       // this.$user.socket.emit("displayChannel", (data: any) => {
       //   this.updateChannels(data, true);
       // });
-=======
-
-      this.$user.socket.emit("displayChannel", (data: any) => {
-        this.updateChannels(data, true);
-      });
->>>>>>> 1d8f42c2bcd68257e66b096528c5291ae6a4818e
     },
     leaveChannel(channel: Channel, user: User): void{
       let arg: any = {
