@@ -112,6 +112,7 @@
       </div>
     </div>
   </v-app>
+  <v-overlay v-if="activeCounter"></v-overlay>
   </div>
 </template>
 
@@ -155,6 +156,8 @@ export default Vue.extend({
       isMapsDisplayed: false as boolean,
       isColorDisplayed: false as boolean,
       isPreGameDisplayed: false as boolean,
+      // display a counter
+      activeCounter: false as boolean,
       // model to typeSelection tabs
       tabTypesIndex: 0 as number,
       mainBtn: new Button(),

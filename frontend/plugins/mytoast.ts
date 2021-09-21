@@ -49,11 +49,17 @@ const infoOpt: Object = {
   action: [dismissAct],
 };
 
+const oneSecOpt: Object = {
+  type: 'info',
+  duration: 1000,
+};
+
 export default (context: any, inject: Function) => {
   const toast: any = context.$toast;
   toast.register('errMsg', basicMsg, errOpt);
   toast.register('succMsg', basicMsg, succOpt);
   toast.register('infoMsg', basicMsg, infoOpt);
+  toast.register('oneSec', basicMsg, oneSecOpt);
   toast.register('unexpectedMsg', unexpectedMsg, infoOpt);
 
   inject('mytoast', {
@@ -62,6 +68,7 @@ export default (context: any, inject: Function) => {
     err: genToast(toast.global.errMsg),
     succ: genToast(toast.global.succMsg),
     info: genToast(toast.global.infoMsg),
+    oneSec: genToast(toast.global.oneSec),
     unexpected: genToast(toast.global.unexpectedMsg),
   });
 };

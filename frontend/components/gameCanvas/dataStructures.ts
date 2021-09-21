@@ -105,7 +105,7 @@ class Ball {
   constructor() {
     this.pos = [768 / 2, 432 / 2];
     this.size = 16;
-    this.speed = 3;
+    this.speed = 5;
     this.color = "#DCE1E5";
     this.delta = [0, 0];
   }
@@ -127,7 +127,7 @@ class Player {
     this.color = "#FA163F";
     this.barLen = 80; // in px
     this.isReady = false;
-    this.barSpeed = 1.5;
+    this.barSpeed = 1.65;
   }
 }
 
@@ -196,21 +196,21 @@ class PowerUp {
     this.type = this.nameMatch[randName];
   }
 
-  // This function generate a position 
+  // This function generate a position
   private genPos(): void {
     const H_PADDING = 52;
     const V_PADDING = 32;
     const widthRange: Array<number> = [0 + H_PADDING, GRID_WIDTH - H_PADDING];
     const heightRange: Array<number> = [0 + V_PADDING, GRID_WIDTH - V_PADDING];
 
-    this.pos[0] = Math.random() * GRID_WIDTH;
-    while (this.pos[0] < widthRange[0] || this.pos[0] > widthRange[1]) {
-      this.pos[0] = Math.random() * GRID_WIDTH;
+    this.pos[0] = genRand(GRID_WIDTH, widthRange[0]);
+    while (this.pos[0] > widthRange[1]) {
+      this.pos[0] = genRand(GRID_WIDTH, widthRange[0]);
     }
     this.pos[0] = Math.round(this.pos[0]);
-    this.pos[1] = Math.random() * GRID_HEIGHT;
-    while (this.pos[1] < heightRange[0] || this.pos[1] > heightRange[1]) {
-      this.pos[1] = Math.random() * GRID_HEIGHT;
+    this.pos[1] = genRand(GRID_HEIGHT, heightRange[0]);
+    while (this.pos[1] > heightRange[1]) {
+      this.pos[1] = genRand(GRID_HEIGHT, heightRange[0]);
     }
     this.pos[1] = Math.round(this.pos[1]);
   }
@@ -296,4 +296,11 @@ class Game {
    * MODIFIER BAR FUNCTIONS
    * These functions move the bar up or down.
    */
+}
+
+function genRand(max: number, min: number = 0, round: boolean = false): number {
+  let randRes: number = (Math.random() * (max - min)) + min;
+  if (round)
+    randRes = Math.round(randRes);
+  return randRes;
 }

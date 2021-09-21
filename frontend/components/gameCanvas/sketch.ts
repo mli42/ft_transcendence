@@ -120,10 +120,10 @@ async function sketch(s: any): Promise<any> {
     if (pCrea && pOppo) {
       game.ball.size = 16;
       ballSizeFacted = transX(ball.size);
-      pCrea.barLen = 64;
-      pOppo.barLen = 64;
-      pCrea.barSpeed = 1;
-      pOppo.barSpeed = 1;
+      pCrea.barLen = 80;
+      pOppo.barLen = 80;
+      pCrea.barSpeed = 1.65;
+      pOppo.barSpeed = 1.65;
     }
   }
 
@@ -139,6 +139,15 @@ async function sketch(s: any): Promise<any> {
     myCanvas.style('backgroundImage', backgroundURL);
     myCanvas.style('background-size', '100% 100%');
 
+    socket.on("countTC", (counterState: string) => {
+      console.log(vueInstance.$data.activeCounter);
+      if (counterState === "3") {
+        vueInstance.$data.activeCounter = true;
+      } else if (counterState === "GO !") {
+        vueInstance.$data.activeCounter = false;
+      }
+      vueInstance.$mytoast.oneSec(counterState);
+    });
     socket.on("b", (payload: { posX: number, posY: number, barCreaY: number, barOppoY: number }) => {
       ball.pos[0] = payload.posX;
       ball.pos[1] = payload.posY;
