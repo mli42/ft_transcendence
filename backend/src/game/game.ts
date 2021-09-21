@@ -36,11 +36,36 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   let ball: Ball = game.ball;
   let pCrea: Player = game.players.get(game.creatorId);
   let pOppo: Player = game.players.get(game.opponentId);
-  let collBarChecker: () => void; // Default behavior
+  let collBarChecker: () => void;
+  let collTopBot: () => boolean;
   const BAR_WIDTH: number = 4;
   const it = game.players.keys();
   const userOne: User = await gameService.getUser(it.next().value);
   const userTwo: User = await gameService.getUser(it.next().value);
+
+  let collTop = function(): boolean {
+    if (ball.pos[1] - (ball.size / 2) <= 0) {
+      collTopBot = collBot;
+      return (true);
+    }
+    return (false);
+  }
+
+  let collBot = function(): boolean {
+    if (ball.pos[1] + (ball.size / 2) >= 432) {
+      collTopBot = collTop;
+      return (true);
+    }
+    return (false);
+  }
+
+  let updateTopBotColl = function (): void {
+    if (ball.delta[1] > 0) {
+      collTopBot = collBot;
+    } else {
+      collTopBot = collTop;
+    }
+  }
 
   function resetPowEffect(game: Game): void {
     let pCrea: Player | undefined = game.players.get(game.creatorId);
@@ -71,6 +96,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     ball.delta[0] = Math.abs(ball.delta[0]);
     if (isCrea === false)
       ball.delta[0] *= -1;
+    updateTopBotColl();
     // Ball general modification
     ball.color = player.color;
     if (ball.speed < 8)
@@ -112,6 +138,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   };
 
   ball.delta = genRandDelta(game.score);
+  updateTopBotColl();
   if (ball.delta[0] > 0) {
     collBarChecker = collOppoChecker;
   } else {
@@ -172,7 +199,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     ball.pos[0] += ball.delta[0] * ball.speed;
     ball.pos[1] += ball.delta[1] * ball.speed;
     // Check collisions between ball and grid borders
-    if (ball.pos[1] - (ball.size / 2) <= 0 || ball.pos[1] + (ball.size / 2) >= 432) { // top & bot collision
+    if (collTopBot()) { // top & bot collision
       ball.delta[1] *= -1;
     } else if (ball.pos[0] - (ball.size / 2) <= 0 || ball.pos[0] + (ball.size / 2) >= 768) { // left & right collision
       if (ball.pos[0] - (ball.size / 2) <= 0) { // left collision
@@ -185,6 +212,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       if (ball.pos[0] - (ball.size / 2) <= 0) { // Redirect the ball to the looser
         ball.delta[0] *= -1;
       }
+      updateTopBotColl();
       ball.pos = [768 / 2, 432 / 2];
       ball.speed = 5;
       if (ball.delta[0] > 0) { collBarChecker = collOppoChecker; } else { collBarChecker = collCreaChecker; }
