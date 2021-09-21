@@ -50,7 +50,7 @@ class Player {
     this.barX = 0;
     this.barY = 432 / 2;
     this.color = "#FA163F";
-    this.barLen = 64; // in px
+    this.barLen = 80; // in px
     this.isReady = false;
     this.barSpeed = 1.5;
   }
