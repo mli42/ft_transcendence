@@ -148,6 +148,9 @@ export default Vue.extend({
         this.pictureFile = null;
         this.$store.dispatch('updateAvatar', res.data);
         this.$mytoast.succ('Avatar successfully updated');
+        // Update Chat's WS
+        this.$user.socketDelete();
+        setTimeout(() => { this.$user.socketCreate(); }, 600);
       })
       .catch(this.catchErr)
       .finally(() => {

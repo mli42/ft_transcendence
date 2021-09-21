@@ -49,7 +49,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 this.userStatus();
 
                 this.logger.log(`Client connected: ${client.id}`);
-                return this.server.to(client.id).emit('channel', channels);
+                // return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
             console.log("ok disc.");

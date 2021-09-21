@@ -89,7 +89,7 @@
       <v-btn class="DoneBtn" @click="modalBool.showSettings = false, changeSettings()" v-if="!currentChannel.publicChannel">
         <p class="v-btn-content">Apply</p>
       </v-btn>
-      <v-btn class="BlockBtn" @click="modalBool.showSettings = false, changeSettings(), deleteChannel(currentChannel)">
+      <v-btn class="BlockBtn" @click="modalBool.showSettings = false, deleteChannel(currentChannel)">
         <p class="v-btn-content">Delete Channel</p>
       </v-btn>
     </SettingModal>
@@ -209,6 +209,7 @@ export default Vue.extend({
     async joinChannel(index: number): Promise<void>{
       if (index < 0 || index >= this.channels.length) {
         console.error('joinChannel: index out of range');
+        this.currentChannel = new Channel;
         return ;
       }
       this.selectedChannel = index;
@@ -341,10 +342,7 @@ export default Vue.extend({
       if(this.currentChannel.publicChannel === true)
         return false;
       if (this.currentChannel.adminUsers.indexOf(this.currentMemberMod.userId) != -1 || this.currentChannel.owner === this.currentMemberMod.userId)
-      {
-        console.log(4);
         return true;
-      }
       else
         return false;
     },
@@ -414,19 +412,13 @@ export default Vue.extend({
         this.createdChannel = false;
         return ;
       }
-      // if (!this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId))
-      // {
-      //   this.joinChannel(newChannelIndex);
-      // }
+      if (!this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId))
+        this.joinChannel(newChannelIndex);
     },
     updateMembers(): void{
       let chan: Channel = this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId);
       if (chan)
-      {
         this.currentChannel = chan;
-        console.log("admins", this.currentChannel.adminUsers);
-      }
-
     },
     blockUser(user: User): void {
       let arg = {
@@ -456,20 +448,23 @@ export default Vue.extend({
         return this.currentUser;
     },
     deleteChannel(channel: Channel): void{
-      this.$user.socket.emit('leaveChannel');
       this.$user.socket.emit("deleteChannel", channel);
-      // this.$user.socket.emit("displayChannel", (data: any) => {
-      //   this.updateChannels(data, true);
-      // });
     },
     leaveChannel(channel: Channel, user: User): void{
       let arg: any = {
         channel: channel,
         user: user,
       }
-      this.$user.socket.emit("userLeaveChannel", arg);
-      if (channel.directMessage === false)
-        this.$mytoast.info(`You left "${channel.channelName}"`);
+      if (channel.users.length <= 1){
+        console.log("ICI");
+        this.$user.socket.emit("deleteChannel", channel);
+      }
+      else
+      {
+        this.$user.socket.emit("userLeaveChannel", arg);
+        if (channel.directMessage === false)
+          this.$mytoast.info(`You left "${channel.channelName}"`);
+      }
     },
     challengeUser(): void {
       const inviteUser: any = this.currentMemberMod;
@@ -498,7 +493,6 @@ export default Vue.extend({
       this.updateChannels(data, true);
     });
     this.$user.socket.on("channel", (data: any) => {
-      console.log(1)
       this.updateChannels(data);
       this.updateMembers();
     });
