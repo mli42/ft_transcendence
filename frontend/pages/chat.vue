@@ -50,7 +50,7 @@
             </div>
         </div>
       </div>
-      <div v-if="currentChannel != undefined && currentChannel.directMessage === false">
+      <div class="memberList" v-if="currentChannel != undefined && currentChannel.directMessage === false">
         <ChatMember :channelUsers="currentChannel.users" :public="currentChannel.publicChannel" :getModStatus="getModStatus" :currentChannel="currentChannel" :currentUser="currentUser"></ChatMember>
       </div>
       </div> <!-- #ChatContent End -->
