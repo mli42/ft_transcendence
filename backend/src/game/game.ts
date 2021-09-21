@@ -73,7 +73,8 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       ball.delta[0] *= -1;
     // Ball general modification
     ball.color = player.color;
-    ball.speed *= 1.1;
+    if (ball.speed < 8)
+      ball.speed += 0.4;
     // Broadcast the new ball
     client.to(game.id).emit("changeSettingsTC", { ball: ball });
     client.emit("changeSettingsTC", { ball: ball });
@@ -185,7 +186,7 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
         ball.delta[0] *= -1;
       }
       ball.pos = [768 / 2, 432 / 2];
-      ball.speed = 3;
+      ball.speed = 5;
       if (ball.delta[0] > 0) { collBarChecker = collOppoChecker; } else { collBarChecker = collCreaChecker; }
       ball.color = "#DCE1E5";
       client.to(game.id).emit("changeSettingsTC", { ball: ball });

@@ -30,7 +30,7 @@ class Ball {
   constructor() {
     this.pos = [GRID_WIDTH / 2, GRID_HEIGHT / 2];
     this.size = 16;
-    this.speed = 3;
+    this.speed = 5;
     this.color = "#DCE1E5";
     this.delta = [0, 0];
   }
