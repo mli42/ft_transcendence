@@ -105,7 +105,7 @@ function socketInit(url: string, gameId: string, vue: any): void {
   });
   socket.on("foundSearchCreaTC", (payload: { userId: string, player: Player }) => {
     console.log("LOG: foundSearchCreaTC");
-    vue.$mytoast.succ("A player found !");
+    vue.$toast.clear();
     vue.$data.mainBtn.resetHover();
     vue.$data.mainBtn.isLoading = false;
     vue.$data.game.players.set(payload.userId, payload.player);
@@ -113,6 +113,7 @@ function socketInit(url: string, gameId: string, vue: any): void {
   });
   socket.on("foundSearchOppoTC", (gameId: string) => {
     console.log("LOG: foundSearchOppoTC");
+    vue.$toast.clear();
     window.$nuxt.$router.push('/game/' + gameId); // Redirect client
   });
   socket.on("startGameTC", () => {

@@ -112,6 +112,7 @@
       </div>
     </div>
   </v-app>
+  <v-overlay v-if="activeCounter"></v-overlay>
   </div>
 </template>
 

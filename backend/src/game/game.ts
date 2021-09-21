@@ -50,8 +50,8 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       ball.size = 16;
       pCrea.barLen = 80;
       pOppo.barLen = 80;
-      pCrea.barSpeed = 1;
-      pOppo.barSpeed = 1;
+      pCrea.barSpeed = 1.65;
+      pOppo.barSpeed = 1.65;
     }
   }
 

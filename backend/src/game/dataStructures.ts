@@ -52,7 +52,7 @@ class Player {
     this.color = "#FA163F";
     this.barLen = 80; // in px
     this.isReady = false;
-    this.barSpeed = 1.5;
+    this.barSpeed = 1.65;
   }
 }
 
@@ -109,7 +109,7 @@ class PowerUp {
     this.modifier = this.powMatch[this.type];
     this.color = this.colorMatch[this.type];
     this.genPos();
-    while (this.checkSuperposition(powerUps) === true) { // Avoid superposition 
+    while (this.checkSuperposition(powerUps) === true) { // Avoid superposition
       this.genPos();
     }
   }
@@ -140,7 +140,7 @@ class PowerUp {
     this.type = this.nameMatch[randName];
   }
 
-  // This function generate a position 
+  // This function generate a position
   private genPos(): void {
     const H_PADDING = 52;
     const V_PADDING = 32;

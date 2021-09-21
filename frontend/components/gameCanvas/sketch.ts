@@ -122,8 +122,8 @@ async function sketch(s: any): Promise<any> {
       ballSizeFacted = transX(ball.size);
       pCrea.barLen = 80;
       pOppo.barLen = 80;
-      pCrea.barSpeed = 1;
-      pOppo.barSpeed = 1;
+      pCrea.barSpeed = 1.65;
+      pOppo.barSpeed = 1.65;
     }
   }
 
@@ -146,7 +146,7 @@ async function sketch(s: any): Promise<any> {
       } else if (counterState === "GO !") {
         vueInstance.$data.activeCounter = false;
       }
-      vueInstance.$mytoast.info(counterState);
+      vueInstance.$mytoast.oneSec(counterState);
     });
     socket.on("b", (payload: { posX: number, posY: number, barCreaY: number, barOppoY: number }) => {
       ball.pos[0] = payload.posX;

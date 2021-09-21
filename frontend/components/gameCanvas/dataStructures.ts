@@ -127,7 +127,7 @@ class Player {
     this.color = "#FA163F";
     this.barLen = 80; // in px
     this.isReady = false;
-    this.barSpeed = 1.5;
+    this.barSpeed = 1.65;
   }
 }
 
@@ -196,7 +196,7 @@ class PowerUp {
     this.type = this.nameMatch[randName];
   }
 
-  // This function generate a position 
+  // This function generate a position
   private genPos(): void {
     const H_PADDING = 52;
     const V_PADDING = 32;
