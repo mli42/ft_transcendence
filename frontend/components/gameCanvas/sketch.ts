@@ -139,7 +139,7 @@ async function sketch(s: any): Promise<any> {
     myCanvas.style('backgroundImage', backgroundURL);
     myCanvas.style('background-size', '100% 100%');
 
-    socket.on("b", (payload: {posX: number, posY: number, barCreaY: number, barOppoY: number}) => {
+    socket.on("b", (payload: { posX: number, posY: number, barCreaY: number, barOppoY: number }) => {
       ball.pos[0] = payload.posX;
       ball.pos[1] = payload.posY;
       pCrea.barY = payload.barCreaY;
@@ -162,6 +162,7 @@ async function sketch(s: any): Promise<any> {
         ball = game.ball;
         ballSizeFacted = transX(ball.size);
       }
+      barWidthFacted = transX(BAR_WIDTH);
     });
     socket.on("newPowTC", (powType: string, powPos: Array<number>) => {
       console.log(`LOG: newPowTC (powtype = ${powType}, powPos = ${powPos})`);
@@ -189,7 +190,7 @@ async function sketch(s: any): Promise<any> {
             ballSizeFacted = transX(ball.size);
           }
           ball = game.ball;
-          return ;
+          return;
         }
         i++;
       }
@@ -220,7 +221,7 @@ async function sketch(s: any): Promise<any> {
     for (let elem of game.powerUps) {
       s.fill(elem.color);
       s.ellipse(transX(elem.pos[0]), transY(elem.pos[1]), transX(elem.size));
-      s.image(eval(elem.type + "Img"), transX(elem.pos[0]), transY(elem.pos[1]), transX(elem.size) * 0.75, transY(elem.size)* 0.75);
+      s.image(eval(elem.type + "Img"), transX(elem.pos[0]), transY(elem.pos[1]), transX(elem.size) * 0.75, transY(elem.size) * 0.75);
     }
   }
   s.windowResized = () => {
@@ -233,14 +234,14 @@ async function sketch(s: any): Promise<any> {
   }
   s.keyPressed = (event: any) => {
     if (event.key === "ArrowUp") {
-      socket.emit("changeBarModTS", {userId: vueInstance.$data.user.userId, state: 1});
+      socket.emit("changeBarModTS", { userId: vueInstance.$data.user.userId, state: 1 });
     } else if (event.key === "ArrowDown") {
-      socket.emit("changeBarModTS", {userId: vueInstance.$data.user.userId, state: -1});
+      socket.emit("changeBarModTS", { userId: vueInstance.$data.user.userId, state: -1 });
     }
   }
   s.keyReleased = (event: any) => {
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-      socket.emit("changeBarModTS", {userId: vueInstance.$data.user.userId, state: 0});
+      socket.emit("changeBarModTS", { userId: vueInstance.$data.user.userId, state: 0 });
     }
   }
 }

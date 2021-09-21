@@ -108,7 +108,6 @@
               </div>
             </div> <!-- EndGameInfos End -->
           </div> <!-- Final Card End -->
-
         </div>
       </div>
     </div>
@@ -366,8 +365,12 @@ export default Vue.extend({
       socket.emit("playerLeaveTS", this.user.userId);
     },
     btnActionInvite(): void { // Action to copy the link in the user clipboard
-      navigator.clipboard.writeText(window.location.href);
-      this.$mytoast.succ("URL paste in your clipboard !");
+      try {
+        navigator.clipboard.writeText(window.location.href);
+        this.$mytoast.succ("URL paste in your clipboard !");
+      } catch (e: any) {
+        this.$mytoast.err('Invite through chat please');
+      }
     },
     btnActionSearch(): void { // Action to start matchmaking to find someone to play
       console.log("LOG: button action search");

@@ -124,6 +124,8 @@ export class UsersRepository extends Repository<User> {
 			await this.save(user);
 			return true;
 		} catch (e) {
+			if (e.code == '23505')
+				throw new InternalServerErrorException('Username or email already taken');
 			throw new InternalServerErrorException();
 		}
 	}

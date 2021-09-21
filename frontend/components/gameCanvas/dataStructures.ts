@@ -125,7 +125,7 @@ class Player {
     this.barX = 0;
     this.barY = 432 / 2;
     this.color = "#FA163F";
-    this.barLen = 64; // in px
+    this.barLen = 80; // in px
     this.isReady = false;
     this.barSpeed = 1.5;
   }
@@ -216,11 +216,13 @@ class PowerUp {
   }
 
   modBallSizeUp(game: Game): void {
-    game.ball.size *= 2;
+    if (game.ball.size < 60) {
+      game.ball.size *= 1.75;
+    }
   }
 
   modBallSizeDown(game: Game): void {
-    game.ball.size *= 0.5;
+    game.ball.size *= 0.75;
   }
 
   modBarLenUp(game: Game, userId?: string | undefined): void {
@@ -229,8 +231,8 @@ class PowerUp {
     if (userId == undefined)
       return ;
     player = game.players.get(userId);
-    if (player) {
-      player.barLen *= 2;
+    if (player && player.barLen < 100) {
+      player.barLen *= 1.75;
     }
   }
 
@@ -241,7 +243,7 @@ class PowerUp {
       return ;
     player = game.players.get(userId);
     if (player) {
-      player.barSpeed *= 2;
+      player.barSpeed *= 1.75;
     }
   }
 }

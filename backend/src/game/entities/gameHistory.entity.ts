@@ -16,8 +16,8 @@ export class GameHistory {
     @Column("text", {default: ""})
     playerTwo: string;
 
-    @Column('date', { default: () => '((CURRENT_DATE))' })
-    date: Date;
+    @Column('text', {default: ""})
+    date: string;
 
     @Column('int',  {default: 0})
     gameDuration: number;

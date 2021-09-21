@@ -158,7 +158,6 @@ export default Vue.extend({
       txt: '' as string,
       messages: [] as Message[],
       channels: [] as Channel[],
-      currentUser: this.$store.state.user as User,
       currentChannel: new Channel as Channel,
       userBanned: false as boolean,
       userMuted: false as boolean,
@@ -199,6 +198,9 @@ export default Vue.extend({
     }
   },
   computed: {
+    currentUser(): User {
+      return this.$store.state.user;
+    },
     currentChannelName(): string | undefined {
       return this.currentChannel?.channelName;
     },
