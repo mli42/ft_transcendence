@@ -1,14 +1,14 @@
 @import '~/assets/Palette.scss';
 
 .content {
-    width: 320px;
+    width: 100%;
     height: 82px;
     padding: 16px;
     background-color: $pg-dark-blue;
 }
 
 .result {
-    width: 290px;
+    width: 100%;
     height: 150px;
     padding: 16px;
     background-color: $pg-dark-blue;
@@ -18,7 +18,7 @@
 }
 
 .search input {
-    width: 250px;
+    width: 90%;
     height: 40px;
     background-color: $pg-blue;
     border-radius: 10px 0 0 10px;
@@ -31,7 +31,7 @@
     height: 40px;
     width: 40px;
     border-radius: 0px 10px 10px 0px;
-    
+
 }
 
 .search img{
@@ -58,7 +58,9 @@ li p{
     margin: auto 16px;
 }
 
-
+.loop{
+    cursor: pointer;
+}
 
 .pp{
     width: 30px;

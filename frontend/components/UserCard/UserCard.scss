@@ -3,27 +3,33 @@
 div{
     display: flex;
     flex-direction: row;
-    width: 300px;
+    width: 95%;
     height: 70px;
     border-radius: 10px;
     margin: 16px auto;
 }
 
-.red
+div:hover{
+    background-color: $pg-grey;
+}
+
+.bgDarkBlue
 {
     background-color: $pg-dark-blue;
 }
 
 .pp{
-    max-width: 40px; 
-    max-height: 40px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
     border-radius: 150px;
     margin: auto 8px;
 }
 
 p{
     margin: auto 5px;
-    width: 200px;
+    width: 100%;
     color: $pg-white;
     font-size: 18px;
     overflow-wrap: anywhere;
@@ -41,4 +47,3 @@ p{
     margin: 10px 10px;
     cursor: pointer;
 }
-

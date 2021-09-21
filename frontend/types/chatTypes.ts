@@ -23,6 +23,14 @@ export interface IChannel {
 	users: User[],
 	joinedUsers: IJoinedChannel[],
 	messages: IMessage[],
+	date: Date,
+	update_at: Date,
+	publicChannel: boolean,
+	password: string,
+	adminUsers: string[],
+	owner: string,
+	authPrivateChannelUsers: string[],
+	directMessage: boolean,
 };
 
 export class Channel implements IChannel {
@@ -32,6 +40,14 @@ export class Channel implements IChannel {
 	users = [];
 	joinedUsers = [];
 	messages = [];
+	date = new Date();
+	update_at = new Date();
+	publicChannel = false;
+	password = '';
+	adminUsers = [];
+	owner = '';
+	authPrivateChannelUsers = [];
+	directMessage = false;
 };
 
 export interface IJoinedChannel {

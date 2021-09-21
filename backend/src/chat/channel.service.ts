@@ -33,6 +33,8 @@ export class ChannelService {
 		if (publicChannel === false) {
 			channel.users.push(creator);
 			if (password) {
+				if (/^([a-zA-Z0-9]+)$/.test(password) === false)
+					return null;
 				const salt = await bcrypt.genSalt();
 				channel.password = await bcrypt.hash(password, salt);
 				channel.authPrivateChannelUsers.push(creator.userId)
@@ -49,6 +51,13 @@ export class ChannelService {
 		const channelFound: Channel = await this.channelRepository.findOne(channel.channelId);
 		if (channelFound) {
 			try {
+				channelFound.users = [];
+				try {
+					await this.channelRepository.save(channelFound);
+				} catch (error) {
+					console.log(error);
+					throw new InternalServerErrorException('empty user on channel');
+				}
 				await this.channelRepository.delete(channelFound.channelId);
 			} catch (error) {
 				console.log(error);
@@ -93,6 +102,7 @@ export class ChannelService {
 		.where('users.userId = :userId', {userId})
 		.andWhere('channel.publicChannel = false')
 		.leftJoinAndSelect('channel.users', 'all_users')
+		.leftJoinAndSelect('channel.roleUser', 'all_roles')
 		.orderBy('channel.date', 'DESC');
 		const privateChannels: ChannelI[] = await query.getMany();
 
@@ -170,7 +180,7 @@ export class ChannelService {
 		}
 	}
 
-	async updateChannelInfo(channelFound: ChannelI, info: any) {
+	async updateChannelInfo(channelFound: ChannelI, info: any): Promise<Boolean> {
 		const { applyPassword, password, deletePassword, members } = info;
 		if (members) {
 			const newUsers = [];
@@ -190,9 +200,13 @@ export class ChannelService {
 			}
         }
 		if (applyPassword && password) {
+			if (/^([a-zA-Z0-9]+)$/.test(password) === false)
+				return false;
 			const salt = await bcrypt.genSalt();
 			channelFound.password = await bcrypt.hash(password, salt);
 		}
 		await this.channelRepository.save(channelFound);
+		return true;
 	}
+	
 }
