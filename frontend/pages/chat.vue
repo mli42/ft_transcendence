@@ -455,9 +455,16 @@ export default Vue.extend({
         channel: channel,
         user: user,
       }
-      this.$user.socket.emit("userLeaveChannel", arg);
-      if (channel.directMessage === false)
-        this.$mytoast.info(`You left "${channel.channelName}"`);
+      if (channel.users.length <= 1){
+        console.log("ICI");
+        this.$user.socket.emit("deleteChannel", channel);
+      }
+      else
+      {
+        this.$user.socket.emit("userLeaveChannel", arg);
+        if (channel.directMessage === false)
+          this.$mytoast.info(`You left "${channel.channelName}"`);
+      }
     },
     challengeUser(): void {
       const inviteUser: any = this.currentMemberMod;
