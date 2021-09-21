@@ -1,5 +1,5 @@
 <template>
-  <div class="friendContainer" @click.prevent="getModStatus">
+  <div class="friendContainer" @click="getModStatus">
     <p>Members</p> <hr />
     <div class="friendList">
       <div :class="{ items : currentChannel.publicChannel === false }" v-for="(user, index) in users" :key="index">

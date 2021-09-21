@@ -9,7 +9,7 @@
     </div>
     <div class="input">    
       <input :type="inputType" :id="id" :name="id" :placeholder="placeHolder"
-      @input="updateValue($event.target.value)" :disabled="ispublic? false : true" autocomplete="off">
+      @input="updateValue($event.target.value)" :disabled="ispublic? false : true" autocomplete="off" @keydown.space.prevent maxlength="50">
     </div>
   </div>
 </template>
