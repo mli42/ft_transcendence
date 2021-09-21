@@ -139,6 +139,15 @@ async function sketch(s: any): Promise<any> {
     myCanvas.style('backgroundImage', backgroundURL);
     myCanvas.style('background-size', '100% 100%');
 
+    socket.on("countTC", (counterState: string) => {
+      console.log(vueInstance.$data.activeCounter);
+      if (counterState === "3") {
+        vueInstance.$data.activeCounter = true;
+      } else if (counterState === "GO !") {
+        vueInstance.$data.activeCounter = false;
+      }
+      vueInstance.$mytoast.info(counterState);
+    });
     socket.on("b", (payload: { posX: number, posY: number, barCreaY: number, barOppoY: number }) => {
       ball.pos[0] = payload.posX;
       ball.pos[1] = payload.posY;

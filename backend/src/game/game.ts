@@ -30,6 +30,9 @@ function genRandDelta(score?: Array<number>): Array<number> {
 }
 
 async function gameInstance(client: Socket, game: Game, gameService: GameService): Promise<any> {
+  /**
+   * ####### GAME SETUP & DECLARATION PART #######
+   */
   let ball: Ball = game.ball;
   let pCrea: Player = game.players.get(game.creatorId);
   let pOppo: Player = game.players.get(game.opponentId);
@@ -45,8 +48,8 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
 
     if (pCrea && pOppo) {
       ball.size = 16;
-      pCrea.barLen = 64;
-      pOppo.barLen = 64;
+      pCrea.barLen = 80;
+      pOppo.barLen = 80;
       pCrea.barSpeed = 1;
       pOppo.barSpeed = 1;
     }
@@ -137,7 +140,22 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
       i++;
     }
   }
-
+  /**
+   * ####### GAME START #######
+   */
+  for (let i = 3; i >= 0; i--) {
+    await sleep(1000);
+    if (i === 0) {
+      client.to(game.id).emit("countTC", "GO !");
+      client.emit("countTC", "GO !");
+    } else {
+      client.to(game.id).emit("countTC", `${i}`);
+      client.emit("countTC", `${i}`);
+    }
+  }
+  /**
+   * ####### GAME LOOP #######
+   */
   while (game.score[0] < 7 && game.score[1] < 7) {
     // Temp loop
     await sleep(10);
@@ -179,6 +197,9 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
     client.to(game.id).emit("b", { posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY });
     client.emit("b", { posX: game.ball.pos[0], posY: game.ball.pos[1], barCreaY: pCrea.barY, barOppoY: pOppo.barY });
   }
+  /**
+   * ####### GAME END #######
+   */
   playingGames.splice(playingGames.lastIndexOf(game.id));
   game.state = "ended";
   gameService.saveGameHistory(game, userOne, userTwo);
