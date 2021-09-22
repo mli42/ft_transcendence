@@ -270,14 +270,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     /********************* Join Channel *********************/
     @SubscribeMessage('joinChannel')
-    async handleJoinChannel(client: Socket, channel: ChannelI) { // voir pour recup exception
-        
+    async handleJoinChannel(client: Socket, channel: ChannelI) {
         const channelFound = await this.channelService.getChannel(channel.channelId);
-        // console.log(channelFound)
-        // console.log(channelFound.publicChannel)
         if (channelFound.publicChannel === false && await this.channelService.isAuthPrivateChannel(channelFound, client.data.user) == false){
-            console.log("FAUX")
-            throw new WsException('The user is not authenticated in this private channel');
+            return;
         }
         const messages = await this.messageService.findMessagesForChannel(channelFound, client.data.user)
         await this.joinedChannelService.create({socketId: client.id, user: client.data.user, channel})
