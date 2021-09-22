@@ -10,7 +10,7 @@ import { GameService } from "./game.service";
 let gamesMap: Map<string, Game> = new Map(); // Relation between gamesIds and games
 let playingGames: Array<string> = new Array();
 let searchList: Map<string, {client: Socket, gameId: string, player: Player}> = new Map(); // Relation between playerId and Player class
-let playingUsers: Array<string> = new Array(); // Array of userId that currentlty playing
+let playingUsers: Map<string, string> = new Map(); // Array of userId that currentlty playing
 let roomsMap: Map<string, Array<string>> = new Map();
 
 export { playingGames, gamesMap, playingUsers };
@@ -82,8 +82,8 @@ export class gameGateway {
     client.to(client.handshake.query.gameId).emit("startGameTC");
     client.emit("startGameTC");
     playingGames.push(game.id);
-    playingUsers.push(game.creatorId);
-    playingUsers.push(game.opponentId);
+    playingUsers.set(game.creatorId, game.id);
+    playingUsers.set(game.opponentId, game.id);
     game.startDate = new Date();
     this.chatGateway.userInGame(playingUsers);
     gameInstance(client, game, this.gameService, this.chatGateway);
@@ -150,7 +150,7 @@ export class gameGateway {
     if (game) {
       if (game.creatorId === query.userId) {
         game.players.delete(game.creatorId);
-        if (playingUsers.indexOf(game.creatorId) >= 0) playingUsers.splice(playingUsers.indexOf(game.creatorId), 1);
+        if (playingUsers.get(game.creatorId) !== undefined) playingUsers.delete(game.creatorId);
         game.creatorId = "";
         if (game.opponentId != "") { // Do we have an opponent to set as creator?
           game.creatorId = game.opponentId;
@@ -158,7 +158,7 @@ export class gameGateway {
         }
       } else if (game.opponentId === query.userId) {
         game.players.delete(query.userId as string);
-        if (playingUsers.indexOf(game.opponentId) >= 0) playingUsers.splice(playingUsers.indexOf(game.opponentId), 1);
+        if (playingUsers.get(game.opponentId) !== undefined) playingUsers.delete(game.opponentId);
         game.opponentId = "";
       }
       this.chatGateway.userInGame(playingUsers);
