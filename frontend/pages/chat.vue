@@ -204,13 +204,16 @@ export default Vue.extend({
     },
   },
   methods: {
-    async joinChannel(index: number): Promise<void>{
+    joinChannel(index: number): void{
       if (index < 0 || index >= this.channels.length) {
         console.error('joinChannel: index out of range');
         this.currentChannel = new Channel;
         return ;
       }
+      // if (this.channels[index].channelId === this.currentChannel.channelId)
+      //     return ;
       this.selectedChannel = index;
+      console.log(2)
       this.$user.socket.emit('leaveChannel');
       this.$user.socket.emit("checkRoleChannelBan", this.channels[index], (resp: any) => {
         if (resp.isBan === true)
@@ -219,9 +222,13 @@ export default Vue.extend({
           return;
         }
         if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
-          this.modalBool.showPrivacy = true;
-        else
         {
+          this.modalBool.showPrivacy = true;
+          return ;
+        }
+        else if(this.channels[index].channelId != this.currentChannel.channelId)
+        {
+          console.log(3)
           this.$user.socket.emit('joinChannel', this.channels[index]);
           this.currentChannel = this.channels[index];
           this.checkIfMute(this.currentChannel);
@@ -245,10 +252,12 @@ export default Vue.extend({
             this.modalBool.showPrivacy = false;
             this.$mytoast.err(`Wrong password!`);
           }
-          else
+          else if(this.channels[this.selectedChannel].channelId != this.currentChannel.channelId)
           {
+            console.log(1)
             this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
             this.currentChannel = this.channels[this.selectedChannel];
+            console.log("1'");
             this.selectedChannel = 0;
             this.checkIfMute(this.currentChannel);
             this.hideModal();
@@ -399,6 +408,7 @@ export default Vue.extend({
       this.channelSettings.members = []
     },
     updateChannels(newChannels: Channel[] | any = [], onMount: boolean = false): void {
+      console.log("IIICCIII");
       if ((newChannels instanceof Array) == false) {
         console.error('Assigning non array type to channels');
         return ;
@@ -489,6 +499,7 @@ export default Vue.extend({
       this.updateChannels(data, true);
     });
     this.$user.socket.on("channel", (data: any) => {
+      // console.log("HEYYY");
       this.updateChannels(data);
       this.updateMembers();
     });
