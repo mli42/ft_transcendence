@@ -210,10 +210,7 @@ export default Vue.extend({
         this.currentChannel = new Channel;
         return ;
       }
-      // if (this.channels[index].channelId === this.currentChannel.channelId)
-      //     return ;
       this.selectedChannel = index;
-      console.log(2)
       this.$user.socket.emit('leaveChannel');
       this.$user.socket.emit("checkRoleChannelBan", this.channels[index], (resp: any) => {
         if (resp.isBan === true)
@@ -228,7 +225,6 @@ export default Vue.extend({
         }
         else if(this.channels[index].channelId != this.currentChannel.channelId)
         {
-          console.log(3)
           this.$user.socket.emit('joinChannel', this.channels[index]);
           this.currentChannel = this.channels[index];
           this.checkIfMute(this.currentChannel);
@@ -254,7 +250,6 @@ export default Vue.extend({
           }
           else if(this.channels[this.selectedChannel].channelId != this.currentChannel.channelId)
           {
-            console.log(1)
             this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
             this.currentChannel = this.channels[this.selectedChannel];
             console.log("1'");
@@ -408,7 +403,6 @@ export default Vue.extend({
       this.channelSettings.members = []
     },
     updateChannels(newChannels: Channel[] | any = [], onMount: boolean = false): void {
-      console.log("IIICCIII");
       if ((newChannels instanceof Array) == false) {
         console.error('Assigning non array type to channels');
         return ;
