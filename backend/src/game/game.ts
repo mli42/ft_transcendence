@@ -229,8 +229,8 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
    * ####### GAME END #######
    */
   playingGames.splice(playingGames.lastIndexOf(game.id));
-  if (playingUsers.indexOf(userOne.userId) >= 0) playingUsers.splice(playingUsers.indexOf(userOne.userId), 1);
-  if (playingUsers.indexOf(userTwo.userId) >= 0) playingUsers.splice(playingUsers.indexOf(userTwo.userId), 1);
+  if (playingUsers.get(userOne.userId) !== undefined) playingUsers.delete(userOne.userId);
+  if (playingUsers.get(userTwo.userId) !== undefined) playingUsers.delete(userTwo.userId);
   chatGateway.userInGame(playingUsers);
   game.state = "ended";
   gameService.saveGameHistory(game, userOne, userTwo);
