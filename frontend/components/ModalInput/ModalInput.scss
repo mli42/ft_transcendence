@@ -34,3 +34,11 @@ img {
 input[type="password"]:disabled { 
   background: $pg-grey;
 }
+
+.protection{
+  width: 280px;
+  size: 8px;
+  margin: 0px 24px;
+  text-align: left;
+  font-style: italic;
+}

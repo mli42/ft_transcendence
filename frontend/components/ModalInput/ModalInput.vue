@@ -7,6 +7,7 @@
       :src="`https://api.iconify.design/${eyeType}.svg?color=white`"
       />
     </div>
+    <div class="protection"><p>{{ protection }}</p></div> 
     <div class="input">    
       <input :type="inputType" :id="id" :name="id" :placeholder="placeHolder"
       @input="updateValue($event.target.value)" :disabled="ispublic? false : true" autocomplete="off" @keydown.space.prevent maxlength="50">
@@ -59,6 +60,10 @@ export default Vue.extend({
     ispublic: {
       type: Boolean,
       required: true,
+    },
+    protection: {
+      type: String,
+      required: false,
     }
   },
 });
