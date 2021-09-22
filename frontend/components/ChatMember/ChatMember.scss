@@ -27,7 +27,8 @@ div.friendContainer hr{
 }
 
 div.friendList{
-  max-height: 384px;
+  max-height: calc(100vh - 260px);
+  height: calc(100vh - 260px);
   overflow-y: auto;
   width: 100%;
 }
