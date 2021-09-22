@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <div class="search flexHVcenter">
-          <input  type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false" autocomplete="off">
+          <input placeholder="Search user to DM" type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false" autocomplete="off">
           <div class="loop flexHVcenter" @click="showResult = true, fetchData()"><img src="~/assets/img/loop.png"></div>
         </div>
         <ul v-if="showResult" class="result" @click.self="showResult = false">
@@ -52,7 +52,7 @@ export default Vue.extend({
       .get(`/api/admin/allUsers`)
       .then((resp: any) => {this.allUser = resp.data;})
       .catch(this.$mytoast.defaultCatch);
-  } 
+  }
 });
 </script>
 
