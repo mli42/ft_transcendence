@@ -86,7 +86,7 @@ export class gameGateway {
     playingUsers.push(game.opponentId);
     game.startDate = new Date();
     this.chatGateway.userInGame(playingUsers);
-    gameInstance(client, game, this.gameService);
+    gameInstance(client, game, this.gameService, this.chatGateway);
   }
 
   // A client ask to get the entire game class. Or to create it if does not exists
@@ -150,7 +150,7 @@ export class gameGateway {
     if (game) {
       if (game.creatorId === query.userId) {
         game.players.delete(game.creatorId);
-        playingUsers.splice(playingUsers.indexOf(game.creatorId), 1);
+        if (playingUsers.indexOf(game.creatorId) >= 0) playingUsers.splice(playingUsers.indexOf(game.creatorId), 1);
         game.creatorId = "";
         if (game.opponentId != "") { // Do we have an opponent to set as creator?
           game.creatorId = game.opponentId;
@@ -158,7 +158,7 @@ export class gameGateway {
         }
       } else if (game.opponentId === query.userId) {
         game.players.delete(query.userId as string);
-        playingUsers.splice(playingUsers.indexOf(game.opponentId), 1);
+        if (playingUsers.indexOf(game.opponentId) >= 0) playingUsers.splice(playingUsers.indexOf(game.opponentId), 1);
         game.opponentId = "";
       }
       this.chatGateway.userInGame(playingUsers);

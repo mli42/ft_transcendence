@@ -1,4 +1,5 @@
-import { playingGames } from "./game.gateway";
+import { playingGames, playingUsers } from "./game.gateway";
+import { ChatGateway } from "src/chat/chat.gateway";
 import { Game, Player, Ball, PowerUp, genRand } from "./dataStructures";
 import { Socket, Server } from "socket.io";
 import { GameService } from "./game.service";
@@ -26,7 +27,7 @@ function genRandDelta(score?: Array<number>): Array<number> {
   return (ballDelta);
 }
 
-async function gameInstance(client: Socket, game: Game, gameService: GameService): Promise<any> {
+async function gameInstance(client: Socket, game: Game, gameService: GameService, chatGateway: ChatGateway): Promise<any> {
   /**
    * ####### GAME SETUP & DECLARATION PART #######
    */
@@ -228,6 +229,9 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
    * ####### GAME END #######
    */
   playingGames.splice(playingGames.lastIndexOf(game.id));
+  if (playingUsers.indexOf(userOne.userId) >= 0) playingUsers.splice(playingUsers.indexOf(userOne.userId), 1);
+  if (playingUsers.indexOf(userTwo.userId) >= 0) playingUsers.splice(playingUsers.indexOf(userTwo.userId), 1);
+  chatGateway.userInGame(playingUsers);
   game.state = "ended";
   gameService.saveGameHistory(game, userOne, userTwo);
   client.to(game.id).emit("endGameTC"); // Update point on front
