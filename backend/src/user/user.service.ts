@@ -121,7 +121,7 @@ export class UserService {
 		const { username } = updateUser;
 
 		const updated: boolean = await this.usersRepository.updateUser(updateUser, user);
-		if (updated === true)
+		if (updated === true && username !== undefined)
 		{
 		   	let auth: boolean = true;
 			const payload: JwtPayload = { username, auth };
