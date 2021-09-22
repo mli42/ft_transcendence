@@ -15,7 +15,7 @@
     </div>
     <div class="chatChamp" v-if="userBanned === false" @click="hideSearch()">
       <div class="chatRoomName flexAlignRow" v-if="currentChannel != undefined">
-        <div class="flexAlignRow">
+        <div class="chatRoomNameLeft flexAlignRow">
           <Avatar v-if="currentChannel.directMessage" class="channelImg" :user="whoIsIt(currentChannel)" ></Avatar>
           <img v-else class="channelImg" src="~/assets/img/chatbubble.svg">
           <p v-if="currentChannel.directMessage"> {{ whoIsIt(currentChannel).username }}</p>
@@ -25,7 +25,7 @@
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
-      <div id="chatContent" class="flexAlignRow">
+      <div id="chatContent" class="flexAlignRow" v-if="currentChannelName">
       <div class="chatMain">
         <div class="received" ref="msgContainer">
           <ul>
@@ -57,7 +57,7 @@
     </div>
     <SettingModal :hideModal="hideModal" v-if="modalBool.showCreate">
       <h1>Create Channel</h1>
-      <ModalInput name="Name of the channel :" v-model.lazy="newChannel.name"  placeHolder="" :ispublic="true" @keyup.enter.native="createChannel"></ModalInput>
+      <ModalInput name="Name of the channel :" protection="must be alphanumeric" v-model.lazy="newChannel.name"  placeHolder="" :ispublic="true" @keyup.enter.native="createChannel"></ModalInput>
       <div class="visibility">
         <input type="radio" name="private" @click="newChannel.public = false">
         <label for="private">Private</label>
@@ -68,7 +68,7 @@
         <input type="checkbox" name="addpassword" v-model="protectByPassword">
         <label class="addPassword" for="addpassword">Protect by password</label>
       </div>
-      <ModalInput name="Password :" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public && protectByPassword"></ModalInput>
+      <ModalInput name="Password :"  protection="must be alphanumeric" v-model.lazy="newChannel.password"  placeHolder="" :isPassword="true" :ispublic="!newChannel.public" v-if="!newChannel.public && protectByPassword"></ModalInput>
       <Dropdown v-if="!newChannel.public" toselect="Choose friends :" :items="friends" ></Dropdown>
       <v-btn class="DoneBtn" @click="modalBool.showCreate = false, createChannel()" >
         <p class="v-btn-content">Create</p>
@@ -455,10 +455,8 @@ export default Vue.extend({
         channel: channel,
         user: user,
       }
-      if (channel.users.length <= 1){
-        console.log("ICI");
+      if (channel.users.length <= 1)
         this.$user.socket.emit("deleteChannel", channel);
-      }
       else
       {
         this.$user.socket.emit("userLeaveChannel", arg);

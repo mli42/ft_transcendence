@@ -1,13 +1,10 @@
 <template>
   <div>
     <div v-if="$fetchState.pending == false" class="friendCard flexAlignRow">
-      <div class="pp">
+      <div class="pp" @click="sendEventChat">
         <Avatar :user="user"></Avatar>
       </div>
-    <div v-if="page == 'chat'" @click="sendEventChat">
-      <p>{{shortUsername}}</p>
-    </div>
-      <NuxtLink v-else :to="userProfile">
+      <NuxtLink :to="userProfile">
         <p>{{shortUsername}}</p>
       </NuxtLink>
       <Iconify v-if="isPlaying" title="Currently playing"
@@ -46,7 +43,8 @@ export default Vue.extend({
   },
   methods: {
     sendEventChat(): void{
-      this.$nuxt.$emit('my-chat-event', this.user);
+      if (this.page == 'chat')
+        this.$nuxt.$emit('my-chat-event', this.user);
     },
   },
   props: ['userId', 'page'],
