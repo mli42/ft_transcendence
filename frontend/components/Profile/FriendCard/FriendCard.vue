@@ -38,7 +38,8 @@ export default Vue.extend({
       return (this.$user.shortName(this.user.username));
     },
     isPlaying(): boolean {
-      return (this.$store.state.playingUsers.includes(this.user.userId));
+      const keys: any = Object.keys(this.$store.state.playingUsers);
+      return keys.includes(this.userId);
     },
   },
   methods: {
