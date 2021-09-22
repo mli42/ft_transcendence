@@ -11,7 +11,7 @@ export class Channel {
 	@PrimaryGeneratedColumn("uuid")
 	channelId: string;
 
-	@Column()
+	@Column("text", {default: ""})
 	channelName: string;
 
 	@CreateDateColumn()
