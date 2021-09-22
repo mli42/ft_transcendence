@@ -25,7 +25,7 @@
           <Iconify class="imgIcone" iconName="ci:settings" @click.native="modalBool.showSettings = true"></Iconify>
         </div>
       </div>
-      <div id="chatContent" class="flexAlignRow">
+      <div id="chatContent" class="flexAlignRow" v-if="currentChannelName">
       <div class="chatMain">
         <div class="received" ref="msgContainer">
           <ul>
