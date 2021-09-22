@@ -8,7 +8,7 @@ export class JoinedChannel {
 	@PrimaryGeneratedColumn("uuid")
 	joinId: string;
 
-	@Column()
+	@Column("text")
 	socketId: string;
 
 	@ManyToOne(() => User, user => user.joinedChannels, {onDelete:'CASCADE'})
