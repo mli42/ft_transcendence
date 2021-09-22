@@ -455,10 +455,8 @@ export default Vue.extend({
         channel: channel,
         user: user,
       }
-      if (channel.users.length <= 1){
-        console.log("ICI");
+      if (channel.users.length <= 1)
         this.$user.socket.emit("deleteChannel", channel);
-      }
       else
       {
         this.$user.socket.emit("userLeaveChannel", arg);
