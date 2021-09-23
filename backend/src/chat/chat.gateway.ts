@@ -296,7 +296,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     async userInGame(playingUser) {
-        return this.server.emit('userInGame', playingUser);
+        let obj = {};
+        playingUser.forEach(function(value, key){
+            obj[key] = value
+        });
+        return this.server.emit('userInGame', obj);
     }
 
 }

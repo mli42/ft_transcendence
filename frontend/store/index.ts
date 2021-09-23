@@ -3,7 +3,7 @@ export const state = () => ({
   isLogged: false as boolean,
   avatarURL: '' as string,
   connectedUsers: [] as any,
-  playingUsers: [] as any,
+  playingUsers: {} as any,
 });
 
 export type indexState = ReturnType<typeof state>;
