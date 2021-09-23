@@ -7,8 +7,10 @@
       <NuxtLink :to="userProfile">
         <p>{{shortUsername}}</p>
       </NuxtLink>
-      <Iconify v-if="isPlaying" title="Currently playing"
-      iconName="ri:sword-line" class="playing"></Iconify>
+      <NuxtLink v-if="isPlaying" :to="gameURL">
+        <Iconify title="Currently playing"
+        iconName="ri:sword-line" class="playing"></Iconify>
+      </NuxtLink>
     </div>
     <p v-else-if="$fetchState.error">Oh no, an error occured...</p>
   </div>
@@ -37,8 +39,17 @@ export default Vue.extend({
     shortUsername(): string {
       return (this.$user.shortName(this.user.username));
     },
+    playingUsers(): any {
+      return this.$store.state.playingUsers;
+    },
     isPlaying(): boolean {
-      return (this.$store.state.playingUsers.includes(this.user.userId));
+      const keys: any = Object.keys(this.playingUsers);
+      return keys.includes(this.userId);
+    },
+    gameURL(): string {
+      if (this.isPlaying == false)
+        return '';
+      return `/game/${this.playingUsers[this.userId]}`;
     },
   },
   methods: {
