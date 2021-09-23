@@ -304,7 +304,7 @@ export default Vue.extend({
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
         publicChannel: this.newChannel.public},  (data: boolean) => {
           if (data === false)
-            this.$mytoast.err(`Wrong channel name or wrong password`);});
+            this.$mytoast.err(`Wrong channel name or already taken`);});
       }
       else if (this.newChannel.public === false)
       {
@@ -313,7 +313,7 @@ export default Vue.extend({
         publicChannel: this.newChannel.public,
         password: this.newChannel.password}, (data: boolean) => {
           if (data === false)
-            this.$mytoast.err(`This channel name already exist`);});
+            this.$mytoast.err(`Wrong channel name or already taken or wrong password`);});
       }
       this.newChannel = new newChannel(); // Run on succes only!
       this.createdChannel = true;
@@ -348,7 +348,7 @@ export default Vue.extend({
         return false;
     },
     joinUserChannel(user: User): void{
-      
+
       let name1: string = this.currentUser.userId + user.userId;
       let name2: string = user.userId + this.currentUser.userId;
       let users: User[] = [];

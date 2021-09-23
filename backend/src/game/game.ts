@@ -37,9 +37,6 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   let collBarChecker: () => void;
   let collTopBot: () => boolean;
   const BAR_WIDTH: number = 4;
-  const it = game.players.keys();
-  const userOne: User = await gameService.getUser(it.next().value);
-  const userTwo: User = await gameService.getUser(it.next().value);
 
   let collTop = function(): boolean {
     if (ball.pos[1] - (ball.size / 2) <= 0) {
@@ -228,6 +225,10 @@ async function gameInstance(client: Socket, game: Game, gameService: GameService
   /**
    * ####### GAME END #######
    */
+  const it = game.players.keys();
+  const userOne: User = await gameService.getUser(it.next().value);
+  const userTwo: User = await gameService.getUser(it.next().value);
+
   playingGames.splice(playingGames.lastIndexOf(game.id));
   if (playingUsers.get(userOne.userId) !== undefined) playingUsers.delete(userOne.userId);
   if (playingUsers.get(userTwo.userId) !== undefined) playingUsers.delete(userTwo.userId);

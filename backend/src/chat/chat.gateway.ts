@@ -14,7 +14,11 @@ import { RoleUserI } from './interfaces/role-user.interface';
 import { RoleUserService } from './role-user.service';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+<<<<<<< HEAD
 import { UserAuthHandshake } from './guards/userAuthHandshake.guard';
+=======
+import { playingUsers } from 'src/game/game.gateway';
+>>>>>>> main
 
 @WebSocketGateway({ namespace: "/chat", cors: { origin: process.env.IP_FRONTEND, credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
@@ -304,6 +308,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     /********************* USER STATUT ********************/
     async userStatus() {
         let userConnected = await this.connectedUserService.userStatus();
+        this.userInGame(playingUsers);
         return this.server.emit('userConnected', userConnected);
     }
 
