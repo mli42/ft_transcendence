@@ -2,7 +2,7 @@
     <div class="content">
         <div class="search flexHVcenter">
           <input placeholder="Search user to DM" type="text" name="mysearch" id="mysearch" v-model="searchName" @focus="showResult = false" autocomplete="off">
-          <div class="loop flexHVcenter" @click="showResult = true, fetchData()"><img src="~/assets/img/loop.png"></div>
+          <div class="loop flexHVcenter" @click="showResult = true, getUsers(), fetchData()"><img src="~/assets/img/loop.png"></div>
         </div>
         <ul v-if="showResult" class="result" @click.self="showResult = false">
             <li v-for="(user, index) in result" :key="index" @click="joinUserChannel(user); showResult = false">
@@ -43,6 +43,12 @@ export default Vue.extend({
         }
         });
     },
+    getUsers(): void{
+      this.$axios
+      .get(`/api/admin/allUsers`)
+      .then((resp: any) => {this.allUser = resp.data;})
+      .catch(this.$mytoast.defaultCatch);
+    }
   },
   mounted(){
      this.$nuxt.$on('hide-search', (data: any) => {

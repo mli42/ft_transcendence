@@ -462,7 +462,7 @@ export default Vue.extend({
         channel: channel,
         user: user,
       }
-      if (channel.users.length <= 1)
+      if (channel.users.length <= 1 || channel.directMessage)
         this.deleteChannel(channel);
       else
       {
