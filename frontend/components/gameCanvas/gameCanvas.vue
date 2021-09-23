@@ -126,7 +126,7 @@ import { sketchWrap, p5Instance } from "./sketch";
 
 export { SOCKET_URL };
 
-const SOCKET_URL: string = `ws://${window.location.hostname}:3000/game`;
+const SOCKET_URL: string = `wss://${window.location.hostname}:3000/game`;
 
 const uiPalette: IstringsAssociation = {
   green: "#219653", white: "#DCE1E5", red: "#B30438",

@@ -129,10 +129,10 @@ async function sketch(s: any): Promise<any> {
 
   s.setup = () => {
     console.log();
-    ballSizeUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/plus.svg`);
-    ballSizeDownImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/minus.svg`);
-    barLenUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/arrows.svg`);
-    barSpeedUpImg = s.loadImage(`http://${window.location.hostname}:3000/api/game/powIcons/zap.svg`);
+    ballSizeUpImg = s.loadImage(`https://${window.location.hostname}:3000/api/game/powIcons/plus.svg`);
+    ballSizeDownImg = s.loadImage(`https://${window.location.hostname}:3000/api/game/powIcons/minus.svg`);
+    barLenUpImg = s.loadImage(`https://${window.location.hostname}:3000/api/game/powIcons/arrows.svg`);
+    barSpeedUpImg = s.loadImage(`https://${window.location.hostname}:3000/api/game/powIcons/zap.svg`);
     let myCanvas: any = s.createCanvas(canvasWidth, canvasHeight);
     myCanvas.style('border', '2px dashed white');
     myCanvas.style('position', 'relative');

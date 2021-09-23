@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 
 services:
   api:
@@ -6,10 +6,11 @@ services:
       context: ./docker/
       dockerfile: Dockerfile-backend
     ports:
-      - "3000:3000"
+      - "3001:3001"
     volumes:
       - ./backend:/app_backend
       - ./upload/:/upload
+      - ../work_nginx/data/certbot:/tmp/certbot
     networks:
       - webapp
       - database
@@ -58,6 +59,7 @@ services:
 
 networks:
   webapp:
+    name: "shared_network"
     driver: bridge
   database:
     driver: bridge

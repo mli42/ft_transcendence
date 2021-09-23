@@ -25,7 +25,7 @@ function socketCreate(context: any): Function {
   return () => {
     if (context.$user.socket !== null)
       return;
-    context.$user.socket = io(`ws://${window.location.hostname}:3000/chat`, {
+    context.$user.socket = io(`wss://${window.location.hostname}:3000/chat`, {
       forceNew: true,
       withCredentials: true,
     });
