@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="$fetchState.pending == false" class="friendCard flexAlignRow">
+    <div v-if="$fetchState.pending == false && shortUsername" class="friendCard flexAlignRow">
       <div class="pp" @click="sendEventChat">
         <Avatar :user="user"></Avatar>
       </div>
