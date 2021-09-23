@@ -415,7 +415,9 @@ export default Vue.extend({
         return ;
       }
       if (!this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId))
+      {
         this.joinChannel(newChannelIndex);
+      }
     },
     updateMembers(): void{
       let chan: Channel = this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId);
@@ -451,6 +453,9 @@ export default Vue.extend({
     },
     deleteChannel(channel: Channel): void{
       this.$user.socket.emit("deleteChannel", channel);
+      const index: number = this.channels.indexOf(channel);
+      if (index >= 0)
+        this.channels.splice(index, 1);
     },
     leaveChannel(channel: Channel, user: User): void{
       let arg: any = {
@@ -458,7 +463,7 @@ export default Vue.extend({
         user: user,
       }
       if (channel.users.length <= 1)
-        this.$user.socket.emit("deleteChannel", channel);
+        this.deleteChannel(channel);
       else
       {
         this.$user.socket.emit("userLeaveChannel", arg);
