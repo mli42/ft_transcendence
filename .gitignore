@@ -41,4 +41,5 @@ pnpm-debug.log*
 !.vscode/extensions.json
 
 # nginx files
-./nginx_files/certbot/conf/*
+!*.dumb_file
+nginx_files/certbot/conf/*

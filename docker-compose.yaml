@@ -10,12 +10,31 @@ services:
     volumes:
       - ./backend:/app_backend
       - ./upload/:/upload
-      - ../work_nginx/data/certbot:/tmp/certbot
+      - ./nginx_files/certbot:/tmp/certbot
     networks:
       - webapp
       - database
     restart: always
     container_name: backend_app
+
+  nginx:
+    image: nginx:1.15-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "3000:3000"
+    volumes:
+      - ./nginx_files/nginx:/etc/nginx/conf.d
+      - ./nginx_files/certbot/conf:/etc/letsencrypt
+      - ./nginx_files/certbot/www:/var/www/certbot
+    networks:
+      - webapp
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx_files/certbot/conf:/etc/letsencrypt
+      - ./nginx_files/certbot/www:/var/www/certbot
 
   webapp:
     build:
@@ -59,7 +78,6 @@ services:
 
 networks:
   webapp:
-    name: "shared_network"
     driver: bridge
   database:
     driver: bridge
