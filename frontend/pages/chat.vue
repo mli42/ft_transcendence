@@ -223,7 +223,7 @@ export default Vue.extend({
           this.modalBool.showPrivacy = true;
           return ;
         }
-        else if(this.channels[index].channelId != this.currentChannel.channelId)
+        else
         {
           this.$user.socket.emit('joinChannel', this.channels[index]);
           this.currentChannel = this.channels[index];
@@ -252,7 +252,6 @@ export default Vue.extend({
           {
             this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
             this.currentChannel = this.channels[this.selectedChannel];
-            console.log("1'");
             this.selectedChannel = 0;
             this.checkIfMute(this.currentChannel);
             this.hideModal();
@@ -305,7 +304,7 @@ export default Vue.extend({
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
         publicChannel: this.newChannel.public},  (data: boolean) => {
           if (data === false)
-            this.$mytoast.err(`This channel name already exist`);});
+            this.$mytoast.err(`Wrong channel name or wrong password`);});
       }
       else if (this.newChannel.public === false)
       {
@@ -349,11 +348,12 @@ export default Vue.extend({
         return false;
     },
     joinUserChannel(user: User): void{
+      
       let name1: string = this.currentUser.userId + user.userId;
       let name2: string = user.userId + this.currentUser.userId;
       let users: User[] = [];
       users.push(user);
-      let channel: Channel = this.channels.find((el: Channel) => el.channelName === name1 || el.channelName === name1);
+      let channel: Channel = this.channels.find((el: Channel) => el.channelName === name1 || el.channelName === name2);
       if(channel)
       {
         this.$user.socket.emit('joinChannel', channel);
@@ -493,7 +493,6 @@ export default Vue.extend({
       this.updateChannels(data, true);
     });
     this.$user.socket.on("channel", (data: any) => {
-      // console.log("HEYYY");
       this.updateChannels(data);
       this.updateMembers();
     });
