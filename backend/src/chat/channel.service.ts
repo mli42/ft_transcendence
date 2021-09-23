@@ -25,7 +25,7 @@ export class ChannelService {
 		const name = await this.channelRepository.findOne({channelName: channelName});
 		if (name)
 			return null;
-		if (/^([a-zA-Z0-9]+)$/.test(channelName) === false)
+		if (/^([a-zA-Z0-9-]+)$/.test(channelName) === false)
 			return null;
 		channel.adminUsers = [];
 		channel.authPrivateChannelUsers = [];
@@ -73,10 +73,13 @@ export class ChannelService {
 			await this.deleteChannel(channel);
 		} else {
 			this.updateAdminUser(false, channel, user);
+			if (channel.publicChannel === false)
+				this.updateAuthUser(channel, user);
 			if (channel.owner === user.userId) {
 				const userFound = channel.users.find(el => el.userId !== user.userId );
 				if (userFound) {
 					channel.owner = userFound.userId;
+					channel.authPrivateChannelUsers.push(userFound.userId);
 				} else {
 					await this.deleteChannel(channel);
 					return;
@@ -88,6 +91,20 @@ export class ChannelService {
 			} catch (error) {
 				console.log(error);
 				throw new InternalServerErrorException('user leave channel');
+			}
+		}
+	}
+
+	async updateAuthUser(channel: ChannelI, user: User) {
+		const userFound = channel.authPrivateChannelUsers.find(element => element === user.userId)
+		if (userFound) {
+			const index = channel.authPrivateChannelUsers.indexOf(user.userId);
+			channel.authPrivateChannelUsers.splice(index, 1);
+			try {
+				await this.channelRepository.save(channel);
+			} catch (error) {
+				console.log(error);
+				throw new InternalServerErrorException('remove an user to auth private channel');
 			}
 		}
 	}
