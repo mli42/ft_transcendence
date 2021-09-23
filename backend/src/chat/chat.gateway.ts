@@ -1,4 +1,4 @@
-import { Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { Logger, OnModuleInit, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException, WsResponse } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { User } from '../user/entities/user.entity';
@@ -14,6 +14,7 @@ import { RoleUserI } from './interfaces/role-user.interface';
 import { RoleUserService } from './role-user.service';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+import { UserAuthHandshake } from './guards/userAuthHandshake.guard';
 
 @WebSocketGateway({ namespace: "/chat", cors: { origin: process.env.IP_FRONTEND, credentials: true }})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
@@ -85,6 +86,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
 
     /********************* CREATE CHANNEL **************** */
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('createChannel')
     async onCreateChannel(client: Socket, channel: ChannelI): Promise<boolean> {
         const createChannel: ChannelI = await this.channelService.createChannel(channel, client.data.user);
@@ -96,6 +98,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
     }
 
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('displayChannel')
     async onChatPage(client: Socket): Promise<ChannelI[]> {
         const user: User = await this.channelService.getUserFromSocket(client);
@@ -104,6 +107,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* DELETE CHANNEL **************** */
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('deleteChannel')
     async onDeleteChannel(client: Socket, channel: ChannelI) {
         await this.channelService.deleteChannel(channel);
@@ -111,6 +115,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* USER LEAVE FROM CHANNEL CHANNEL **************** */
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('userLeaveChannel')
     async onUserLeaveChannel(client: Socket, data: any) {
         const { channel, user } = data;
@@ -119,6 +124,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* UPDATE CHANNEL **************** */
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('updateChannel')
     async updateChannel(client: Socket, info: any): Promise<boolean> {
         const { channel } = info;
@@ -137,6 +143,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
 
     /********************* HANDLE MESSAGE *****************/
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('newMessage')
     async onAddMessage(client: Socket, message: MessageI) {
         const userRoleFound = await this.roleUserService.findUserByChannel(message.channel, client.data.user.userId);
@@ -167,6 +174,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
 
     /********************* Block user *********************/
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('blockUser')
     async blockOrDefiUser(client: Socket, data: any): Promise<User> {
         const { user, block } = data;
@@ -175,6 +183,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* Autorisation Channel *********************/
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('autorisationChannel')
     async updateAutorisationChannel(client: Socket, data: any) {
         const { user, channel, admin } = data;
@@ -253,6 +262,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* Auth Private Channel *********************/
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('passwordChannel')
     async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
         const { channel, password } = data;
@@ -268,6 +278,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
 
     /********************* Join Channel *********************/
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('joinChannel')
     async handleJoinChannel(client: Socket, channel: ChannelI) {
         const channelFound = await this.channelService.getChannel(channel.channelId);
@@ -280,6 +291,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     /********************* Leave Channel ********************/
+    @UseGuards(UserAuthHandshake)
     @SubscribeMessage('leaveChannel')
     async handleLeaveChannel(client: Socket) {
         await this.joinedChannelService.deleteBySocketId(client.id);
