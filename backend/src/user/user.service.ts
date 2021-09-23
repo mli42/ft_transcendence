@@ -131,6 +131,14 @@ export class UserService {
 	}
 
 	async deleteUser(id: string, @Res({passthrough: true}) res: Response): Promise<void> {
+		const query = await this.usersRepository.createQueryBuilder('user').select(["user.userId", "user.friends"])
+		.andWhere('user.friends LIKE :friends', {friends: id})
+		.select(["user.userId"])
+		.getMany();
+
+		for (const user of query) {
+			this.deleteFriend(id, user);
+		}
 		res.clearCookie('jwt');
 		const result = await this.usersRepository.delete(id);
 	}
