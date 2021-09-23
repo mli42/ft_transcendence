@@ -409,14 +409,10 @@ export default Vue.extend({
       }
       this.channels = newChannels;
       const newChannelIndex: number = 0;
-      if (onMount === true || (this.channels?.[newChannelIndex]?.owner === this.currentUser.userId && this.createdChannel)) {
-        this.joinChannel(newChannelIndex);
-        this.createdChannel = false;
-        return ;
-      }
       if (!this.channels.find((el: Channel) => el.channelId === this.currentChannel.channelId))
       {
-        this.joinChannel(newChannelIndex);
+        this.$user.socket.emit('leaveChannel');
+        this.currentChannel = new Channel();
       }
     },
     updateMembers(): void{
