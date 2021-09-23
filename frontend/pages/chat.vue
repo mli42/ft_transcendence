@@ -158,6 +158,7 @@ export default Vue.extend({
       txt: '' as string,
       messages: [] as Message[],
       channels: [] as Channel[],
+      currentUser: this.$store.state.user as User,
       currentChannel: new Channel as Channel,
       userBanned: false as boolean,
       userMuted: false as boolean,
@@ -198,15 +199,12 @@ export default Vue.extend({
     }
   },
   computed: {
-    currentUser(): User {
-      return this.$store.state.user;
-    },
     currentChannelName(): string | undefined {
       return this.currentChannel?.channelName;
     },
   },
   methods: {
-    async joinChannel(index: number): Promise<void>{
+    joinChannel(index: number): void{
       if (index < 0 || index >= this.channels.length) {
         console.error('joinChannel: index out of range');
         this.currentChannel = new Channel;
@@ -221,7 +219,10 @@ export default Vue.extend({
           return;
         }
         if (!this.channels[index].publicChannel && !this.channels[index].authPrivateChannelUsers.find((el: String) => el === this.$store.state.user.userId))
+        {
           this.modalBool.showPrivacy = true;
+          return ;
+        }
         else
         {
           this.$user.socket.emit('joinChannel', this.channels[index]);
@@ -247,7 +248,7 @@ export default Vue.extend({
             this.modalBool.showPrivacy = false;
             this.$mytoast.err(`Wrong password!`);
           }
-          else
+          else if(this.channels[this.selectedChannel].channelId != this.currentChannel.channelId)
           {
             this.$user.socket.emit('joinChannel', this.channels[this.selectedChannel]);
             this.currentChannel = this.channels[this.selectedChannel];
@@ -303,7 +304,7 @@ export default Vue.extend({
         this.$user.socket.emit('createChannel', {channelName: this.newChannel.name,
         publicChannel: this.newChannel.public},  (data: boolean) => {
           if (data === false)
-            this.$mytoast.err(`This channel name already exist`);});
+            this.$mytoast.err(`Wrong channel name or wrong password`);});
       }
       else if (this.newChannel.public === false)
       {
@@ -347,11 +348,12 @@ export default Vue.extend({
         return false;
     },
     joinUserChannel(user: User): void{
+      
       let name1: string = this.currentUser.userId + user.userId;
       let name2: string = user.userId + this.currentUser.userId;
       let users: User[] = [];
       users.push(user);
-      let channel: Channel = this.channels.find((el: Channel) => el.channelName === name1 || el.channelName === name1);
+      let channel: Channel = this.channels.find((el: Channel) => el.channelName === name1 || el.channelName === name2);
       if(channel)
       {
         this.$user.socket.emit('joinChannel', channel);

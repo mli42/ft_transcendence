@@ -7,7 +7,7 @@ export class Message {
 	@PrimaryGeneratedColumn("uuid")
 	msgId: string;
 
-	@Column()
+	@Column("text")
 	text: string;
 
 	@ManyToOne(() => User, user => user.messages, { onDelete: 'CASCADE' })

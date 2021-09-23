@@ -7,7 +7,7 @@ export class RoleUser {
 	@PrimaryGeneratedColumn("uuid")
 	roleUserId: string;
 
-	@Column()
+	@Column("text")
 	userId: string;
 
 	@Column({nullable: true, type: 'timestamptz'})

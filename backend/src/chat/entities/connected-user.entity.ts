@@ -7,7 +7,7 @@ export class ConnectedUser {
 	@PrimaryGeneratedColumn("uuid")
 	userConnectId: string;
 
-	@Column()
+	@Column("text")
 	socketId: string;
 
 	@ManyToOne(() => User, user => user.connections, {onDelete:'CASCADE'})
