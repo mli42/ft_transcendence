@@ -256,7 +256,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage('passwordChannel')
     async authPrivateChannel(client: Socket, data: any): Promise<boolean> {
         const { channel, password } = data;
-        console.log(data)
         if (await bcrypt.compare(password, channel.password) === false)
             return false;
         await this.channelService.addAuthUserPrivateChannel(channel, client.data.user);
