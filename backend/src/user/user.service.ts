@@ -140,6 +140,11 @@ export class UserService {
 	}
 
 	async getProfilePicture(@Res() res, profilePicture: string): Promise<Observable<object>> {
+		let fs = require('fs');
+		let files = fs.readdirSync('../upload/image/');
+		if (Object.values(files).indexOf(profilePicture) === -1) {
+			return of(res.sendFile(join(process.cwd(), process.env.DEFAULT_PROFILE_PICTURE)));
+		}
 		return of(res.sendFile(join(process.cwd(), '../upload/image/' + profilePicture)));
 	}
 
