@@ -30,15 +30,15 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'searchCard',
-  data() {
-    return {
-      ratio: (this.user.ratio == -1 ? 'N/A' : `${this.user.ratio}%`) as string,
-      userProfile: `/profile/${this.user.username}` as string,
-    };
-  },
   computed: {
     shortUsername(): string {
       return (this.$user.shortName(this.user.username, 12));
+    },
+    ratio(): string {
+      return (this.user.ratio == -1 ? 'N/A' : `${this.user.ratio}%`);
+    },
+    userProfile(): string {
+      return `/profile/${this.user.username}`;
     },
   },
   props: ['user'],
