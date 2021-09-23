@@ -25,7 +25,7 @@ export class ChannelService {
 		const name = await this.channelRepository.findOne({channelName: channelName});
 		if (name)
 			return null;
-		if (/^([a-zA-Z0-9]+)$/.test(channelName) === false)
+		if (/^([a-zA-Z0-9-]+)$/.test(channelName) === false)
 			return null;
 		channel.adminUsers = [];
 		channel.authPrivateChannelUsers = [];

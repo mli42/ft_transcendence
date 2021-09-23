@@ -52,7 +52,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 // return this.server.to(client.id).emit('channel', channels);
             }
         } catch {
-            console.log("ok disc.");
             return this.disconnectClient(client);
         }
     }
