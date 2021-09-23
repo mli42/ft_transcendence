@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ForbiddenException } from '@nestjs/common';
+import { Injectable, CanActivate } from '@nestjs/common';
 import { User } from '../../user/entities/user.entity';
 import { parse } from 'cookie';
 import { JwtPayload } from '../../user/interfaces/jwt-payload.interface'
