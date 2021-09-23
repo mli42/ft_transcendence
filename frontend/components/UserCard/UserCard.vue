@@ -7,7 +7,7 @@
       <p v-if="channel.directMessage"> {{ whoIsIt().username }}</p>
       <p v-else>{{ channel.channelName }}</p>
       <img v-if="!channel.publicChannel && !channel.directMessage" class="lock" src="~/assets/img/padlock.svg">
-    <img  v-if="channel.channelId === currentChannel.channelId && !channel.publicChannel" class="cross" src="~/assets/img/red_cross.svg" @click="leaveChannel(channel, currentUser)">
+    <img  v-if="channel.channelId === currentChannel.channelId && !channel.publicChannel" class="cross" src="~/assets/img/red_cross.svg" @click.stop="leaveChannel(channel, currentUser)">
   </div>
 </template>
 
