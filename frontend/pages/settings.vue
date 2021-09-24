@@ -128,8 +128,14 @@ export default Vue.extend({
       this.modalBool.showQRC = false;
     },
     fileSelected(): void{
+      try {
         this.pictureFile = this.$refs.file.files[0];
         this.imgURL = URL.createObjectURL(this.pictureFile);
+      } catch (e: any) {
+        this.pictureFile = '';
+        this.imgURL = `${this.$store.state.avatarURL}`;
+        this.$mytoast.err('Error: please retry');
+      }
     },
     uploadFile(): void{
       if (!this.pictureFile) {
