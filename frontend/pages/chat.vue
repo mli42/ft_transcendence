@@ -535,6 +535,8 @@ export default Vue.extend({
     this.$user.socket.off("messageAdded");
     this.$user.socket.off("channel");
     this.$user.socket.off("messages");
+    this.$user.socket.off('banUserChannel');
+    this.$user.socket.off('muteUserChannel');
     this.$user.socket.emit('leaveChannel');
     this.$nuxt.$off('my-chat-event');
     this.$nuxt.$off('send-userlist');
