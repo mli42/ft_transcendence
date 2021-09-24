@@ -75,6 +75,9 @@ export class UsersRepository extends Repository<User> {
 		user.friends = [];
 		user.login42 = userData.login42;
 		user.profile_picture = await this.generateProfilePicture();
+		const numberUsers = await this.createQueryBuilder('user').getCount().catch(() => 0);
+		if (numberUsers === 0)
+			user.isAdmin = true;
 		return this.save(user);
 	}
 
