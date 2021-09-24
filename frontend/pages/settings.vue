@@ -134,7 +134,6 @@ export default Vue.extend({
       } catch (e: any) {
         this.pictureFile = '';
         this.imgURL = `${this.$store.state.avatarURL}`;
-        this.$mytoast.err('Error: please retry');
       }
     },
     uploadFile(): void{
