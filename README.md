@@ -33,6 +33,12 @@ This project is fully coded in Typescript and could be deployed simply with dock
 
 If you are more curious, you could find our Notion documentation bellow.
 
+### Usage
+
+To start this project, you have to use the command `docker-compose up --build`.
+
+⚠ 42 authentication will not work because you need API keys.
+
 ## Our documentation:
 
 - [Notions](https://www.notion.so/Doc-ft_transcendence-65a2330b989b415282cd7f77a9fb4478)
