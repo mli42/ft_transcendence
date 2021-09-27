@@ -46,5 +46,5 @@ To start this project, you have to use the command `docker-compose up --build`.
 
 ## Contact
 
-If you have any question, all links are on my GitHub profile. \
+If you have any question, feel free to contact us. \
 See contributors to know our team.
