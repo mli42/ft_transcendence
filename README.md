@@ -20,18 +20,18 @@ The goal is to be lost in new notions to improve learning skills.
 ### Presentation
 
 This is a website where you can play pong with other players.
-There is accounts, a chat, spectating and a match-making system. You can also customize the game by
+There are accounts, a chat, spectating mode and a match-making system. You can also customize the game by
 changing the background and add power-ups.
 
 ### Technical details
 
 This project is fully coded in Typescript and could be deployed simply with docker-compose.
 
-- For front framework, we choose VueJS. There are many different framework but this projet looked good to us. Above Vue, we added NuxtJS to simplify our development.
-- For back framework, NestJS was imposed.
-- Finally, postgres was imposed too.
+- For the front framework, we choose VueJS. There are many different frameworks but this project looked good to us. Above Vue, we added NuxtJS to simplify our development.
+- For the back framework, NestJS was imposed.
+- Finally, Postgres was imposed too.
 
-If are more curious, you could find our Notions documentation bellow.
+If you are more curious, you could find our Notion documentation bellow.
 
 ## Our documentation:
 
