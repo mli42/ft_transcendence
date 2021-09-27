@@ -29,6 +29,18 @@ services:
     restart: always
     container_name: frontend_app
 
+  proxy:
+    build:
+      context: ./docker/
+      dockerfile: Dockerfile-proxy
+    ports:
+      - "443:443"
+      - "80:80"
+    networks:
+      - webapp
+    restart: always
+    container_name: proxy
+
   db:
     image: postgres:13-alpine
     environment:
